@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Stack de criação de frontend
+Parameters:
+  BucketPrefix:
+    Type: String
+    Default: gramfort-dev
+    Description: A prefix for S3 bucket name, account id will be added to ensure global uniqueness
+  
+Resources:         
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BucketPrefix}"
+      # BucketName: gramfort-dev
+      # AccessControl: PublicRead 
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+    DeletionPolicy: Retain
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      PolicyDocument:
+        Statement:       
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref S3Bucket
+                - /*
+      Bucket: !Ref S3Bucket
+Outputs:    
+  WebsiteURL:
+    Value: !GetAtt
+      - S3Bucket      
+      - WebsiteURL
+    Description: URL do site hospedado no S3
+  S3BucketSecureURL:
+    Value: !Join
+      - ''
+      - - 'https://'
+        - !GetAtt
+          - S3Bucket
+          - DomainName
+    Description: Nome do Bucket S3 onde estao os arquivos do site
+    

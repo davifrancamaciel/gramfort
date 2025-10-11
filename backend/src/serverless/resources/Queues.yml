@@ -1,0 +1,19 @@
+Resources:  
+    SendEmailQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "${self:service}-${opt:stage, self:provider.stage}-send-email-queue"
+        VisibilityTimeout: 601
+        MessageRetentionPeriod: 6000
+        RedrivePolicy:
+          deadLetterTargetArn:
+            "Fn::GetAtt":
+              - ReceiverDeadLetterSendEmailQueue
+              - Arn
+          maxReceiveCount: 3
+    ReceiverDeadLetterSendEmailQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "${self:service}-${opt:stage, self:provider.stage}-send-email-queue-dlq"
+        MessageRetentionPeriod: 1209600 # 14 days in seconds
+    

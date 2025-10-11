@@ -1,0 +1,26 @@
+Resources:
+    PublicSystemBucket: # nome variável
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketPublic}
+        # AccessControl: PublicRead
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
+        CorsConfiguration:
+          CorsRules:
+          - AllowedMethods:
+            - GET
+            - PUT
+            - POST
+            - HEAD
+            AllowedOrigins:
+            - "*"
+            AllowedHeaders:
+            - "*"
+    PrivateSystemBucket: # nome variável
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketPrivate}

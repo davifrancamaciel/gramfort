@@ -1,0 +1,72 @@
+#Grupos de usuários do sistema
+Resources:
+    CognitoUserPoolGroupAdmin:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Super-usuário, pode executar todas as tarefas dos outros usuários, e mais gerenciamento de usuários no sistema (criar/editar/remover)"
+        GroupName: "Administrador"
+        UserPoolId:
+          Ref: UserPool #Refere-se ao grupo de usuários criado acima
+    CognitoUserPoolGroupUsers:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar usuários do sistema"
+        GroupName: "Usuarios"
+        UserPoolId:
+          Ref: UserPool #Refere-se ao grupo de usuários criado acima
+    CognitoUserPoolGroupProducts:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Produtos"
+        GroupName: "Produtos"
+        UserPoolId:
+          Ref: UserPool #Refere-se ao grupo de usuários criado acima
+    CognitoUserPoolGroupVisit:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Visitas"
+        GroupName: "Visitas"
+        UserPoolId:
+          Ref: UserPool #Refere-se ao grupo de usuários criado acima        
+    CognitoUserPoolGroupSales:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Vendas"
+        GroupName: "Vendas"
+        UserPoolId:
+          Ref: UserPool #Refere-se ao grupo de usuários criado acima      
+    CognitoUserPoolGroupSalesChangeUser:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário alterar vendedor nas vendas"
+        GroupName: "Vendedor_vendas"
+        UserPoolId:
+          Ref: UserPool #Refere-se ao grupo de usuários criado acima      
+    CognitoUserPoolGroupExpenses:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar despesas"
+        GroupName: "Despesas"
+        UserPoolId:
+          Ref: UserPool #Refere-se ao grupo de usuários criado acima    
+    CognitoUserPoolGroupClients:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Clientes"
+        GroupName: "Clientes"
+        UserPoolId:
+          Ref: UserPool
+    CognitoUserPoolGroupSuppliers:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Fornecedores"
+        GroupName: "Fornecedores"
+        UserPoolId:
+          Ref: UserPool                    
+    CognitoUserPoolGroupsShopping:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Compras"
+        GroupName: "Compras"
+        UserPoolId:
+          Ref: UserPool  
