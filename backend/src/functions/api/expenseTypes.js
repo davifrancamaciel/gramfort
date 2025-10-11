@@ -13,7 +13,7 @@ module.exports.listAll = async (event, context) => {
             order: [['name', 'ASC']],
         })
 
-        const respFormated = resp.map(item => ({
+        const respFormated = resp.filter(x => x.id != 1).map(item => ({
             value: item.id,
             label: item.name,
         }));

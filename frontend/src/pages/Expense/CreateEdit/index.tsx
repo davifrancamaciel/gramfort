@@ -18,14 +18,18 @@ import {
   formatValueWhithDecimalCaseOnChange,
   priceToNumber
 } from 'utils/formatPrice';
+import { getTitle, getType } from '../utils';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
+  const [path, setPath] = useState('');
 
   useEffect(() => {
+    setPath(getType());
+    if (getType() == appRoutes.shopping) dispatch({ expenseTypeId: 1 });
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
   }, [props.match.params.id]); // eslint-disable-line
@@ -61,7 +65,7 @@ const CreateEdit: React.FC = (props: any) => {
 
       setLoading(false);
 
-      result.success && history.push(`/${appRoutes.expenses}`);
+      result.success && history.push(`/${path}`);
     } catch (error) {
       setLoading(false);
     }
@@ -69,7 +73,9 @@ const CreateEdit: React.FC = (props: any) => {
 
   return (
     <PanelCrud
-      title={`${type === 'update' ? 'Editar' : 'Nova'} despesa`}
+      title={`${type === 'update' ? 'Editar' : 'Nova'} ${getTitle(
+        path
+      ).toLocaleLowerCase()}`}
       type={type}
       onClickActionButton={action}
       loadingBtnAction={false}
@@ -85,14 +91,16 @@ const CreateEdit: React.FC = (props: any) => {
           />
         </Col>
       </ShowByRoule>
-      <Col lg={8} md={8} sm={24} xs={24}>
-        <Select
-          label={'Tipo'}
-          url={`${apiRoutes.expenseTypes}`}
-          value={state.expenseTypeId}
-          onChange={(expenseTypeId) => dispatch({ expenseTypeId })}
-        />
-      </Col>
+      {path == appRoutes.expenses && (
+        <Col lg={8} md={8} sm={24} xs={24}>
+          <Select
+            label={'Tipo'}
+            url={`${apiRoutes.expenseTypes}`}
+            value={state.expenseTypeId}
+            onChange={(expenseTypeId) => dispatch({ expenseTypeId })}
+          />
+        </Col>
+      )}
 
       <Col lg={8} md={8} sm={12} xs={24}>
         <Input

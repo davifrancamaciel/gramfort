@@ -10,25 +10,33 @@ import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import Action from 'components/Action';
+import { getTitle, getType } from '../utils';
 
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [path, setPath] = useState(apiRoutes.expenses);
 
   useEffect(() => {
     actionFilter();
+    setPath(getType());
   }, []);
 
   const actionFilter = async (pageNumber: number = 1) => {
     try {
       dispatch({ pageNumber });
-
+      const type = getType();
+      let expenseTypeId: string = '';
+      if (type == appRoutes.shopping) {
+        expenseTypeId = '1';
+      }
       setLoading(true);
       const resp = await api.get(apiRoutes.expenses, {
         ...state,
-        pageNumber
+        pageNumber,
+        expenseTypeId
       });
       setLoading(false);
 
@@ -65,7 +73,7 @@ const List: React.FC = () => {
   return (
     <div>
       <PanelFilter
-        title="Despesas cadastradas"
+        title={`${getTitle(path, true)} cadastradas`}
         actionButton={() => actionFilter()}
         loading={loading}
       >
@@ -86,13 +94,15 @@ const List: React.FC = () => {
             onChange={(paidOut) => dispatch({ paidOut })}
           />
         </Col>
-        <Col lg={8} md={8} sm={12} xs={24}>
-          <Input
-            label={'Tipo'}
-            value={state.expenseTypeName}
-            onChange={(e) => dispatch({ expenseTypeName: e.target.value })}
-          />
-        </Col>
+        {path == appRoutes.expenses && (
+          <Col lg={8} md={8} sm={12} xs={24}>
+            <Input
+              label={'Tipo'}
+              value={state.expenseTypeName}
+              onChange={(e) => dispatch({ expenseTypeName: e.target.value })}
+            />
+          </Col>
+        )}
 
         <Col lg={8} md={12} sm={12} xs={24}>
           <Input
@@ -163,8 +173,8 @@ const List: React.FC = () => {
         pageSize={state.pageSize}
         loading={loading}
         routes={{
-          routeCreate: `/${appRoutes.expenses}/create`,
-          routeUpdate: `/${appRoutes.expenses}/edit`,
+          routeCreate: `/${path.toLowerCase()}/create`,
+          routeUpdate: `/${path.toLowerCase()}/edit`,
           // routeView: `/${appRoutes.expenses}/details`,
           routeDelete: `/${appRoutes.expenses}`
         }}

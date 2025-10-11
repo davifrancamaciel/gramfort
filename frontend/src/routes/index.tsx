@@ -125,6 +125,21 @@ const routesArray: IRouteProps[] = [
     path: `/${appRoutes.expenses}/edit/:id`,
     component: ExpenseCreateEdit,
     roule: roules.expenses
+  }, 
+  {
+    path: `/${appRoutes.shopping}`,
+    component: ExpenseList,
+    roule: roules.shopping
+  },
+  {
+    path: `/${appRoutes.shopping}/create`,
+    component: ExpenseCreateEdit,
+    roule: roules.shopping
+  },
+  {
+    path: `/${appRoutes.shopping}/edit/:id`,
+    component: ExpenseCreateEdit,
+    roule: roules.shopping
   },  
   {
     path: `/${appRoutes.companies}`,

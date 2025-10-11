@@ -25,23 +25,7 @@ function load() {
 }
 
 const data_array = [
-  'Pagamento de comissão',
-  '13º 1ª parcela',
-  '13º 2ª parcela',
-  '13º integral',
-  '13º parcial',
-  'Pagamento salario semanal',
-  'Pagamento salario mensal',
-  'Férias',
-  'Aluguel',
-  'Contador',
-  'Nota fiscal de produtos',
-  'Agua',
-  'Energia elétrica',
-  'Gás',
-  'Alimento',
-  'Serviços de terceiros',
-  'Manutenções',
+  'Compras',  
   'Outros',
 ];
 

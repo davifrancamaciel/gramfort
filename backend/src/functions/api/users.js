@@ -19,7 +19,7 @@ module.exports.list = async (event) => {
 
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
-        if (!checkRouleProfileAccess(user.groups, roules.users) && !checkRouleProfileAccess(user.groups, roules.clients) && !checkRouleProfileAccess(user.groups, roules.suppliers))
+        if (checkProfile(user))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
         const whereStatement = {};
@@ -88,7 +88,7 @@ module.exports.listById = async (event) => {
 
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
-        if (!checkRouleProfileAccess(user.groups, roules.users) && !checkRouleProfileAccess(user.groups, roules.clients) && !checkRouleProfileAccess(user.groups, roules.suppliers))
+        if (checkProfile(user))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade');
 
         const userInDb = await User.findByPk(pathParameters.id);
@@ -129,7 +129,7 @@ module.exports.create = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.users) && !checkRouleProfileAccess(user.groups, roules.clients) && !checkRouleProfileAccess(user.groups, roules.suppliers))
+        if (checkProfile(user))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             companyId = user.companyId
@@ -137,7 +137,7 @@ module.exports.create = async (event) => {
         if (type === userType.USER) {
             if (password && password.length < 8)
                 return handlerResponse(400, {}, `A senha precisa ter ao menos 8 caracteres`)
-            const item = await User.findOne({ where: { email } })
+            const item = await User.findOne({ where: { email, type } })
             if (item)
                 return handlerResponse(400, {}, `${getTitle(type)} já existe`)
         }
@@ -198,7 +198,7 @@ module.exports.update = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.users) && !checkRouleProfileAccess(user.groups, roules.clients) && !checkRouleProfileAccess(user.groups, roules.suppliers))
+        if (checkProfile(user))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
@@ -274,7 +274,7 @@ module.exports.delete = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.users) && !checkRouleProfileAccess(user.groups, roules.clients) && !checkRouleProfileAccess(user.groups, roules.suppliers))
+        if (checkProfile(user))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade');
 
         if (Number(user.userId) === Number(id))
@@ -358,3 +358,6 @@ const getTitle = (path, isPlural = false) => {
             return `Usuário${isPlural ? 's' : ''}`;
     }
 };
+
+const checkProfile = (user) =>
+    !checkRouleProfileAccess(user.groups, roules.users) && !checkRouleProfileAccess(user.groups, roules.clients) && !checkRouleProfileAccess(user.groups, roules.suppliers)

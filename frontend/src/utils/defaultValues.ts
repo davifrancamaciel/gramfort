@@ -21,7 +21,8 @@ export const appRoutes = {
   sales: 'sales',
   expenses: 'expenses',
   companies: 'companies',
-  services: 'services'
+  services: 'services',
+  shopping: 'shopping'
 };
 
 export const apiRoutes = {
@@ -32,7 +33,7 @@ export const apiRoutes = {
   sales: appRoutes.sales,
   companies: appRoutes.companies,
   services: appRoutes.services,
-  expenses: 'expenses',
+  expenses: appRoutes.expenses,
   expenseTypes: 'expense-types'
 };
 

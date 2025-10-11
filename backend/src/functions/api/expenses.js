@@ -24,7 +24,7 @@ module.exports.list = async (event, context) => {
 
         if (event.queryStringParameters) {
             const {
-                id, expenseTypeName, title, description, paidOut,
+                id, expenseTypeName, title, description, paidOut, expenseTypeId,
                 paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision
             } = event.queryStringParameters
 
@@ -76,6 +76,10 @@ module.exports.list = async (event, context) => {
                 };
             if (myCommision)
                 whereStatement.userId = user.userId
+            if (expenseTypeId)
+                whereStatement.expenseTypeId = expenseTypeId
+            else
+                whereStatement.expenseTypeId = { [Op.gt]: 1, }
         }
 
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
@@ -179,7 +183,7 @@ module.exports.create = async (event) => {
             await Expense.bulkCreate(espensesList);
         }
 
-        return handlerResponse(201, result, `${RESOURCE_NAME} criada com sucesso`)
+        return handlerResponse(201, result, `${getTitle(objOnSave.expenseTypeId)} criada com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, body)
     }
@@ -199,13 +203,6 @@ module.exports.update = async (event) => {
         const { id } = body
         const item = await Expense.findByPk(Number(id))
         let message = ''
-        if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.expenseTypeId === 1) {
-            body.expenseTypeId = item.expenseTypeId;
-            body.value = item.value;
-            body.title = item.title;
-            body.description = item.description;
-            message = 'Usuario não tem permissão de alterar tipo, valor, titulo e descrição de despesa entre em contato com o administrador.'
-        }
 
         console.log('BODY ', body)
         console.log('DESPESA ALTERADA DE ', item.dataValues)
@@ -218,7 +215,7 @@ module.exports.update = async (event) => {
         const result = await item.update(body);
         console.log('PARA ', result.dataValues)
 
-        return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso. ${message}`)
+        return handlerResponse(200, result, `${getTitle(item.expenseTypeId)} alterada com sucesso. ${message}`)
     } catch (err) {
         return await handlerErrResponse(err, body)
     }
@@ -239,12 +236,20 @@ module.exports.delete = async (event) => {
         const item = await Expense.findByPk(id)
         if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
-        if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.expenseTypeId === 1)
-            return handlerResponse(403, {}, 'Usuário não tem permissão apagar este tipo de despesa')
 
         await Expense.destroy({ where: { id } });
-        return handlerResponse(200, {}, `${RESOURCE_NAME} código (${id}) removida com sucesso`)
+        return handlerResponse(200, {}, `${getTitle(item.expenseTypeId)} código (${id}) removida com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, pathParameters)
     }
 }
+
+const getTitle = (type, isPlural = false) => {
+    switch (type) {
+        case 1:
+            return `Compra${isPlural ? 's' : ''}`;
+
+        default:
+            return `Despesa${isPlural ? 's' : ''}`;
+    }
+};

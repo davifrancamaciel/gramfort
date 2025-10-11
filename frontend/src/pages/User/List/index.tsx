@@ -3,13 +3,7 @@ import { Col, Image } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input } from 'components/_inputs';
-import {
-  apiRoutes,
-  appRoutes,
-  roules,
-  systemColors,
-  userType
-} from 'utils/defaultValues';
+import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
 import { initialStateFilter, Users } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';

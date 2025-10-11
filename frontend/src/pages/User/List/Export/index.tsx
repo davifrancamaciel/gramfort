@@ -41,8 +41,9 @@ const Export: React.FC<Filter> = (props) => {
         const nextPage = pageNumber + 1;
         await actionFilter(nextPage, itemsArray);
       } else {
-        const newData = itemsArray.map((item: Users) => ({
+        const newData = itemsArray.map((item: any) => ({
           ...item,
+          companyName: item.company?.name,
           active: item.active ? 'SIM' : 'NÃO',
           type: getTitle(item.type),
           createdAt: formatDateHour(item.createdAt),
@@ -68,6 +69,7 @@ const Export: React.FC<Filter> = (props) => {
         data={formattedData}
         documentTitle={nameReport}
         headers={[
+          { label: 'Empresa', key: 'companyName' },
           { label: 'Código', key: 'id' },
           { label: 'Nome', key: 'name' },
           { label: 'Telefone', key: 'phone' },
