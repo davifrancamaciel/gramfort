@@ -9,6 +9,7 @@ const roules = {
     expenses: 'despesas',
     clients: 'clientes',
     supplier: 'fornecedores',
+    visits: 'visitas',
 };
 
 const cognito = {

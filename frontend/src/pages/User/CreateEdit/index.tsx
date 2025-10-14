@@ -25,7 +25,7 @@ import {
   userType
 } from 'utils/defaultValues';
 import BooleanTag from 'components/BooleanTag';
-import { getTitle, getType } from '../utils';
+import { getTitle, getType, arrayCapture } from '../utils';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
@@ -248,15 +248,14 @@ const CreateEdit: React.FC = (props: any) => {
           )}
 
           {path === userType.CLIENT && (
-            <>
-              <Col lg={8} md={8} sm={12} xs={24}>
-                <Input
-                  label={'Captação'}
-                  value={state.capture}
-                  onChange={(e) => dispatch({ capture: e.target.value })}
-                />
-              </Col>
-            </>
+            <Col lg={8} md={8} sm={12} xs={24}>
+              <Select
+                label={'Captação'}
+                options={arrayCapture}
+                value={state?.capture}
+                onChange={(capture) => dispatch({ capture })}
+              />
+            </Col>
           )}
           {/* <ShowByRoule roule={roules.sales}>
             {path === userType.USER && (

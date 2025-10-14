@@ -5,6 +5,7 @@ const User = require('./User')(db.sequelize, db.Sequelize);
 
 module.exports = function (sequelize, DataTypes) {
     const Expense = sequelize.define('expenses', {
+        companyId: { type: DataTypes.UUID },   
         expenseTypeId: { type: DataTypes.INTEGER },
         expenseDadId: { type: DataTypes.INTEGER },
         userId: { type: DataTypes.INTEGER },
@@ -14,7 +15,6 @@ module.exports = function (sequelize, DataTypes) {
         description: { type: DataTypes.STRING(1000) },
         paidOut: { type: DataTypes.BOOLEAN },
         paymentDate: { type: DataTypes.DATE },     
-        companyId: { type: DataTypes.UUID },   
     });
     
     Expense.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });  

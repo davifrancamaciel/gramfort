@@ -7,9 +7,9 @@ import {
   UnorderedListOutlined,
   CloudServerOutlined,
   ArrowDownOutlined,
-  ArrowUpOutlined,
   DollarOutlined,
-  BarcodeOutlined
+  BarcodeOutlined,
+  ScheduleOutlined
 } from '@ant-design/icons';
 import { Auth } from 'aws-amplify';
 
@@ -40,7 +40,24 @@ const SliderMenu: React.FC = (props: any) => {
       }
     }
   };
-
+  const menuItem = () => {
+    return (
+      checkRouleProfileAccess(groupsUser, roules.products) && (
+        <SubMenu
+          key={`sub-/${appRoutes.products}`}
+          title={'Produtos'}
+          icon={<BarcodeOutlined />}
+        >
+          <Menu.Item key={`/${appRoutes.products}`}>
+            <Link to={`/${appRoutes.products}`}>Lista</Link>
+          </Menu.Item>
+          <Menu.Item key={`/${appRoutes.products}/create`}>
+            <Link to={`/${appRoutes.products}/create`}>Novo</Link>
+          </Menu.Item>
+        </SubMenu>
+      )
+    );
+  };
   return (
     <Sider
       width={230}
@@ -59,7 +76,7 @@ const SliderMenu: React.FC = (props: any) => {
       >
         <Menu.Item key={'/'} icon={<DashboardOutlined />}>
           <Link to={'/'}>Dashboard</Link>
-        </Menu.Item>       
+        </Menu.Item>
         {checkRouleProfileAccess(groupsUser, roules.products) && (
           <SubMenu
             key={`sub-/${appRoutes.products}`}
@@ -91,6 +108,20 @@ const SliderMenu: React.FC = (props: any) => {
                 Minhas comissões
               </Link>
             </Menu.Item> */}
+          </SubMenu>
+        )}
+        {checkRouleProfileAccess(groupsUser, roules.visit) && (
+          <SubMenu
+            key={`sub-/${appRoutes.visits}`}
+            title={'Visitas'}
+            icon={<ScheduleOutlined />}
+          >
+            <Menu.Item key={`/${appRoutes.visits}`}>
+              <Link to={`/${appRoutes.visits}`}>Lista</Link>
+            </Menu.Item>
+            <Menu.Item key={`/${appRoutes.visits}/create`}>
+              <Link to={`/${appRoutes.visits}/create`}>Nova</Link>
+            </Menu.Item>
           </SubMenu>
         )}
         {checkRouleProfileAccess(groupsUser, roules.expenses) && (

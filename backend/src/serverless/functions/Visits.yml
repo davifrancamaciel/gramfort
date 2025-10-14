@@ -1,0 +1,40 @@
+visits:
+  handler: src/functions/api/visits.list
+  events:
+    - http:
+        path: visits
+        method: get
+        authorizer: verifyToken
+        cors: true 
+visitsById:
+  handler: src/functions/api/visits.listById
+  events:
+    - http:
+        path: visits/{id}
+        method: get
+        authorizer: verifyToken
+        cors: true 
+visitsCreate:
+  handler: src/functions/api/visits.create
+  events:
+    - http:
+        path: visits
+        method: post
+        authorizer: verifyToken
+        cors: true  
+visitsUpdate:
+  handler: src/functions/api/visits.update
+  events:
+    - http:
+        path: visits
+        method: put
+        authorizer: verifyToken
+        cors: true 
+visitsDelete:
+  handler: src/functions/api/visits.delete
+  events:
+    - http:
+        path: visits/{id}
+        method: delete
+        authorizer: verifyToken
+        cors: true

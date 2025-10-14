@@ -4,64 +4,57 @@ import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
 import { apiRoutes, appRoutes, booleanFilter } from 'utils/defaultValues';
-import { initialStateFilter, Expense } from '../interfaces';
+import { initialStateFilter, Visit } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import Action from 'components/Action';
-import { getTitle, getType } from '../utils';
+import Print from './Print';
 
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
-  const [items, setItems] = useState<Expense[]>([]);
+  const [items, setItems] = useState<Visit[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [path, setPath] = useState(apiRoutes.expenses);
 
   useEffect(() => {
     actionFilter();
-    setPath(getType());
   }, []);
 
   const actionFilter = async (pageNumber: number = 1) => {
     try {
       dispatch({ pageNumber });
-      const type = getType();
-      let expenseTypeId: string = '';
-      if (type == appRoutes.shopping) {
-        expenseTypeId = '1';
-      }
+
       setLoading(true);
-      const resp = await api.get(apiRoutes.expenses, {
+      const resp = await api.get(apiRoutes.visits, {
         ...state,
-        pageNumber,
-        expenseTypeId
+        pageNumber
       });
       setLoading(false);
 
       const { count, rows } = resp.data;
-      const itemsFormatted = rows.map((e: Expense) => {
-        const expense = {
-          ...e,
-          nameInfoDel: `${getTitle(path)} ${e.title} do tipo ${
-            e.expenseType?.name
-          }`,
-          expenseTypeName: e.expenseType?.name,
-          value: formatPrice(Number(e.value) || 0),
-          paymentDate: formatDate(e.paymentDate),
-          createdAt: formatDateHour(e.createdAt),
-          updatedAt: formatDateHour(e.updatedAt),
+      const itemsFormatted = rows.map((item: Visit) => {
+        const itemFormatted = {
+          ...item,
+          nameInfoDel: `Visita cliente ${item.client?.name} cosultor ${item.user?.name}`,
+          clientName: item.client?.name,
+          userName: item.user?.name,
+          value: formatPrice(Number(item.value) || 0),
+          paymentDate: formatDate(item.paymentDate),
+          createdAt: formatDateHour(item.createdAt),
+          updatedAt: formatDateHour(item.updatedAt),
           paidOut: (
             <Action
-              item={e}
+              item={item}
               setUpdate={() => {}}
-              apiRoutes={apiRoutes.expenses}
+              apiRoutes={apiRoutes.visits}
               propName="paidOut"
             />
           )
         };
-        return expense;
+        return { ...itemFormatted, print: <Print item={item} /> };
       });
       setItems(itemsFormatted);
       console.log(itemsFormatted);
@@ -75,7 +68,7 @@ const List: React.FC = () => {
   return (
     <div>
       <PanelFilter
-        title={`${getTitle(path, true)} cadastradas`}
+        title={`Visitas cadastradas`}
         actionButton={() => actionFilter()}
         loading={loading}
       >
@@ -96,34 +89,26 @@ const List: React.FC = () => {
             onChange={(paidOut) => dispatch({ paidOut })}
           />
         </Col>
-        {path == appRoutes.expenses && (
-          <Col lg={8} md={8} sm={12} xs={24}>
-            <Input
-              label={'Tipo'}
-              value={state.expenseTypeName}
-              onChange={(e) => dispatch({ expenseTypeName: e.target.value })}
-            />
-          </Col>
-        )}
+
+        <Col lg={8} md={8} sm={12} xs={24}>
+          <Input
+            label={'Cliente'}
+            value={state.clientName}
+            onChange={(e) => dispatch({ clientName: e.target.value })}
+          />
+        </Col>
 
         <Col lg={8} md={12} sm={12} xs={24}>
           <Input
-            label={'Titulo'}
-            value={state.title}
-            onChange={(e) => dispatch({ title: e.target.value })}
-          />
-        </Col>
-        <Col lg={8} md={12} sm={24} xs={24}>
-          <Input
-            label={'Descrição'}
-            value={state.description}
-            onChange={(e) => dispatch({ description: e.target.value })}
+            label={'Consultor'}
+            value={state.userName}
+            onChange={(e) => dispatch({ userName: e.target.value })}
           />
         </Col>
 
         <Col lg={8} md={24} sm={24} xs={24}>
           <RangePicker
-            label="Data de vencimento"
+            label="Data de pagamento"
             onChange={(value: any, dateString: any) => {
               dispatch({
                 paymentDateStart: dateString[0]?.split('/').reverse().join('-')
@@ -154,16 +139,17 @@ const List: React.FC = () => {
         scroll={{ x: 840 }}
         columns={[
           { title: 'Código', dataIndex: 'id' },
-          { title: 'Tipo', dataIndex: 'expenseTypeName' },
-          { title: 'Titulo', dataIndex: 'title' },
+          { title: 'Cliente', dataIndex: 'clientName' },
+          { title: 'Cosultor', dataIndex: 'userName' },
           { title: 'Valor', dataIndex: 'value' },
           { title: 'Criada em', dataIndex: 'createdAt' },
           { title: 'Alterada em', dataIndex: 'updatedAt' },
           {
-            title: 'Vencimento',
+            title: 'Data PGTO',
             dataIndex: 'paymentDate'
           },
-          { title: 'Paga', dataIndex: 'paidOut' }
+          { title: 'Paga', dataIndex: 'paidOut' },
+          { title: '', dataIndex: 'print' }
         ]}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}
@@ -175,10 +161,9 @@ const List: React.FC = () => {
         pageSize={state.pageSize}
         loading={loading}
         routes={{
-          routeCreate: `/${path.toLowerCase()}/create`,
-          routeUpdate: `/${path.toLowerCase()}/edit`,
-          // routeView: `/${appRoutes.expenses}/details`,
-          routeDelete: `/${appRoutes.expenses}`
+          routeCreate: `/${appRoutes.visits}/create`,
+          routeUpdate: `/${appRoutes.visits}/edit`,
+          routeDelete: `/${appRoutes.visits}`
         }}
       />
     </div>

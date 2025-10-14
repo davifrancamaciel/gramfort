@@ -22,7 +22,8 @@ export const appRoutes = {
   expenses: 'expenses',
   companies: 'companies',
   services: 'services',
-  shopping: 'shopping'
+  shopping: 'shopping',
+  visits: 'visits',
 };
 
 export const apiRoutes = {
@@ -34,6 +35,7 @@ export const apiRoutes = {
   companies: appRoutes.companies,
   services: appRoutes.services,
   expenses: appRoutes.expenses,
+  visits: appRoutes.visits,
   expenseTypes: 'expense-types'
 };
 
@@ -46,7 +48,8 @@ export const apiRoutesArray = [
   apiRoutes.companies,
   apiRoutes.expenseTypes,
   apiRoutes.expenses,
-  apiRoutes.services
+  apiRoutes.services,
+  apiRoutes.visits,
 ];
 
 export const roules = {
@@ -58,7 +61,8 @@ export const roules = {
   expenses: 'despesas',
   clients: 'clientes',
   suppliers: 'fornecedores',
-  shopping: 'compras'
+  shopping: 'compras',
+  visit: 'visitas',
 };
 
 export const enumStatusUserAws = {

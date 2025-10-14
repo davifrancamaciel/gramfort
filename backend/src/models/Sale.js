@@ -5,6 +5,9 @@ const SaleProduct = require('./SaleProduct')(db.sequelize, db.Sequelize);
 
 module.exports = function (sequelize, DataTypes) {
     const Sale = sequelize.define('sales', {
+        companyId: { type: DataTypes.UUID },
+        userId: { type: DataTypes.INTEGER },
+        clientId: { type: DataTypes.INTEGER },
         products: { type: DataTypes.TEXT },
         productsFormatted: {
             type: DataTypes.VIRTUAL,
@@ -12,11 +15,8 @@ module.exports = function (sequelize, DataTypes) {
                 return JSON.parse(this.products);
             },
         },
-        userId: { type: DataTypes.INTEGER },
-        clientId: { type: DataTypes.INTEGER },
         note: { type: DataTypes.STRING(500) },
         value: { type: DataTypes.DECIMAL },
-        companyId: { type: DataTypes.UUID },
         commission: { type: DataTypes.DECIMAL },
         invoiceNumber: { type: DataTypes.STRING(50) },
         germinationLevel: { type: DataTypes.STRING(100) },

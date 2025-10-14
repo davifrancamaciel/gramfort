@@ -1,3 +1,4 @@
+import { IOptions } from 'utils/commonInterfaces';
 import { appRoutes, userType } from 'utils/defaultValues';
 import { UserCognito, UserCognitoAttribute, Users } from './interfaces';
 
@@ -39,3 +40,26 @@ export const getTitle = (path: string, isPlural: boolean = false) => {
       return `Usuário${isPlural ? 's' : ''}`;
   }
 };
+
+const array = [
+  'INSTAGRAM',
+  'FACEBOOK ',
+  'GOOGLE ',
+  'TIKTOK ',
+  'INDICAÇÃO EXCLIENTE',
+  'INDICAÇÃO PROFISSIONAL ',
+  'CAPTAÇÃO NA OBRA ',
+  'CAPTAÇÃO ATIVA ',
+  'FACHADA DE OBRA',
+  'OUTDOOR',
+  'RÁDIO  ',
+  'MÍDIA CARROS ',
+  'FEIRA/EVENTO ',
+  'TV ',
+  'OUTROS '
+];
+
+export const arrayCapture: IOptions[] = array.map((item: string) => ({
+  value: item,
+  label: item
+}));
