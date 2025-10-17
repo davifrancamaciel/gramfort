@@ -16,7 +16,7 @@ function load() {
   const list = [];
   for (let i = 0; i < data_array.length; i++) {
     list.push({
-      name: data_array[i],     
+      name: data_array[i],
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -25,7 +25,22 @@ function load() {
 }
 
 const data_array = [
-  'Compras',  
-  'Outros',
+  'COMPRAS',  
+  'OUTROS',
+  'COMISSÕES',
+  'DESPESAS FIXAS',
+  'PAGAMENTOS',
+  'IMPOSTOS',
+  'SEGUROS ',
+  'INVESTIMENTO ',
+  'MARKETING',
+  'MATERIAL PUBLICITÁRIO',
+  'COMBUSTIVEL',
+  'PEDAGIO',
+  'ALIMENTAÇÃO',
+  'MANUTENÇÕES',
+  'EXTRAS',
+  'EQUIPAMENTO E FERRAMENTAS',
+  'INSUMOS'
 ];
 

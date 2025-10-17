@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Col } from 'antd';
+import { Col, Image } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
-import { apiRoutes, appRoutes, booleanFilter } from 'utils/defaultValues';
-import { initialStateFilter, Visit } from '../interfaces';
+import { apiRoutes, appRoutes } from 'utils/defaultValues';
+import { initialStateFilter, Vehicle, years } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
-import { formatDate, formatDateHour } from 'utils/formatDate';
+import { formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
-import Action from 'components/Action';
-import Print from './Print';
 
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
-  const [items, setItems] = useState<Visit[]>([]);
+  const [items, setItems] = useState<Vehicle[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -28,34 +26,28 @@ const List: React.FC = () => {
       dispatch({ pageNumber });
 
       setLoading(true);
-      const resp = await api.get(apiRoutes.visits, {
+      const resp = await api.get(apiRoutes.vehicles, {
         ...state,
         pageNumber
       });
       setLoading(false);
 
       const { count, rows } = resp.data;
-      const itemsFormatted = rows.map((item: Visit) => {
+      const itemsFormatted = rows.map((item: Vehicle) => {
         const itemFormatted = {
           ...item,
-          nameInfoDel: `Visita cliente ${item.client?.name} cosultor ${item.user?.name}`,
-          clientName: item.client?.name,
-          userName: item.user?.name,
+          nameInfoDel: `Veiculo ${item.model} empresa ${item.company?.name}`,
+          companyName: item.company?.name,
           value: formatPrice(Number(item.value) || 0),
-          paymentDate: formatDate(item.paymentDate),
           createdAt: formatDateHour(item.createdAt),
           updatedAt: formatDateHour(item.updatedAt),
-          date: formatDateHour(item.date),
-          paidOut: (
-            <Action
-              item={item}
-              setUpdate={() => {}}
-              apiRoutes={apiRoutes.visits}
-              propName="paidOut"
-            />
+          image: (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Image style={{ height: '60px' }} src={item.image} />
+            </div>
           )
         };
-        return { ...itemFormatted, print: <Print item={item} /> };
+        return itemFormatted;
       });
       setItems(itemsFormatted);
       console.log(itemsFormatted);
@@ -69,7 +61,7 @@ const List: React.FC = () => {
   return (
     <div>
       <PanelFilter
-        title={`Visitas cadastradas`}
+        title={`Veiculos cadastrados`}
         actionButton={() => actionFilter()}
         loading={loading}
       >
@@ -84,40 +76,26 @@ const List: React.FC = () => {
         </Col>
         <Col lg={5} md={8} sm={12} xs={24}>
           <Select
-            label={'Pagas'}
-            options={booleanFilter}
-            value={state?.paidOut}
-            onChange={(paidOut) => dispatch({ paidOut })}
+            label={'Ano'}
+            options={years}
+            value={state?.year}
+            onChange={(year) => dispatch({ year })}
           />
         </Col>
 
         <Col lg={8} md={8} sm={12} xs={24}>
           <Input
-            label={'Cliente'}
-            value={state.clientName}
-            onChange={(e) => dispatch({ clientName: e.target.value })}
+            label={'Modelo'}
+            value={state.model}
+            onChange={(e) => dispatch({ model: e.target.value })}
           />
         </Col>
 
         <Col lg={8} md={12} sm={12} xs={24}>
           <Input
-            label={'Consultor'}
-            value={state.userName}
-            onChange={(e) => dispatch({ userName: e.target.value })}
-          />
-        </Col>
-
-        <Col lg={8} md={24} sm={24} xs={24}>
-          <RangePicker
-            label="Data de pagamento"
-            onChange={(value: any, dateString: any) => {
-              dispatch({
-                paymentDateStart: dateString[0]?.split('/').reverse().join('-')
-              });
-              dispatch({
-                paymentDateEnd: dateString[1]?.split('/').reverse().join('-')
-              });
-            }}
+            label={'Categoria'}
+            value={state.category}
+            onChange={(e) => dispatch({ category: e.target.value })}
           />
         </Col>
 
@@ -134,40 +112,21 @@ const List: React.FC = () => {
             }}
           />
         </Col>
-        <Col lg={8} md={24} sm={24} xs={24}>
-          <RangePicker
-            label="Data"
-            onChange={(value: any, dateString: any) => {
-              dispatch({
-                dateStart: dateString[0]?.split('/').reverse().join('-')
-              });
-              dispatch({
-                dateEnd: dateString[1]?.split('/').reverse().join('-')
-              });
-            }}
-          />
-        </Col>
       </PanelFilter>
+
       <GridList
         size="small"
         scroll={{ x: 840 }}
         columns={[
+          { title: 'Imagem', dataIndex: 'image' },
           { title: 'Código', dataIndex: 'id' },
-          {
-            title: 'Data',
-            dataIndex: 'date'
-          },
-          { title: 'Cliente', dataIndex: 'clientName' },
-          { title: 'Cosultor', dataIndex: 'userName' },
+          { title: 'Modelo', dataIndex: 'model' },
+          { title: 'Ano', dataIndex: 'year' },
+          { title: 'Categoria', dataIndex: 'category' },
+          { title: 'Empresa', dataIndex: 'companyName' },
           { title: 'Valor', dataIndex: 'value' },
           { title: 'Criada em', dataIndex: 'createdAt' },
-          { title: 'Alterada em', dataIndex: 'updatedAt' },
-          {
-            title: 'Data PGTO',
-            dataIndex: 'paymentDate'
-          },
-          { title: 'Paga', dataIndex: 'paidOut' },
-          { title: '', dataIndex: 'print' }
+          { title: 'Alterado em', dataIndex: 'updatedAt' }
         ]}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}
@@ -179,9 +138,9 @@ const List: React.FC = () => {
         pageSize={state.pageSize}
         loading={loading}
         routes={{
-          routeCreate: `/${appRoutes.visits}/create`,
-          routeUpdate: `/${appRoutes.visits}/edit`,
-          routeDelete: `/${appRoutes.visits}`
+          routeCreate: `/${appRoutes.vehicles}/create`,
+          routeUpdate: `/${appRoutes.vehicles}/edit`,
+          routeDelete: `/${appRoutes.vehicles}`
         }}
       />
     </div>

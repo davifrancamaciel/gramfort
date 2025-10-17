@@ -109,6 +109,7 @@ functions:
   - ${file(src/serverless/functions/Services.yml)}
   - ${file(src/serverless/functions/Products.yml)}
   - ${file(src/serverless/functions/Visits.yml)}
+  - ${file(src/serverless/functions/Vehicles.yml)}
   
   
     

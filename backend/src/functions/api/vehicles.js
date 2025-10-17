@@ -3,7 +3,7 @@
 const { Op } = require('sequelize');
 const { startOfDay, endOfDay, parseISO, addMonths } = require('date-fns');
 const db = require('../../database');
-const Visit = require('../../models/Visit')(db.sequelize, db.Sequelize);
+const Vehicle = require('../../models/Vehicle')(db.sequelize, db.Sequelize);
 const User = require('../../models/User')(db.sequelize, db.Sequelize);
 const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
@@ -11,7 +11,7 @@ const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const imageService = require("../../services/ImageService");
 
-const RESOURCE_NAME = 'Visita'
+const RESOURCE_NAME = 'Veiculo'
 
 module.exports.list = async (event, context) => {
     try {
@@ -22,24 +22,24 @@ module.exports.list = async (event, context) => {
         context.callbackWaitsForEmptyEventLoop = false;
 
         const whereStatement = {};
-        const whereStatementUsers = {};
-        const whereStatementClients = {};
+
 
         if (event.queryStringParameters) {
             const {
-                id, userName, paidOut, clientName, dateStart, dateEnd,
-                paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd,
+                id, year, dateStart, dateEnd, model, category,
+                createdAtStart, createdAtEnd,
             } = event.queryStringParameters
 
             if (id) whereStatement.id = id;
 
-            if (userName)
-                whereStatementUsers.name = { [Op.like]: `%${userName}%` }
-            if (clientName)
-                whereStatementClients.name = { [Op.like]: `%${clientName}%` }
+            if (year)
+                whereStatement.year = year;
 
-            if (paidOut !== undefined && paidOut !== '')
-                whereStatement.paidOut = paidOut === 'true';
+            if (model)
+                whereStatement.model = { [Op.like]: `%${model}%` }
+
+            if (category)
+                whereStatement.category = { [Op.like]: `%${category}%` }
 
             if (createdAtStart)
                 whereStatement.createdAt = {
@@ -57,63 +57,22 @@ module.exports.list = async (event, context) => {
                         endOfDay(parseISO(createdAtEnd)),
                     ],
                 };
-
-            if (paymentDateStart)
-                whereStatement.paymentDate = {
-                    [Op.gte]: startOfDay(parseISO(paymentDateStart)),
-                };
-
-            if (paymentDateEnd)
-                whereStatement.paymentDate = {
-                    [Op.lte]: endOfDay(parseISO(paymentDateEnd)),
-                };
-            if (paymentDateStart && paymentDateEnd)
-                whereStatement.paymentDate = {
-                    [Op.between]: [
-                        startOfDay(parseISO(paymentDateStart)),
-                        endOfDay(parseISO(paymentDateEnd)),
-                    ],
-                };
-
-            if (dateStart)
-                whereStatement.date = {
-                    [Op.gte]: startOfDay(parseISO(dateStart)),
-                };
-
-            if (dateEnd)
-                whereStatement.date = {
-                    [Op.lte]: endOfDay(parseISO(dateEnd)),
-                };
-            if (dateStart && dateEnd)
-                whereStatement.date = {
-                    [Op.between]: [
-                        startOfDay(parseISO(dateStart)),
-                        endOfDay(parseISO(dateEnd)),
-                    ],
-                };
         }
 
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             whereStatement.companyId = user.companyId;
 
-        if (!checkRouleProfileAccess(user.groups, roules.visits))
-            whereStatement.userId = user.userId;
+
 
         const { pageSize, pageNumber } = event.queryStringParameters
-        const { count, rows } = await Visit.findAndCountAll({
+        const { count, rows } = await Vehicle.findAndCountAll({
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * Number(pageSize),
             order: [['id', 'DESC']],
             include: [
                 {
-                    model: Company, as: 'company', attributes: ['name', 'image', 'pixKey']
-                },
-                {
-                    model: User, as: 'user', attributes: ['name'], where: whereStatementUsers
-                },
-                {
-                    model: User, as: 'client', attributes: ['name'], where: whereStatementClients
+                    model: Company, as: 'company', attributes: ['name']
                 }
             ]
         })
@@ -132,20 +91,12 @@ module.exports.listById = async (event) => {
 
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
-        if (!checkRouleProfileAccess(user.groups, roules.visits))
+        if (!checkRouleProfileAccess(user.groups, roules.vehicles))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
-        const result = await Visit.findByPk(pathParameters.id, {
-            include: [
-                {
-                    model: User, as: 'user', attributes: ['name']
-                },
-                {
-                    model: User, as: 'client', attributes: ['name']
-                }]
-        })
+        const result = await Vehicle.findByPk(pathParameters.id)
         if (!result)
-            return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
+            return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrado`)
 
         if (!checkRouleProfileAccess(user.groups, roules.administrator) && result.companyId !== user.companyId)
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
@@ -165,27 +116,19 @@ module.exports.create = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.Visits))
+        if (!checkRouleProfileAccess(user.groups, roules.Vehicles))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
         let objOnSave = body
 
-        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+        if (!checkRouleProfileAccess(user.groups, roules.administrator) || !objOnSave.companyId)
             objOnSave.companyId = user.companyId
 
-        if (!objOnSave.clientId)
-            return handlerResponse(400, {}, 'Informe o cliente')
-        if (!objOnSave.userId)
-            objOnSave.userId = user.userId
-        if (!objOnSave.companyId)
-            objOnSave.companyId = user.companyId
+        const result = await Vehicle.create(objOnSave);
 
+        await imageService.add('vehicles', result.dataValues, body.fileList);
 
-        const result = await Visit.create(objOnSave);
-
-        await imageService.add('visits', result.dataValues, body.fileList);
-
-        return handlerResponse(201, result, `${RESOURCE_NAME} criada com sucesso`)
+        return handlerResponse(201, result, `${RESOURCE_NAME} criado com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, body)
     }
@@ -199,17 +142,17 @@ module.exports.update = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.visits))
+        if (!checkRouleProfileAccess(user.groups, roules.vehicles))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
         const { id } = body
-        const item = await Visit.findByPk(Number(id))
+        const item = await Vehicle.findByPk(Number(id))
         let message = ''
 
         console.log('BODY ', body)
         console.log('DESPESA ALTERADA DE ', item.dataValues)
         if (!item)
-            return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
+            return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrado`)
 
         if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
@@ -217,9 +160,9 @@ module.exports.update = async (event) => {
         const result = await item.update(body);
         console.log('PARA ', result.dataValues)
 
-        await imageService.add('visits', result.dataValues, body.fileList);
+        await imageService.add('vehicles', result.dataValues, body.fileList);
 
-        return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso. ${message}`)
+        return handlerResponse(200, result, `${RESOURCE_NAME} alterado com sucesso. ${message}`)
     } catch (err) {
         return await handlerErrResponse(err, body)
     }
@@ -233,20 +176,49 @@ module.exports.delete = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.visits))
+        if (!checkRouleProfileAccess(user.groups, roules.vehicles))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
         const { id } = pathParameters
-        const item = await Visit.findByPk(id)
+        const item = await Vehicle.findByPk(id)
         if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
 
-        await Visit.destroy({ where: { id } });
+        await Vehicle.destroy({ where: { id } });
 
         await imageService.remove(item.image);
 
-        return handlerResponse(200, {}, `${RESOURCE_NAME} código (${id}) removida com sucesso`)
+        return handlerResponse(200, {}, `${RESOURCE_NAME} código (${id}) removido com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, pathParameters)
+    }
+}
+
+module.exports.listAll = async (event) => {
+    const { queryStringParameters } = event
+    try {
+
+        const whereStatement = {};
+        const user = await getUser(event)
+
+        if (!user)
+            return handlerResponse(400, {}, `Usuário não encontrado`)
+        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+            whereStatement.companyId = user.companyId
+
+
+        const resp = await Vehicle.findAll({
+            where: whereStatement,
+            attributes: ['id', 'model', 'year'],
+            order: [['model', 'ASC']],
+        })
+
+        const respFormated = resp.map(item => ({
+            value: item.id,
+            label: `${item.model} ${item.year}`,
+        }));
+        return handlerResponse(200, respFormated)
+    } catch (err) {
+        return await handlerErrResponse(err, queryStringParameters)
     }
 }

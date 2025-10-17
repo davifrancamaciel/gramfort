@@ -2,6 +2,7 @@ const db = require('../database');
 const ExpenseType = require('./ExpenseType')(db.sequelize, db.Sequelize);
 const Company = require('./Company')(db.sequelize, db.Sequelize);
 const User = require('./User')(db.sequelize, db.Sequelize);
+const Vehicle = require('./Vehicle')(db.sequelize, db.Sequelize);
 
 module.exports = function (sequelize, DataTypes) {
     const Expense = sequelize.define('expenses', {
@@ -21,6 +22,7 @@ module.exports = function (sequelize, DataTypes) {
     Expense.belongsTo(ExpenseType, { foreignKey: 'expenseTypeId', as: 'expenseType' });
     Expense.belongsTo(Expense, { foreignKey: 'expenseDadId', as: 'expense' });
     Expense.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+    Expense.belongsTo(Vehicle, { foreignKey: 'vehicleId', as: 'vehicle' });
 
     return Expense;
 };

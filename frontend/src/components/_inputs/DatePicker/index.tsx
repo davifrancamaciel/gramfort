@@ -5,9 +5,11 @@ import locale from 'antd/es/date-picker/locale/pt_BR';
 import { Moment } from 'moment';
 import 'moment/locale/pt-br';
 import moment from 'moment';
+import Required from '../Required';
 
 interface PropTypes extends PickerDateProps<Moment> {
   label?: string;
+  required?: boolean;
 }
 
 const RangePickerComponent: React.FC<PropTypes> = (props) => {
@@ -27,6 +29,7 @@ const RangePickerComponent: React.FC<PropTypes> = (props) => {
       {props.label && (
         <Typography.Title level={5} style={{ marginBottom: 0 }}>
           {props.label}
+          {props.required ? <Required /> : ' '}
         </Typography.Title>
       )}
       <DatePicker

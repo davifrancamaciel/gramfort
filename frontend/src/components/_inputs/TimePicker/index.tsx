@@ -4,9 +4,11 @@ import { TimePickerProps } from 'antd/lib/time-picker';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 import 'moment/locale/pt-br';
 import moment from 'moment';
+import Required from '../Required';
 
 interface PropTypes extends TimePickerProps {
   label?: string;
+  required?: boolean;
 }
 
 const TimePikerComponent: React.FC<PropTypes> = (props) => {
@@ -23,6 +25,7 @@ const TimePikerComponent: React.FC<PropTypes> = (props) => {
       {props.label && (
         <Typography.Title level={5} style={{ marginBottom: 0 }}>
           {props.label}
+          {props.required ? <Required /> : ' '}
         </Typography.Title>
       )}
       <TimePicker

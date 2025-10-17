@@ -95,7 +95,7 @@ const Login: React.FC = () => {
           </Button>
           <Link to={'/forgot-password'}>Esqueceu a senha?</Link>
           <a
-            href="https://api.whatsapp.com/send?phone=5524993954479&text=Olá, desejo criar uma conta no Portal GRAMFORT"
+            href="https://api.whatsapp.com/send?phone=5524993954479&text=Olá, desejo criar uma conta no Portal SISGRAM"
             target={'_blank'}
           >
             Criar conta

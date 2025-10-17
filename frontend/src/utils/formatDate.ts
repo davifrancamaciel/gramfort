@@ -5,7 +5,9 @@ import {
   setHours,
   setMilliseconds,
   setMinutes,
-  setSeconds
+  setSeconds,
+  intervalToDuration,
+  differenceInYears
 } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import moment from 'moment';
@@ -24,6 +26,14 @@ export const formatDateEn = (value?: string) =>
 
 export const extractHour = (value: string) =>
   !value ? '' : format(parseISO(value), 'HH:mm', { locale: pt });
+
+export const formatDateText = (value: string) =>
+  !value
+    ? ''
+    : format(parseISO(value), "dd 'de' MMMM 'de' yyyy", { locale: pt });
+
+export const formatDifferenceInYears = (value: string) =>
+  !value ? '' : differenceInYears(new Date(), parseISO(value));
 
 export const setHour = (date: any, time: any) => {
   try {
@@ -55,3 +65,20 @@ export const duration = (s: number) =>
     includeSeconds: true,
     locale: pt
   });
+
+export const getPeriod = (value: string) => {
+  if (!value) return '';
+  const duration = intervalToDuration({
+    start: new Date(),
+    end: parseISO(value)
+  });
+  let interval = '';
+  if (duration.years! > 0)
+    interval += `${duration.years} ano${duration.years! > 1 ? 's' : ''}, `;
+  if (duration.months! > 0)
+    interval! += `${duration.months} mês${duration.months! > 1 ? 'es' : ''}, `;
+  if (duration.days! > 0)
+    interval += `${duration.days} dia${duration.days! > 1 ? 's' : ''}`;
+
+  return interval.replace(/, $/, '');
+};

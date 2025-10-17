@@ -5,9 +5,12 @@ const { startOfDay, endOfDay, parseISO, addMonths } = require('date-fns');
 const db = require('../../database');
 const Expense = require('../../models/Expense')(db.sequelize, db.Sequelize);
 const ExpenseType = require('../../models/ExpenseType')(db.sequelize, db.Sequelize);
+const Vehicle = require('../../models/Vehicle')(db.sequelize, db.Sequelize);
+const User = require('../../models/User')(db.sequelize, db.Sequelize);
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
+const { executeSelect } = require("../../services/ExecuteQueryService");
 
 const RESOURCE_NAME = 'Despesa'
 
@@ -21,66 +24,71 @@ module.exports.list = async (event, context) => {
 
         const whereStatement = {};
         const whereExpenseTypes = {};
+        const whereStatementUsers = {};
+        const whereStatementVehicles = {};
 
-        if (event.queryStringParameters) {
-            const {
-                id, expenseTypeName, title, description, paidOut, expenseTypeId,
-                paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision
-            } = event.queryStringParameters
 
-            if (id) whereStatement.id = id;
+        const {
+            id, expenseTypeName, title, description, paidOut, expenseTypeId, vehicleModel, userName,
+            paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision
+        } = event.queryStringParameters
 
-            if (expenseTypeName)
-                whereExpenseTypes.name = { [Op.like]: `%${expenseTypeName}%` }
+        if (id) whereStatement.id = id;
 
-            if (paidOut !== undefined && paidOut !== '')
-                whereStatement.paidOut = paidOut === 'true';
-            if (description)
-                whereStatement.description = { [Op.like]: `%${description}%` }
+        if (expenseTypeName)
+            whereExpenseTypes.name = { [Op.like]: `%${expenseTypeName}%` }
 
-            if (title)
-                whereStatement.title = { [Op.like]: `%${title}%` }
+        if (paidOut !== undefined && paidOut !== '')
+            whereStatement.paidOut = paidOut === 'true';
+        if (description)
+            whereStatement.description = { [Op.like]: `%${description}%` }
+        if (userName)
+            whereStatementUsers.name = { [Op.like]: `%${userName}%` }
+        if (vehicleModel)
+            whereStatementVehicles.model = { [Op.like]: `%${vehicleModel}%` }
 
-            if (createdAtStart)
-                whereStatement.createdAt = {
-                    [Op.gte]: startOfDay(parseISO(createdAtStart)),
-                };
+        if (title)
+            whereStatement.title = { [Op.like]: `%${title}%` }
 
-            if (createdAtEnd)
-                whereStatement.createdAt = {
-                    [Op.lte]: endOfDay(parseISO(createdAtEnd)),
-                };
-            if (createdAtStart && createdAtEnd)
-                whereStatement.createdAt = {
-                    [Op.between]: [
-                        startOfDay(parseISO(createdAtStart)),
-                        endOfDay(parseISO(createdAtEnd)),
-                    ],
-                };
+        if (createdAtStart)
+            whereStatement.createdAt = {
+                [Op.gte]: startOfDay(parseISO(createdAtStart)),
+            };
 
-            if (paymentDateStart)
-                whereStatement.paymentDate = {
-                    [Op.gte]: startOfDay(parseISO(paymentDateStart)),
-                };
+        if (createdAtEnd)
+            whereStatement.createdAt = {
+                [Op.lte]: endOfDay(parseISO(createdAtEnd)),
+            };
+        if (createdAtStart && createdAtEnd)
+            whereStatement.createdAt = {
+                [Op.between]: [
+                    startOfDay(parseISO(createdAtStart)),
+                    endOfDay(parseISO(createdAtEnd)),
+                ],
+            };
 
-            if (paymentDateEnd)
-                whereStatement.paymentDate = {
-                    [Op.lte]: endOfDay(parseISO(paymentDateEnd)),
-                };
-            if (paymentDateStart && paymentDateEnd)
-                whereStatement.paymentDate = {
-                    [Op.between]: [
-                        startOfDay(parseISO(paymentDateStart)),
-                        endOfDay(parseISO(paymentDateEnd)),
-                    ],
-                };
-            if (myCommision)
-                whereStatement.userId = user.userId
-            if (expenseTypeId)
-                whereStatement.expenseTypeId = expenseTypeId
-            else
-                whereStatement.expenseTypeId = { [Op.gt]: 1, }
-        }
+        if (paymentDateStart)
+            whereStatement.paymentDate = {
+                [Op.gte]: startOfDay(parseISO(paymentDateStart)),
+            };
+
+        if (paymentDateEnd)
+            whereStatement.paymentDate = {
+                [Op.lte]: endOfDay(parseISO(paymentDateEnd)),
+            };
+        if (paymentDateStart && paymentDateEnd)
+            whereStatement.paymentDate = {
+                [Op.between]: [
+                    startOfDay(parseISO(paymentDateStart)),
+                    endOfDay(parseISO(paymentDateEnd)),
+                ],
+            };
+        if (myCommision)
+            whereStatement.userId = user.userId
+        if (expenseTypeId)
+            whereStatement.expenseTypeId = expenseTypeId
+        else
+            whereStatement.expenseTypeId = { [Op.gt]: 1, }
 
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             whereStatement.companyId = user.companyId;
@@ -93,23 +101,46 @@ module.exports.list = async (event, context) => {
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * Number(pageSize),
-            order: [['id', 'DESC']],
+            order: [['expenseType', 'name', 'ASC'], ['paymentDate', 'ASC']],
             include: [
                 {
                     model: ExpenseType,
                     as: 'expenseType',
                     attributes: ['name'],
                     where: whereExpenseTypes
+                },
+                {
+                    model: User, as: 'user',
+                    attributes: ['name'],
+                    where: whereStatementUsers,
+                    required: whereStatementUsers.name ? true : false
+                },
+                {
+                    model: Vehicle, as: 'vehicle',
+                    attributes: ['model'],
+                    where: whereStatementVehicles,
+                    required: whereStatementVehicles.model ? true : false
                 }
             ]
         })
-
-        return handlerResponse(200, { count, rows })
+        let data;
+        if (Number(pageNumber) == 1) {
+            const isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
+            data = await expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user);
+        }
+        return handlerResponse(200, { count, rows, data })
 
     } catch (err) {
         return await handlerErrResponse(err)
     }
 };
+
+const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user) => {
+    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
+                    WHERE e.paymentDate BETWEEN '${paymentDateStart}' AND '${paymentDateEnd}' 
+                    ${isAdm ? '' : `AND e.companyId = '${user.companyId}'`} GROUP BY e.paidOut`
+    return await executeSelect(query);
+}
 
 module.exports.listById = async (event) => {
     const { pathParameters } = event
@@ -156,14 +187,14 @@ module.exports.create = async (event) => {
         let objOnSave = body
         objOnSave.dividedIn = Number(body.dividedIn || 1);
 
-        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+        if (!checkRouleProfileAccess(user.groups, roules.administrator) || !objOnSave.companyId)
             objOnSave.companyId = user.companyId
 
         if (!objOnSave.paymentDate)
             objOnSave.paymentDate = new Date()
 
         if (objOnSave.dividedIn > 1) {
-            objOnSave.title = `1ª parcela de ${objOnSave.dividedIn} ${objOnSave.title ? objOnSave.title : ''}`
+            // objOnSave.title = `1ª parcela de ${objOnSave.dividedIn} ${objOnSave.title ? objOnSave.title : ''}`
             objOnSave.value = Number(body.value) / objOnSave.dividedIn
         }
 
@@ -174,7 +205,7 @@ module.exports.create = async (event) => {
             for (let i = 1; i < objOnSave.dividedIn; i++) {
                 const obtOnSavePortion = {
                     ...objOnSave,
-                    title: objOnSave.title.replace('1ª', `${i + 1}ª`),
+                    // title: objOnSave.title.replace('1ª', `${i + 1}ª`),
                     expenseDadId: result.id,
                     paymentDate: addMonths(parseISO(objOnSave.paymentDate), i)
                 }

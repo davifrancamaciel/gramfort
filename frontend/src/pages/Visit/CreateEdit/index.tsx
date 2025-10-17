@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Col, notification, UploadFile } from 'antd';
-import { DatePicker, Input, Select, Switch } from 'components/_inputs';
+import {
+  DatePicker,
+  Input,
+  Select,
+  Switch,
+  TimePicker
+} from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import ShowByRoule from 'components/ShowByRoule';
 import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
@@ -13,6 +19,7 @@ import {
   priceToNumber
 } from 'utils/formatPrice';
 import UploadImages from 'components/UploadImages';
+import { extractHour, setHour } from 'utils/formatDate';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
@@ -34,7 +41,8 @@ const CreateEdit: React.FC = (props: any) => {
       const resp = await api.get(`${apiRoutes.visits}/${id}`);
       dispatch({
         ...resp.data,
-        value: formatValueWhithDecimalCaseOnChange(resp.data?.value)
+        value: formatValueWhithDecimalCaseOnChange(resp.data?.value),
+        dateHour: extractHour(resp.data?.date)
       });
       if (resp.data && resp.data.image) {
         const imageArr = resp.data.image.split('/');
@@ -55,7 +63,7 @@ const CreateEdit: React.FC = (props: any) => {
 
   const action = async () => {
     try {
-      if (!state.value || !state.clientId) {
+      if (!state.value || !state.clientId || !state.date || !state.dateHour) {
         notification.warning({
           message: 'Existem campos obrigatórios não preenchidos'
         });
@@ -65,7 +73,9 @@ const CreateEdit: React.FC = (props: any) => {
       const method = type === 'update' ? 'put' : 'post';
       const result = await api[method](apiRoutes.visits, {
         ...state,
-        value: priceToNumber(state.value)
+        value: priceToNumber(state.value),
+        date: setHour(state.date, state.dateHour),
+        fileList
       });
 
       setLoading(false);
@@ -108,6 +118,7 @@ const CreateEdit: React.FC = (props: any) => {
 
       <Col lg={8} md={8} sm={24} xs={24}>
         <Select
+          required={true}
           label={'Cliente'}
           options={users.filter((u: any) => u.type === userType.CLIENT)}
           value={state.clientId}
@@ -124,7 +135,7 @@ const CreateEdit: React.FC = (props: any) => {
         />
       </Col>
 
-      <Col lg={8} md={8} sm={12} xs={24}>
+      <Col lg={4} md={8} sm={6} xs={24}>
         <Input
           label={'Valor'}
           type={'tel'}
@@ -138,7 +149,7 @@ const CreateEdit: React.FC = (props: any) => {
           }
         />
       </Col>
-      <Col lg={8} md={8} sm={12} xs={24}>
+      <Col lg={4} md={8} sm={6} xs={24}>
         <Input
           label={'Kms rodados'}
           type={'tel'}
@@ -159,11 +170,23 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(paymentDate) => dispatch({ paymentDate })}
         />
       </Col>
-      <Col lg={8} md={8} sm={12} xs={24}>
+      <Col lg={5} md={8} sm={16} xs={16}>
         <DatePicker
           label={'Data da visita'}
           value={state.date}
+          required={true}
           onChange={(date) => dispatch({ date })}
+        />
+      </Col>
+      <Col lg={3} md={8} sm={8} xs={8}>
+        <TimePicker
+          label={'Hora'}
+          placeholder="HH:MM"
+          required={true}
+          value={state.dateHour}
+          onChange={(dateHour) => {
+            dispatch({ dateHour });
+          }}
         />
       </Col>
       <Col lg={8} md={8} sm={12} xs={24}>
@@ -217,7 +240,7 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={() => dispatch({ proposal: !state.proposal })}
         />
       </Col>
-      <Col lg={3} md={4} sm={6} xs={24}>
+      <Col lg={12} md={12} sm={6} xs={24}>
         <Switch
           label={'Venda'}
           title="Não / Sim"

@@ -19,6 +19,7 @@ export interface Visit {
   sale: boolean;
   paymentDate?: string;
   date?: string;
+  dateHour?: string;
   createdAt?: string;
   updatedAt?: string;
   companyId?: string;
@@ -31,7 +32,7 @@ export const initialStateForm: Visit = {
   id: undefined,
   createdAt: '',
   updatedAt: '',
-  paymentDate: new Date().toISOString(),
+  date: new Date().toISOString(),
   paidOut: false,
   carriedOut: false,
   proposal: false,
@@ -47,6 +48,8 @@ export interface Filter {
   createdAtEnd?: string;
   paymentDateStart?: string;
   paymentDateEnd?: string;
+  dateStart?: string;
+  dateEnd?: string;
   paidOut?: string;
   pageNumber: number;
   pageSize: number;

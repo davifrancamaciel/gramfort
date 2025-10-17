@@ -323,6 +323,7 @@ const removeUserToGroup = async (Username, groups, position) => {
 module.exports.listAll = async (event) => {
     const { queryStringParameters } = event
     try {
+        const { type } = queryStringParameters
         const whereStatement = {};
         const user = await getUser(event)
 
@@ -330,6 +331,8 @@ module.exports.listAll = async (event) => {
             return handlerResponse(400, {}, `Usuário não encontrado`)
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             whereStatement.companyId = user.companyId
+        if (type)
+            whereStatement.type = type;
 
         const resp = await User.findAll({
             where: whereStatement,

@@ -13,7 +13,7 @@ Resources:
       #UsernameAttributes:
       #  - email
       UserPoolName: ${self:service}-user-pool-${opt:stage, self:provider.stage}
-      EmailVerificationSubject: "Bem vindo a GRAMFORT - Código de verificação"
+      EmailVerificationSubject: "Bem vindo ao SISGRAM - Código de verificação"
       EmailVerificationMessage: ${file(src/serverless/layouts/template-email-code.html)}        
       Schema:
         - Name: email
@@ -38,7 +38,7 @@ Resources:
             #TemporaryPasswordValidityDays: 7
       AdminCreateUserConfig:
         InviteMessageTemplate:
-          EmailSubject: "Bem vindo a GRAMFORT - Senha temporária"
+          EmailSubject: "Bem vindo ao SISGRAM - Senha temporária"
           EmailMessage: ${file(src/serverless/layouts/template-email-password.html)}                  
         UnusedAccountValidityDays: 7
         #Permitir que somente o administrador crie usuários

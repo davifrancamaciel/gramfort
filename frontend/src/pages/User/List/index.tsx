@@ -53,7 +53,7 @@ const List: React.FC = () => {
         ...item,
         image: (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Image style={{ height: '60px' }} src={item.image} />
+            <Image style={{ height: '40px' }} src={item.image} />
           </div>
         ),
 
@@ -62,7 +62,8 @@ const List: React.FC = () => {
         deleteName: `${item.name} da empresa ${item.company?.name}`,
         companyName: item.company?.name,
         createdAt: formatDateHour(item.createdAt),
-        updatedAt: formatDateHour(item.updatedAt)
+        updatedAt: formatDateHour(item.updatedAt),
+        
       }));
       dispatch({ pageNumber });
       setItems(dataItemsFormatted);
@@ -116,13 +117,21 @@ const List: React.FC = () => {
           { title: 'Código', dataIndex: 'id' },
           { title: 'Nome', dataIndex: 'name' },
           { title: 'Email', dataIndex: 'email' },
+          // {
+          //   title: checkRouleProfileAccess(groups, roules.administrator)
+          //     ? 'Empresa'
+          //     : 'Telefone',
+          //   dataIndex: checkRouleProfileAccess(groups, roules.administrator)
+          //     ? 'companyName'
+          //     : 'phone'
+          // },
           {
-            title: checkRouleProfileAccess(groups, roules.administrator)
-              ? 'Empresa'
-              : 'Telefone',
-            dataIndex: checkRouleProfileAccess(groups, roules.administrator)
-              ? 'companyName'
-              : 'phone'
+            title: 'Empresa',
+            dataIndex: 'companyName'
+          },
+          {
+            title: 'Telefone',
+            dataIndex: 'phone'
           },
           { title: 'Ativo', dataIndex: 'active' },
           { title: 'Criado em', dataIndex: 'createdAt' },

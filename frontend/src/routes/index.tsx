@@ -30,6 +30,8 @@ const ExpenseList = lazy(() => import('pages/Expense/List'));
 const ExpenseCreateEdit = lazy(() => import('pages/Expense/CreateEdit'));
 const VisitList = lazy(() => import('pages/Visit/List'));
 const VisitCreateEdit = lazy(() => import('pages/Visit/CreateEdit'));
+const VehicleList = lazy(() => import('pages/Vehicle/List'));
+const VehicleCreateEdit = lazy(() => import('pages/Vehicle/CreateEdit'));
 const CompanyList = lazy(() => import('pages/Company/List'));
 const CompanyCreateEdit = lazy(() => import('pages/Company/CreateEdit'));
 const ServicesList = lazy(() => import('pages/Services/List'));
@@ -172,6 +174,21 @@ const routesArray: IRouteProps[] = [
     path: `/${appRoutes.visits}/edit/:id`,
     component: VisitCreateEdit,
     roule: roules.visit
+  },
+  {
+    path: `/${appRoutes.vehicles}`,
+    component: VehicleList,
+    roule: roules.vehicles
+  },
+  {
+    path: `/${appRoutes.vehicles}/create`,
+    component: VehicleCreateEdit,
+    roule: roules.vehicles
+  },
+  {
+    path: `/${appRoutes.vehicles}/edit/:id`,
+    component: VehicleCreateEdit,
+    roule: roules.vehicles
   },
   {
     path: `/${appRoutes.services}`,

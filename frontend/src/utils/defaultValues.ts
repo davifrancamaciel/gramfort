@@ -24,6 +24,7 @@ export const appRoutes = {
   services: 'services',
   shopping: 'shopping',
   visits: 'visits',
+  vehicles: 'vehicles'
 };
 
 export const apiRoutes = {
@@ -36,6 +37,7 @@ export const apiRoutes = {
   services: appRoutes.services,
   expenses: appRoutes.expenses,
   visits: appRoutes.visits,
+  vehicles: appRoutes.vehicles,
   expenseTypes: 'expense-types'
 };
 
@@ -50,6 +52,7 @@ export const apiRoutesArray = [
   apiRoutes.expenses,
   apiRoutes.services,
   apiRoutes.visits,
+  apiRoutes.vehicles
 ];
 
 export const roules = {
@@ -63,6 +66,7 @@ export const roules = {
   suppliers: 'fornecedores',
   shopping: 'compras',
   visit: 'visitas',
+  vehicles: 'veiculos'
 };
 
 export const enumStatusUserAws = {

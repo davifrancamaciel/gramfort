@@ -5,6 +5,8 @@ export interface Expense {
   id?: string;
   expenseType?: ExpenseType;
   expenseTypeId?: number;
+  userId?: number;
+  vehicleId?: number;
   dividedIn: number;
   value?: number;
   title?: string;
@@ -14,6 +16,11 @@ export interface Expense {
   createdAt?: string;
   updatedAt?: string;
   companyId?: string;
+}
+export interface ExpenseTotal {
+  count: number;
+  totalValueMonth: number;
+  paidOut: boolean;
 }
 
 export const initialStateForm: Expense = {
@@ -28,6 +35,8 @@ export const initialStateForm: Expense = {
 export interface Filter {
   id?: string;
   expenseTypeName?: string;
+  userName?: string;
+  vehicleModel?: string;
   title?: string;
   description?: string;
   createdAtStart?: string;

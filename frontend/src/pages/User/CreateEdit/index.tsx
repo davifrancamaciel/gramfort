@@ -18,7 +18,6 @@ import UploadImages from 'components/UploadImages';
 
 import {
   apiRoutes,
-  appRoutes,
   enumStatusUserAws,
   roules,
   systemColors,
@@ -26,6 +25,8 @@ import {
 } from 'utils/defaultValues';
 import BooleanTag from 'components/BooleanTag';
 import { getTitle, getType, arrayCapture } from '../utils';
+
+import { formatDifferenceInYears, getPeriod } from 'utils/formatDate';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
@@ -287,10 +288,24 @@ const CreateEdit: React.FC = (props: any) => {
                 />
               </Col>
               <Col lg={8} md={8} sm={12} xs={24}>
+                <Input
+                  label={'Idade'}
+                  value={formatDifferenceInYears(state.dateOfBirth)}
+                  disabled={true}
+                />
+              </Col>
+              <Col lg={8} md={8} sm={12} xs={24}>
                 <DatePicker
                   label={'Data de contratação'}
                   value={state.hiringDate}
                   onChange={(hiringDate) => dispatch({ hiringDate })}
+                />
+              </Col>
+              <Col lg={8} md={8} sm={12} xs={24}>
+                <Input
+                  label={'Tempo de casa'}
+                  value={getPeriod(state.hiringDate)}
+                  disabled={true}
                 />
               </Col>
               <Col lg={8} md={8} sm={12} xs={24}>

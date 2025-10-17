@@ -9,7 +9,8 @@ import {
   ArrowDownOutlined,
   DollarOutlined,
   BarcodeOutlined,
-  ScheduleOutlined
+  ScheduleOutlined,
+  CarOutlined
 } from '@ant-design/icons';
 import { Auth } from 'aws-amplify';
 
@@ -149,6 +150,20 @@ const SliderMenu: React.FC = (props: any) => {
             </Menu.Item>
             <Menu.Item key={`/${appRoutes.shopping}/create`}>
               <Link to={`/${appRoutes.shopping}/create`}>Nova</Link>
+            </Menu.Item>
+          </SubMenu>
+        )}
+        {checkRouleProfileAccess(groupsUser, roules.vehicles) && (
+          <SubMenu
+            key={`sub-/${appRoutes.vehicles}`}
+            title={'Veiculos'}
+            icon={<CarOutlined />}
+          >
+            <Menu.Item key={`/${appRoutes.vehicles}`}>
+              <Link to={`/${appRoutes.vehicles}`}>Lista</Link>
+            </Menu.Item>
+            <Menu.Item key={`/${appRoutes.vehicles}/create`}>
+              <Link to={`/${appRoutes.vehicles}/create`}>Novo</Link>
             </Menu.Item>
           </SubMenu>
         )}

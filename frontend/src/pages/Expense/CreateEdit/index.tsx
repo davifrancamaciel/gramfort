@@ -10,7 +10,7 @@ import {
 } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import ShowByRoule from 'components/ShowByRoule';
-import { apiRoutes, appRoutes, roules } from 'utils/defaultValues';
+import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
 import useFormState from 'hooks/useFormState';
 import { initialStateForm } from '../interfaces';
 import api from 'services/api-aws-amplify';
@@ -19,6 +19,7 @@ import {
   priceToNumber
 } from 'utils/formatPrice';
 import { getTitle, getType } from '../utils';
+import { IOptions } from 'utils/commonInterfaces';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
@@ -26,9 +27,15 @@ const CreateEdit: React.FC = (props: any) => {
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
   const [path, setPath] = useState('');
+  const [users, setUsers] = useState<any[]>([]);
+  const [expenseTypes, setExpenseTypes] = useState<IOptions[]>([]);
+  const [vehicles, setVehicles] = useState<IOptions[]>([]);
+  const arrayTypeExpensesRequiredUser = [5, 11, 13];
+  const arrayTypeExpensesRequiredVehicle = [12];
 
   useEffect(() => {
     setPath(getType());
+    onLoad();
     if (getType() == appRoutes.shopping) dispatch({ expenseTypeId: 1 });
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
@@ -47,6 +54,25 @@ const CreateEdit: React.FC = (props: any) => {
       setLoading(false);
     }
   };
+  const onLoad = async () => {
+    try {
+      setLoading(true);
+      const respUser = await api.get(`${apiRoutes.users}/all`, {
+        type: userType.USER
+      });
+      setUsers(respUser.data);
+
+      const respEpensesTypes = await api.get(apiRoutes.expenseTypes);
+      setExpenseTypes(respEpensesTypes.data);
+
+      const respVehicles = await api.get(`${apiRoutes.vehicles}/all`);
+      setVehicles(respVehicles.data);
+
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
   const action = async () => {
     try {
@@ -60,7 +86,15 @@ const CreateEdit: React.FC = (props: any) => {
       const method = type === 'update' ? 'put' : 'post';
       const result = await api[method](apiRoutes.expenses, {
         ...state,
-        value: priceToNumber(state.value)
+        value: priceToNumber(state.value),
+        userId: arrayTypeExpensesRequiredUser.includes(state.expenseTypeId)
+          ? state.userId
+          : null,
+        vehicleId: arrayTypeExpensesRequiredVehicle.includes(
+          state.expenseTypeId
+        )
+          ? state.vehicleId
+          : null
       });
 
       setLoading(false);
@@ -81,6 +115,20 @@ const CreateEdit: React.FC = (props: any) => {
       loadingBtnAction={false}
       loadingPanel={loading}
     >
+      <Col lg={24} md={24} sm={24} xs={24}>
+        <Input
+          label={'Título'}
+          value={state.title}
+          onChange={(e) => dispatch({ title: e.target.value })}
+        />
+      </Col>
+      <Col lg={24} md={24} sm={24} xs={24}>
+        <Textarea
+          label={'Descrição'}
+          value={state.description}
+          onChange={(e) => dispatch({ description: e.target.value })}
+        />
+      </Col>
       <ShowByRoule roule={roules.administrator}>
         <Col lg={8} md={8} sm={12} xs={24}>
           <Select
@@ -91,16 +139,6 @@ const CreateEdit: React.FC = (props: any) => {
           />
         </Col>
       </ShowByRoule>
-      {path == appRoutes.expenses && (
-        <Col lg={8} md={8} sm={24} xs={24}>
-          <Select
-            label={'Tipo'}
-            url={`${apiRoutes.expenseTypes}`}
-            value={state.expenseTypeId}
-            onChange={(expenseTypeId) => dispatch({ expenseTypeId })}
-          />
-        </Col>
-      )}
 
       <Col lg={8} md={8} sm={12} xs={24}>
         <Input
@@ -124,24 +162,41 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(paymentDate) => dispatch({ paymentDate })}
         />
       </Col>
-
-      <Col lg={24} md={24} sm={24} xs={24}>
-        <Input
-          label={'Título'}
-          value={state.title}
-          onChange={(e) => dispatch({ title: e.target.value })}
-        />
-      </Col>
-      <Col lg={24} md={24} sm={24} xs={24}>
-        <Textarea
-          label={'Descrição'}
-          value={state.description}
-          onChange={(e) => dispatch({ description: e.target.value })}
-        />
-      </Col>
+      {path == appRoutes.expenses && (
+        <>
+          <Col lg={8} md={8} sm={24} xs={24}>
+            <Select
+              label={'Tipo'}
+              options={expenseTypes}
+              value={state.expenseTypeId}
+              onChange={(expenseTypeId) => dispatch({ expenseTypeId })}
+            />
+          </Col>
+          {arrayTypeExpensesRequiredUser.includes(state.expenseTypeId) && (
+            <Col lg={8} md={8} sm={24} xs={24}>
+              <Select
+                label={'Consultor'}
+                options={users}
+                value={state.userId}
+                onChange={(userId) => dispatch({ userId })}
+              />
+            </Col>
+          )}
+          {arrayTypeExpensesRequiredVehicle.includes(state.expenseTypeId) && (
+            <Col lg={8} md={8} sm={24} xs={24}>
+              <Select
+                label={'Veiculo'}
+                options={vehicles}
+                value={state.vehicleId}
+                onChange={(vehicleId) => dispatch({ vehicleId })}
+              />
+            </Col>
+          )}
+        </>
+      )}
 
       {type === 'create' && (
-        <Col lg={6} md={12} sm={12} xs={24}>
+        <Col lg={5} md={12} sm={12} xs={24}>
           <Input
             label={'Dividido em'}
             required={true}
@@ -152,7 +207,7 @@ const CreateEdit: React.FC = (props: any) => {
           />
         </Col>
       )}
-      <Col lg={6} md={8} sm={12} xs={24}>
+      <Col lg={3} md={8} sm={12} xs={24}>
         <Switch
           label={'Paga'}
           title="Não / Sim"

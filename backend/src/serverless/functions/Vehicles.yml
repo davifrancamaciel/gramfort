@@ -1,0 +1,48 @@
+vehicles:
+  handler: src/functions/api/vehicles.list
+  events:
+    - http:
+        path: vehicles
+        method: get
+        authorizer: verifyToken
+        cors: true 
+vehiclesById:
+  handler: src/functions/api/vehicles.listById
+  events:
+    - http:
+        path: vehicles/{id}
+        method: get
+        authorizer: verifyToken
+        cors: true 
+vehiclesCreate:
+  handler: src/functions/api/vehicles.create
+  events:
+    - http:
+        path: vehicles
+        method: post
+        authorizer: verifyToken
+        cors: true  
+vehiclesUpdate:
+  handler: src/functions/api/vehicles.update
+  events:
+    - http:
+        path: vehicles
+        method: put
+        authorizer: verifyToken
+        cors: true 
+vehiclesDelete:
+  handler: src/functions/api/vehicles.delete
+  events:
+    - http:
+        path: vehicles/{id}
+        method: delete
+        authorizer: verifyToken
+        cors: true
+vehiclesAll:
+    handler: src/functions/api/vehicles.listAll
+    events:
+      - http:
+          path: vehicles/all
+          method: get
+          authorizer: verifyToken
+          cors: true
