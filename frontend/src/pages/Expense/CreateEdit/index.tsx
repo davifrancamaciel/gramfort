@@ -18,7 +18,7 @@ import {
   formatValueWhithDecimalCaseOnChange,
   priceToNumber
 } from 'utils/formatPrice';
-import { getTitle, getType } from '../utils';
+import { getTitle, getType, paymentMethods } from '../utils';
 import { IOptions } from 'utils/commonInterfaces';
 
 const CreateEdit: React.FC = (props: any) => {
@@ -34,9 +34,10 @@ const CreateEdit: React.FC = (props: any) => {
   const arrayTypeExpensesRequiredVehicle = [12];
 
   useEffect(() => {
-    setPath(getType());
-    onLoad();
-    if (getType() == appRoutes.shopping) dispatch({ expenseTypeId: 1 });
+    const typePath = getType();
+    setPath(typePath);
+    if (typePath == appRoutes.shopping) dispatch({ expenseTypeId: 1 });
+    onLoad(typePath);
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
   }, [props.match.params.id]); // eslint-disable-line
@@ -47,26 +48,29 @@ const CreateEdit: React.FC = (props: any) => {
       const resp = await api.get(`${apiRoutes.expenses}/${id}`);
       dispatch({
         ...resp.data,
-        value: formatValueWhithDecimalCaseOnChange(resp.data?.value)
+        value: formatValueWhithDecimalCaseOnChange(resp.data?.value),
+        amount: formatValueWhithDecimalCaseOnChange(resp.data?.amount),
       });
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
   };
-  const onLoad = async () => {
+  const onLoad = async (typePath: string) => {
     try {
       setLoading(true);
       const respUser = await api.get(`${apiRoutes.users}/all`, {
-        type: userType.USER
+        type: typePath == appRoutes.expenses ? userType.USER : userType.SUPPLIER
       });
       setUsers(respUser.data);
 
-      const respEpensesTypes = await api.get(apiRoutes.expenseTypes);
-      setExpenseTypes(respEpensesTypes.data);
+      if (typePath == appRoutes.expenses) {
+        const respEpensesTypes = await api.get(apiRoutes.expenseTypes);
+        setExpenseTypes(respEpensesTypes.data);
 
-      const respVehicles = await api.get(`${apiRoutes.vehicles}/all`);
-      setVehicles(respVehicles.data);
+        const respVehicles = await api.get(`${apiRoutes.vehicles}/all`);
+        setVehicles(respVehicles.data);
+      }
 
       setLoading(false);
     } catch (error) {
@@ -87,6 +91,7 @@ const CreateEdit: React.FC = (props: any) => {
       const result = await api[method](apiRoutes.expenses, {
         ...state,
         value: priceToNumber(state.value),
+        amount: priceToNumber(state.amount),
         userId: arrayTypeExpensesRequiredUser.includes(state.expenseTypeId)
           ? state.userId
           : null,
@@ -94,7 +99,8 @@ const CreateEdit: React.FC = (props: any) => {
           state.expenseTypeId
         )
           ? state.vehicleId
-          : null
+          : null,
+        supplierId: path == appRoutes.shopping ? state.supplierId : null
       });
 
       setLoading(false);
@@ -162,6 +168,39 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(paymentDate) => dispatch({ paymentDate })}
         />
       </Col>
+      {path == appRoutes.shopping && (
+        <>
+          <Col lg={8} md={8} sm={24} xs={24}>
+            <Select
+              label={'Fornecedor'}
+              options={users}
+              value={state.supplierId}
+              onChange={(supplierId) => dispatch({ supplierId })}
+            />
+          </Col>
+          <Col lg={8} md={8} sm={24} xs={24}>
+            <Select
+              label={'Forma de PGTO'}
+              options={paymentMethods}
+              value={state.paymentMethod}
+              onChange={(paymentMethod) => dispatch({ paymentMethod })}
+            />
+          </Col>
+          <Col lg={8} md={8} sm={12} xs={24}>
+            <Input
+              label={'Quantidade'}
+              type={'tel'}
+              placeholder="15,00"
+              value={state.amount}
+              onChange={(e) =>
+                dispatch({
+                  amount: formatValueWhithDecimalCaseOnChange(e.target.value)
+                })
+              }
+            />
+          </Col>
+        </>
+      )}
       {path == appRoutes.expenses && (
         <>
           <Col lg={8} md={8} sm={24} xs={24}>

@@ -10,6 +10,7 @@ const { Panel } = Collapse;
 const { Title } = Typography;
 
 const Index: React.FC<PropTypes> = (props) => {
+  const show = window.location.href.includes('localhost');
   const { footerChildren } = props;
 
   const header = (
@@ -68,7 +69,7 @@ const Index: React.FC<PropTypes> = (props) => {
   );
 
   return (
-    <Collapse defaultActiveKey={['1']}>
+    <Collapse defaultActiveKey={[show ? '1' : '0']}>
       <Panel showArrow={false} header={header} key="1">
         <form onSubmit={actionButton}>
           <Row gutter={[16, 24]}>

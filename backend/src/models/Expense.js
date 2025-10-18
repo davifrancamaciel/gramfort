@@ -6,22 +6,30 @@ const Vehicle = require('./Vehicle')(db.sequelize, db.Sequelize);
 
 module.exports = function (sequelize, DataTypes) {
     const Expense = sequelize.define('expenses', {
-        companyId: { type: DataTypes.UUID },   
+        companyId: { type: DataTypes.UUID },
         expenseTypeId: { type: DataTypes.INTEGER },
         expenseDadId: { type: DataTypes.INTEGER },
         userId: { type: DataTypes.INTEGER },
+        vehicleId: { type: DataTypes.INTEGER },
+        supplierId: { type: DataTypes.INTEGER },
+
+
         dividedIn: { type: DataTypes.VIRTUAL },
         value: { type: DataTypes.DECIMAL },
         title: { type: DataTypes.STRING(256) },
         description: { type: DataTypes.STRING(1000) },
         paidOut: { type: DataTypes.BOOLEAN },
-        paymentDate: { type: DataTypes.DATE },     
+        paymentDate: { type: DataTypes.DATE },
+
+        paymentMethod: { type: DataTypes.STRING(50) },
+        amount: { type: DataTypes.DECIMAL },
     });
-    
-    Expense.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });  
+
+    Expense.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
     Expense.belongsTo(ExpenseType, { foreignKey: 'expenseTypeId', as: 'expenseType' });
     Expense.belongsTo(Expense, { foreignKey: 'expenseDadId', as: 'expense' });
     Expense.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+    Expense.belongsTo(User, { foreignKey: 'supplierId', as: 'supplier' });
     Expense.belongsTo(Vehicle, { foreignKey: 'vehicleId', as: 'vehicle' });
 
     return Expense;

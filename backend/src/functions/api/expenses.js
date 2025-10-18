@@ -25,6 +25,7 @@ module.exports.list = async (event, context) => {
         const whereStatement = {};
         const whereExpenseTypes = {};
         const whereStatementUsers = {};
+        const whereStatementSuppiers = {};
         const whereStatementVehicles = {};
 
 
@@ -42,8 +43,11 @@ module.exports.list = async (event, context) => {
             whereStatement.paidOut = paidOut === 'true';
         if (description)
             whereStatement.description = { [Op.like]: `%${description}%` }
-        if (userName)
+        if (userName && !expenseTypeId)
             whereStatementUsers.name = { [Op.like]: `%${userName}%` }
+        if (userName && expenseTypeId)
+            whereStatementSuppiers.name = { [Op.like]: `%${userName}%` }
+
         if (vehicleModel)
             whereStatementVehicles.model = { [Op.like]: `%${vehicleModel}%` }
 
@@ -120,7 +124,13 @@ module.exports.list = async (event, context) => {
                     attributes: ['model'],
                     where: whereStatementVehicles,
                     required: whereStatementVehicles.model ? true : false
-                }
+                },
+                {
+                    model: User, as: 'supplier',
+                    attributes: ['name'],
+                    where: whereStatementSuppiers,
+                    required: whereStatementSuppiers.name ? true : false
+                },
             ]
         })
         let data;

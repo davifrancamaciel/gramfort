@@ -62,8 +62,6 @@ module.exports.list = async (event, context) => {
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             whereStatement.companyId = user.companyId;
 
-
-
         const { pageSize, pageNumber } = event.queryStringParameters
         const { count, rows } = await Vehicle.findAndCountAll({
             where: whereStatement,

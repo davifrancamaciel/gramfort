@@ -141,20 +141,23 @@ const List: React.FC = () => {
             onChange={(e) => dispatch({ description: e.target.value })}
           />
         </Col>
+
         <Col lg={6} md={12} sm={24} xs={24}>
           <Input
-            label={'Consultor'}
+            label={path == appRoutes.expenses ? 'Consultor' : 'Fornecedor'}
             value={state.userName}
             onChange={(e) => dispatch({ userName: e.target.value })}
           />
         </Col>
-        <Col lg={6} md={12} sm={24} xs={24}>
-          <Input
-            label={'Veiculo'}
-            value={state.vehicleModel}
-            onChange={(e) => dispatch({ vehicleModel: e.target.value })}
-          />
-        </Col>
+        {path == appRoutes.expenses && (
+          <Col lg={6} md={12} sm={24} xs={24}>
+            <Input
+              label={'Veiculo'}
+              value={state.vehicleModel}
+              onChange={(e) => dispatch({ vehicleModel: e.target.value })}
+            />
+          </Col>
+        )}
 
         <Col lg={6} md={24} sm={24} xs={24}>
           <RangePicker

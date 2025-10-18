@@ -70,3 +70,10 @@ Resources:
         GroupName: "Compras"
         UserPoolId:
           Ref: UserPool  
+    CognitoUserPoolGroupsVehicles:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Veiculos"
+        GroupName: "Veiculos"
+        UserPoolId:
+          Ref: UserPool  

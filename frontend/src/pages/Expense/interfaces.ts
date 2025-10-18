@@ -7,9 +7,12 @@ export interface Expense {
   expenseTypeId?: number;
   userId?: number;
   vehicleId?: number;
+  supplierId?: number;
   dividedIn: number;
   value?: number;
+  amount?: number;
   title?: string;
+  paymentMethod?: string;
   description?: string;
   paidOut: boolean;
   paymentDate?: string;

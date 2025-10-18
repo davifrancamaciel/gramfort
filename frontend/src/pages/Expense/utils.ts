@@ -1,3 +1,4 @@
+import { IOptions } from 'utils/commonInterfaces';
 import { appRoutes } from 'utils/defaultValues';
 
 export const getType = () => {
@@ -14,3 +15,10 @@ export const getTitle = (path: string, isPlural: boolean = false) => {
       return `Despesa${isPlural ? 's' : ''}`;
   }
 };
+
+const array: Array<string> = ['BOLETO', 'CREDITO', 'DEBITO', 'DINHEIRO', 'PIX'];
+
+export const paymentMethods: IOptions[] = array.map((x: string) => ({
+  value: `${x}`,
+  label: `${x}`
+}));
