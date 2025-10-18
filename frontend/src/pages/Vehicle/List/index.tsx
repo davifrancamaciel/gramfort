@@ -97,21 +97,7 @@ const List: React.FC = () => {
             value={state.category}
             onChange={(e) => dispatch({ category: e.target.value })}
           />
-        </Col>
-
-        <Col lg={8} md={24} sm={24} xs={24}>
-          <RangePicker
-            label="Data de cadastro"
-            onChange={(value: any, dateString: any) => {
-              dispatch({
-                createdAtStart: dateString[0]?.split('/').reverse().join('-')
-              });
-              dispatch({
-                createdAtEnd: dateString[1]?.split('/').reverse().join('-')
-              });
-            }}
-          />
-        </Col>
+        </Col>        
       </PanelFilter>
 
       <GridList

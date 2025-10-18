@@ -20,7 +20,6 @@ module.exports = function (sequelize, DataTypes) {
         description: { type: DataTypes.STRING(1000) },
         paidOut: { type: DataTypes.BOOLEAN },
         paymentDate: { type: DataTypes.DATE },
-
         paymentMethod: { type: DataTypes.STRING(50) },
         amount: { type: DataTypes.DECIMAL },
     });

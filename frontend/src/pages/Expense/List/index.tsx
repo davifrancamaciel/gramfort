@@ -134,14 +134,7 @@ const List: React.FC = () => {
             onChange={(e) => dispatch({ title: e.target.value })}
           />
         </Col>
-        <Col lg={6} md={12} sm={24} xs={24}>
-          <Input
-            label={'Descrição'}
-            value={state.description}
-            onChange={(e) => dispatch({ description: e.target.value })}
-          />
-        </Col>
-
+       
         <Col lg={6} md={12} sm={24} xs={24}>
           <Input
             label={path == appRoutes.expenses ? 'Consultor' : 'Fornecedor'}
@@ -172,20 +165,6 @@ const List: React.FC = () => {
               });
               dispatch({
                 paymentDateEnd: dateString[1]?.split('/').reverse().join('-')
-              });
-            }}
-          />
-        </Col>
-
-        <Col lg={6} md={24} sm={24} xs={24}>
-          <RangePicker
-            label="Data de cadastro"
-            onChange={(value: any, dateString: any) => {
-              dispatch({
-                createdAtStart: dateString[0]?.split('/').reverse().join('-')
-              });
-              dispatch({
-                createdAtEnd: dateString[1]?.split('/').reverse().join('-')
               });
             }}
           />

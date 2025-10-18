@@ -136,7 +136,7 @@ module.exports.list = async (event, context) => {
         let data;
         if (Number(pageNumber) == 1) {
             const isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
-            data = await expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user);
+            data = await expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId);
         }
         return handlerResponse(200, { count, rows, data })
 
@@ -145,10 +145,21 @@ module.exports.list = async (event, context) => {
     }
 };
 
-const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user) => {
+const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId) => {
+    if (expenseTypeId == 1)
+        expenseTypeName = 'COMPRAS'
+
+    const queryDate = paymentDateStart && paymentDateEnd ? `AND e.paymentDate BETWEEN '${paymentDateStart}' AND '${paymentDateEnd}' ` : '';
+    const queyType = expenseTypeName ? ` AND t.name LIKE '%${expenseTypeName}%' ` : '';
+
     const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
-                    WHERE e.paymentDate BETWEEN '${paymentDateStart}' AND '${paymentDateEnd}' 
-                    ${isAdm ? '' : `AND e.companyId = '${user.companyId}'`} GROUP BY e.paidOut`
+                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
+                    
+                    WHERE e.id > 0 ${queryDate} ${queyType} 
+                    AND e.title LIKE '%${title}%'   
+                    ${isAdm ? '' : `AND e.companyId = '${user.companyId}'`} 
+                    
+                    GROUP BY e.paidOut`
     return await executeSelect(query);
 }
 
