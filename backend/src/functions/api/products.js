@@ -3,6 +3,7 @@
 const { Op } = require('sequelize');
 const db = require('../../database');
 const Product = require('../../models/Product')(db.sequelize, db.Sequelize);
+const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { executeSelect } = require("../../services/ExecuteQueryService");
@@ -74,7 +75,12 @@ module.exports.list = async (event, context) => {
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * pageSize,
-            order: [['id', 'DESC']],            
+            order: [['id', 'DESC']], 
+            include: [
+                {
+                    model: Company, as: 'company', attributes: ['name',]
+                }               
+            ]           
         })
 
         return handlerResponse(200, { count, rows })

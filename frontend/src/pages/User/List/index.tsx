@@ -115,6 +115,10 @@ const List: React.FC = () => {
         columns={[
           { title: 'Imagem', dataIndex: 'image' },
           { title: 'Código', dataIndex: 'id' },
+          {
+            title: 'Empresa',
+            dataIndex: 'companyName'
+          },
           { title: 'Nome', dataIndex: 'name' },
           { title: 'Email', dataIndex: 'email' },
           // {
@@ -125,10 +129,6 @@ const List: React.FC = () => {
           //     ? 'companyName'
           //     : 'phone'
           // },
-          {
-            title: 'Empresa',
-            dataIndex: 'companyName'
-          },
           {
             title: 'Telefone',
             dataIndex: 'phone'

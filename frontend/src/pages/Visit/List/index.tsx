@@ -40,6 +40,7 @@ const List: React.FC = () => {
           ...item,
           nameInfoDel: `Visita cliente ${item.client?.name} cosultor ${item.user?.name}`,
           clientName: item.client?.name,
+          companyName: item.company?.name,
           userName: item.user?.name,
           value: formatPrice(Number(item.value) || 0),
           paymentDate: formatDate(item.paymentDate),
@@ -153,6 +154,7 @@ const List: React.FC = () => {
         scroll={{ x: 840 }}
         columns={[
           { title: 'Código', dataIndex: 'id' },
+          { title: 'Empresa', dataIndex: 'companyName' },
           {
             title: 'Data',
             dataIndex: 'date'

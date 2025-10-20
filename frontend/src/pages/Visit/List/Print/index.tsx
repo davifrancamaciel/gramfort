@@ -28,7 +28,7 @@ const Print: React.FC<PropTypes> = ({ item }) => {
             <strong>Gramfort Hidrossemeadura Soluções Ambientais LTDA</strong>{' '}
             CNPJ: 50.641.930/0001-00 com sede na Estrada União e Industria,
             22.373 Galpão 04 — Pedro do Rio — Petrópolis — RJ identificou o
-            pagamento realizado no valor de {formatPrice(Number(item.value))} na
+            pagamento realizado no valor de <strong>{formatPrice(Number(item.value))}</strong> na
             conta: Santander Ag 4421 CC 13002793-2 Gramfort Hidrossemeadura Pix:
             CNPJ {item.company?.pixKey} referente a visita técnica para medição
             de uma área para projeto de Hidrossemeadura, para{' '}

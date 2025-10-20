@@ -106,10 +106,10 @@ const List: React.FC = () => {
         columns={[
           { title: 'Imagem', dataIndex: 'image' },
           { title: 'Código', dataIndex: 'id' },
+          { title: 'Empresa', dataIndex: 'companyName' },
           { title: 'Modelo', dataIndex: 'model' },
           { title: 'Ano', dataIndex: 'year' },
           { title: 'Categoria', dataIndex: 'category' },
-          { title: 'Empresa', dataIndex: 'companyName' },
           { title: 'Valor', dataIndex: 'value' },
           { title: 'Criada em', dataIndex: 'createdAt' },
           { title: 'Alterado em', dataIndex: 'updatedAt' }

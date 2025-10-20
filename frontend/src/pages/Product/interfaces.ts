@@ -1,4 +1,6 @@
+import { Company } from './../Company/interfaces';
 export interface Product {
+  company?: Company;  
   id?: string;
   name?: string;
   price?: string;

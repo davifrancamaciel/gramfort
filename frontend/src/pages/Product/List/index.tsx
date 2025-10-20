@@ -47,11 +47,12 @@ const List: React.FC = () => {
       const { count, rows } = resp.data;
       const itemsFormatted = rows.map((p: Product) => ({
         ...p,
+        companyName: p.company?.name,
         image: (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Image style={{ height: '60px' }} src={p.image} />
           </div>
-        ),        
+        ),
         price: formatPrice(Number(p.price) || 0),
         createdAt: formatDateHour(p.createdAt),
         updatedAt: formatDateHour(p.updatedAt),
@@ -155,6 +156,10 @@ const List: React.FC = () => {
         columns={[
           { title: 'Imagem', dataIndex: 'image' },
           { title: 'Código', dataIndex: 'id' },
+          {
+            title: 'Empresa',
+            dataIndex: 'companyName'
+          },
           { title: 'Nome do produto', dataIndex: 'name' },
           { title: 'Preço', dataIndex: 'price' },
           {
@@ -163,7 +168,7 @@ const List: React.FC = () => {
           },
           { title: 'Criado em', dataIndex: 'createdAt' },
           { title: 'Alterado em', dataIndex: 'updatedAt' },
-          { title: 'Ativo', dataIndex: 'active' },
+          { title: 'Ativo', dataIndex: 'active' }
         ]}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}
