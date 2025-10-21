@@ -5,7 +5,12 @@ import Profile from './Profile';
 import CollapseMenu from './CollapseMenu';
 import Logo from '../Logo';
 
-import { Container, ContainerMenu, ContainerProfile } from './styles';
+import {
+  Container,
+  ContainerMenu,
+  ContainerProfile,
+  ContainerLogo
+} from './styles';
 
 const Header: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<any>();
@@ -26,17 +31,24 @@ const Header: React.FC = () => {
     }
   };
   return (
-    <Container>
-      <ContainerMenu>
+    <>
+      <ContainerLogo>
         <Link to={'/'}>
           <Logo />
         </Link>
-        <CollapseMenu />
-      </ContainerMenu>
-      <ContainerProfile>
-        <Profile name={currentUser?.name} />
-      </ContainerProfile>
-    </Container>
+      </ContainerLogo>
+      <Container>
+        <ContainerMenu>
+          <Link to={'/'}>
+            <Logo />
+          </Link>
+          <CollapseMenu />
+        </ContainerMenu>
+        <ContainerProfile>
+          <Profile name={currentUser?.name} />
+        </ContainerProfile>
+      </Container>
+    </>
   );
 };
 

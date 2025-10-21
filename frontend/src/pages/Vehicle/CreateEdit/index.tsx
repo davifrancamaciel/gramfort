@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Col, notification, UploadFile } from 'antd';
+import { Col, notification, Row, UploadFile } from 'antd';
 import {
   DatePicker,
   Input,
@@ -91,79 +91,91 @@ const CreateEdit: React.FC = (props: any) => {
       loadingBtnAction={false}
       loadingPanel={loading}
     >
-      <ShowByRoule roule={roules.administrator}>
-        <Col lg={8} md={8} sm={12} xs={24}>
-          <Select
-            label={'Empresa'}
-            url={`${apiRoutes.companies}/all`}
-            value={state.companyId}
-            onChange={(companyId) => dispatch({ companyId })}
-          />
-        </Col>
-      </ShowByRoule>
-      <Col lg={8} md={8} sm={12} xs={24}>
-        <Input
-          label={'Categoria'}
-          value={state.category}
-          onChange={(e) => dispatch({ category: e.target.value })}
-        />
+      <Col lg={6} md={24} sm={24} xs={24}>
+        <Row gutter={[16, 24]}>
+          <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
+            <UploadImages setFileList={setFileList} fileList={fileList} />
+          </Col>
+        </Row>
       </Col>
-      <Col lg={8} md={8} sm={12} xs={24}>
-        <Input
-          label={'Modelo'}
-          required={true}
-          value={state.model}
-          onChange={(e) => dispatch({ model: e.target.value })}
-        />
-      </Col>
-      <Col lg={4} md={8} sm={6} xs={24}>
-        <Select
-          label={'Ano'}
-          options={years}
-          required={true}
-          value={state.year}
-          onChange={(year) => dispatch({ year })}
-        />
-      </Col>
-      <Col lg={4} md={8} sm={6} xs={24}>
-        <Input
-          label={'Valor'}
-          type={'tel'}
-          required={true}
-          placeholder="15,00"
-          value={state.value}
-          onChange={(e) =>
-            dispatch({
-              value: formatValueWhithDecimalCaseOnChange(e.target.value)
-            })
-          }
-        />
-      </Col>
-      <Col lg={4} md={8} sm={6} xs={24}>
-        <Input
-          label={'Kms compra'}
-          type={'tel'}
-          placeholder="15"
-          value={state.kmInitial}
-          onChange={(e) =>
-            dispatch({
-              kmInitial: priceToNumber(e.target.value)
-            })
-          }
-        />
-      </Col>
-      <Col lg={4} md={8} sm={6} xs={24}>
-        <Input
-          label={'Kms atual'}
-          type={'tel'}
-          placeholder="15"
-          value={state.kmCurrent}
-          onChange={(e) =>
-            dispatch({
-              kmCurrent: priceToNumber(e.target.value)
-            })
-          }
-        />
+
+      <Col lg={18} md={24} sm={24} xs={24}>
+        <Row gutter={[16, 24]}>
+          <ShowByRoule roule={roules.administrator}>
+            <Col lg={8} md={8} sm={12} xs={24}>
+              <Select
+                label={'Empresa'}
+                url={`${apiRoutes.companies}/all`}
+                value={state.companyId}
+                onChange={(companyId) => dispatch({ companyId })}
+              />
+            </Col>
+          </ShowByRoule>
+          <Col lg={8} md={8} sm={12} xs={24}>
+            <Input
+              label={'Categoria'}
+              value={state.category}
+              onChange={(e) => dispatch({ category: e.target.value })}
+            />
+          </Col>
+          <Col lg={8} md={8} sm={12} xs={24}>
+            <Input
+              label={'Modelo'}
+              required={true}
+              value={state.model}
+              onChange={(e) => dispatch({ model: e.target.value })}
+            />
+          </Col>
+          <Col lg={4} md={8} sm={6} xs={24}>
+            <Select
+              label={'Ano'}
+              options={years}
+              required={true}
+              value={state.year}
+              onChange={(year) => dispatch({ year })}
+            />
+          </Col>
+          <Col lg={4} md={8} sm={6} xs={24}>
+            <Input
+              label={'Valor'}
+              type={'tel'}
+              required={true}
+              placeholder="15,00"
+              value={state.value}
+              onChange={(e) =>
+                dispatch({
+                  value: formatValueWhithDecimalCaseOnChange(e.target.value)
+                })
+              }
+            />
+          </Col>
+          <Col lg={4} md={8} sm={6} xs={24}>
+            <Input
+              label={'Kms compra'}
+              type={'tel'}
+              placeholder="15"
+              value={state.kmInitial}
+              onChange={(e) =>
+                dispatch({
+                  kmInitial: priceToNumber(e.target.value)
+                })
+              }
+            />
+          </Col>
+          <Col lg={4} md={8} sm={6} xs={24}>
+            <Input
+              label={'Kms atual'}
+              type={'tel'}
+              placeholder="15"
+              value={state.kmCurrent}
+              onChange={(e) =>
+                dispatch({
+                  kmCurrent: priceToNumber(e.target.value)
+                })
+              }
+            />
+          </Col>
+        </Row>
       </Col>
 
       <Col lg={24} md={24} sm={24} xs={24}>
@@ -172,16 +184,6 @@ const CreateEdit: React.FC = (props: any) => {
           value={state.description}
           onChange={(e) => dispatch({ description: e.target.value })}
         />
-      </Col>
-
-      <Col
-        lg={6}
-        md={12}
-        sm={24}
-        xs={24}
-        style={{ display: 'flex', justifyContent: 'center' }}
-      >
-        <UploadImages setFileList={setFileList} fileList={fileList} />
       </Col>
     </PanelCrud>
   );

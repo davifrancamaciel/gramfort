@@ -38,7 +38,8 @@ export const apiRoutes = {
   expenses: appRoutes.expenses,
   visits: appRoutes.visits,
   vehicles: appRoutes.vehicles,
-  expenseTypes: 'expense-types'
+  expenseTypes: 'expense-types',
+  categories: 'categories',
 };
 
 export const apiRoutesArray = [
@@ -52,7 +53,8 @@ export const apiRoutesArray = [
   apiRoutes.expenses,
   apiRoutes.services,
   apiRoutes.visits,
-  apiRoutes.vehicles
+  apiRoutes.vehicles,
+  apiRoutes.categories,
 ];
 
 export const roules = {

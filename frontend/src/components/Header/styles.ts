@@ -14,6 +14,26 @@ export const Container = styled(Header)`
   border-bottom: 1px solid #d9d9d9;
 `;
 
+export const ContainerLogo = styled.div`
+  display: none;
+  width: 100%;
+  align-items: center;
+  height: 100%;
+  margin: auto 0px;
+
+  > a {
+    display: flex;
+    align-items: center;
+  }
+  @media (max-width: 650px) {
+    display: flex;
+    justify-content: center;
+    background-color: #fff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+`;
 export const ContainerMenu = styled.div`
   display: flex;
   width: 100%;
@@ -23,7 +43,14 @@ export const ContainerMenu = styled.div`
 
   > a {
     display: flex;
-    align-items: center;    
+    align-items: center;
+  }
+  @media (max-width: 650px) {
+    > a {
+      img {
+        display: none;
+      }
+    }
   }
 `;
 export const ContainerProfile = styled.div`

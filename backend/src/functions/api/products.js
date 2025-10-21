@@ -2,8 +2,10 @@
 
 const { Op } = require('sequelize');
 const db = require('../../database');
+const User = require('../../models/User')(db.sequelize, db.Sequelize);
 const Product = require('../../models/Product')(db.sequelize, db.Sequelize);
 const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
+const Category = require('../../models/Category')(db.sequelize, db.Sequelize);
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { executeSelect } = require("../../services/ExecuteQueryService");
@@ -18,6 +20,9 @@ module.exports.list = async (event, context) => {
         context.callbackWaitsForEmptyEventLoop = false;
 
         let whereStatement = {};
+        const whereStatementSuppiers = {};
+        const whereStatementCategory = {};
+
 
         const user = await getUser(event)
 
@@ -28,7 +33,7 @@ module.exports.list = async (event, context) => {
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             whereStatement.companyId = user.companyId
         if (event.queryStringParameters) {
-            const { id, name, active, priceMin, priceMax, inventoryCountMin, inventoryCountMax } = event.queryStringParameters
+            const { id, name, active, priceMin, priceMax, inventoryCountMin, inventoryCountMax, userName, category } = event.queryStringParameters
 
             if (id) whereStatement.id = id;
 
@@ -36,6 +41,11 @@ module.exports.list = async (event, context) => {
                 whereStatement.name = { [Op.like]: `%${name}%` }
             if (active !== undefined && active !== '')
                 whereStatement.active = active === 'true';
+            if (userName)
+                whereStatementSuppiers.name = { [Op.like]: `%${userName}%` }
+            if (category)
+                whereStatementCategory.name = { [Op.like]: `%${category}%` }
+
 
             if (priceMin)
                 whereStatement.price = {
@@ -75,12 +85,23 @@ module.exports.list = async (event, context) => {
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * pageSize,
-            order: [['id', 'DESC']], 
+            order: [['id', 'DESC']],
             include: [
+                { model: Company, as: 'company', attributes: ['name'] },
+                { model: Category, as: 'category', attributes: ['name'] },
                 {
-                    model: Company, as: 'company', attributes: ['name',]
-                }               
-            ]           
+                    model: Category, as: 'category',
+                    attributes: ['name'],
+                    where: whereStatementCategory,
+                    required: whereStatementCategory.name ? true : false
+                },
+                {
+                    model: User, as: 'supplier',
+                    attributes: ['name'],
+                    where: whereStatementSuppiers,
+                    required: whereStatementSuppiers.name ? true : false
+                },
+            ]
         })
 
         return handlerResponse(200, { count, rows })
@@ -100,7 +121,13 @@ module.exports.listById = async (event) => {
         if (!checkRouleProfileAccess(user.groups, roules.products))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
-        const result = await Product.findByPk(pathParameters.id)
+        const result = await Product.findByPk(pathParameters.id, {
+            include: [
+                { model: Company, as: 'company', attributes: ['name'] },
+                { model: Category, as: 'category', attributes: ['name'] },
+                { model: User, as: 'supplier', attributes: ['name'] },
+            ]
+        })
         if (!result)
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrado`)
         if (!checkRouleProfileAccess(user.groups, roules.administrator) && result.companyId !== user.companyId)
@@ -128,8 +155,8 @@ module.exports.create = async (event) => {
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
         const { id } = body
-        const objOnSave = { id: Number(id), ...body }
-        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+        const objOnSave = { ...body }
+        if (!checkRouleProfileAccess(user.groups, roules.administrator) || !objOnSave.companyId)
             objOnSave.companyId = user.companyId
 
         const result = await Product.create(objOnSave);

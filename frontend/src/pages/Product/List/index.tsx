@@ -89,12 +89,28 @@ const List: React.FC = () => {
             onChange={(e) => dispatch({ id: e.target.value })}
           />
         </Col>
-        <Col lg={15} md={7} sm={24} xs={24}>
+        <Col lg={5} md={6} sm={24} xs={24}>
           <Input
             label={'Nome do produto'}
             placeholder="Ex.: bola"
             value={state.name}
             onChange={(e) => dispatch({ name: e.target.value })}
+          />
+        </Col>
+        <Col lg={5} md={6} sm={24} xs={24}>
+          <Input
+            label={'Categoria'}
+            placeholder="Ex.: organico"
+            value={state.category}
+            onChange={(e) => dispatch({ category: e.target.value })}
+          />
+        </Col>
+        <Col lg={5} md={6} sm={24} xs={24}>
+          <Input
+            label={'Fornecedor'}
+            placeholder="Ex.: Jorge"
+            value={state.userName}
+            onChange={(e) => dispatch({ userName: e.target.value })}
           />
         </Col>
         <Col lg={4} md={12} sm={24} xs={24}>

@@ -321,9 +321,12 @@ const removeUserToGroup = async (Username, groups, position) => {
 }
 
 module.exports.listAll = async (event) => {
-    const { queryStringParameters } = event
+    let type
+    if (event && event.queryStringParameters) {
+        const { queryStringParameters } = event
+        type = queryStringParameters.type
+    }
     try {
-        const { type } = queryStringParameters
         const whereStatement = {};
         const user = await getUser(event)
 

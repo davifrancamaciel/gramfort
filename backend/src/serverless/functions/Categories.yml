@@ -1,0 +1,8 @@
+categoriesAll:
+  handler: src/functions/api/categories.listAll
+  events:
+    - http:
+        path: categories/all
+        method: get
+        authorizer: verifyToken
+        cors: true 

@@ -84,21 +84,13 @@ const Details: React.FC = (props: any) => {
           <Col lg={8} md={12} sm={24} xs={24}>
             <ViewData label="Categoria" value={state.categoryName} />
           </Col>
-          
+
           <Col lg={8} md={12} sm={24} xs={24}>
-            <ViewData label="Tamanho" value={state.size} />
+            <ViewData label="Fornecedor" value={state?.supplier?.name} />
           </Col>
-          <Col lg={8} md={12} sm={24} xs={24}>
-            <ViewData label="Cor" value={state.color} />
-          </Col>
+
           <Col lg={8} md={12} sm={24} xs={24}>
             <ViewData label="Estoque" value={state.inventoryCount} />
-          </Col>
-          <Col lg={8} md={12} sm={24} xs={24}>
-            <ViewData label="Cor" value={state.color} />
-          </Col>
-          <Col lg={8} md={12} sm={24} xs={24}>
-            <ViewData label="Código de barras" value={state.ean} />
           </Col>
           <Col lg={8} md={12} sm={12} xs={24}>
             <ViewData label="Ativo" value={state.activeTag} />

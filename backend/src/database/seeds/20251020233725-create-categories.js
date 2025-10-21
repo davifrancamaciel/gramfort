@@ -1,6 +1,6 @@
 'use strict';
 
-const TABLE_NAME = 'expenseTypes';
+const TABLE_NAME = 'categories';
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -17,6 +17,7 @@ function load() {
   for (let i = 0; i < data_array.length; i++) {
     list.push({
       name: data_array[i],
+      active: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -25,22 +26,6 @@ function load() {
 }
 
 const data_array = [
-  // 'COMPRAS',  
-  // 'OUTROS',
-  // 'COMISSÕES',
-  // 'DESPESAS FIXAS',
-  // 'PAGAMENTOS',
-  // 'IMPOSTOS',
-  // 'SEGUROS ',
-  // 'INVESTIMENTO ',
-  // 'MARKETING',
-  // 'MATERIAL PUBLICITÁRIO',
-  // 'COMBUSTIVEL',
-  // 'PEDAGIO',
-  // 'ALIMENTAÇÃO',
-  // 'MANUTENÇÕES',
-  // 'EXTRAS',
-  // 'EQUIPAMENTO E FERRAMENTAS',
-  // 'INSUMOS'
+  'CATEGORIA TESTE',
 ];
 

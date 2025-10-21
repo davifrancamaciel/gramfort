@@ -37,6 +37,8 @@ const Export: React.FC<Filter> = (props) => {
       } else {
         const newData = itemsArray.map((item: Product) => ({
           ...item,
+          supplier: item.supplier?.name,
+          category: item.category?.name,
           active: item.active ? 'SIM' : 'NÃO',
           createdAt: formatDateHour(item.createdAt),
           updatedAt: formatDateHour(item.updatedAt)
@@ -65,12 +67,11 @@ const Export: React.FC<Filter> = (props) => {
           { label: 'Nome do produto', key: 'name' },
           { label: 'Preço', key: 'price' },
           { label: 'Ativo', key: 'active' },
+          { label: 'Categoria', key: 'category' },        
+          { label: 'Fornecedor', key: 'supplier' },        
+          { label: 'Estoque', key: 'inventoryCount' },          
           { label: 'Data de cadastro', key: 'createdAt' },
           { label: 'Data de alteração', key: 'updatedAt' },
-          { label: 'Tamanho', key: 'size' },        
-          { label: 'Estoque', key: 'inventoryCount' },
-          { label: 'Cor', key: 'color' },
-          { label: 'Código de barras', key: 'ean' },
           { label: 'Descrição', key: 'description' }
         ]}
       >
