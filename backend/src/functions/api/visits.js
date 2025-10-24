@@ -27,10 +27,11 @@ module.exports.list = async (event, context) => {
 
         if (event.queryStringParameters) {
             const {
-                id, userName, paidOut, clientName, dateStart, dateEnd,
+                id, userName, paidOut, clientName, dateStart, dateEnd, companyId,
                 paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd,
             } = event.queryStringParameters
 
+            if (companyId) whereStatement.companyId = companyId;
             if (id) whereStatement.id = id;
 
             if (userName)

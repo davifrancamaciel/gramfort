@@ -25,11 +25,13 @@ module.exports.list = async (event) => {
         const whereStatement = {};
         const whereStatementCompany = {};
 
-        if (!checkRouleProfileAccess(user.groups, roules.administrator))
-            whereStatement.companyId = user.companyId
-
         if (queryStringParameters) {
-            const { id, companyName, name, type, email, createdAtStart, createdAtEnd } = queryStringParameters
+            const { id, companyName, name, type, email, createdAtStart, createdAtEnd, companyId } = queryStringParameters
+
+            if (companyId) whereStatement.companyId = companyId;
+
+            if (!checkRouleProfileAccess(user.groups, roules.administrator))
+                whereStatement.companyId = user.companyId
 
             if (id)
                 whereStatement.id = id;

@@ -3,12 +3,13 @@ import { Col, Image } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
-import { apiRoutes, appRoutes } from 'utils/defaultValues';
+import { apiRoutes, appRoutes, roules } from 'utils/defaultValues';
 import { initialStateFilter, Vehicle, years } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
+import ShowByRoule from 'components/ShowByRoule';
 
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
@@ -91,13 +92,16 @@ const List: React.FC = () => {
           />
         </Col>
 
-        <Col lg={8} md={12} sm={12} xs={24}>
-          <Input
-            label={'Categoria'}
-            value={state.category}
-            onChange={(e) => dispatch({ category: e.target.value })}
-          />
-        </Col>        
+        <ShowByRoule roule={roules.administrator}>
+          <Col lg={8} md={12} sm={24} xs={24}>
+            <Select
+              label={'Empresa'}
+              url={`${apiRoutes.companies}/all`}
+              value={state.companyId}
+              onChange={(companyId) => dispatch({ companyId })}
+            />
+          </Col>
+        </ShowByRoule>
       </PanelFilter>
 
       <GridList

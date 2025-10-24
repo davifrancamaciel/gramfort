@@ -18,12 +18,12 @@ export const Container = styled.div`
       header {
         color: #968d8d;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         border-bottom: #eee solid 1px;
         padding-bottom: 10px;
         img {
-          max-width: 150px;
+          max-width: 200px;
           max-height: 90px;
         }
         h2 {

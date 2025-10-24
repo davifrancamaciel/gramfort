@@ -32,10 +32,13 @@ module.exports.list = async (event, context) => {
         if (!checkRouleProfileAccess(user.groups, roules.sales))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
         const isAdm = checkRouleProfileAccess(user.groups, roules.administrator)
-        if (!isAdm)
-            whereStatement.companyId = user.companyId
         if (event.queryStringParameters) {
-            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note } = event.queryStringParameters
+            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId } = event.queryStringParameters
+
+            if (companyId) whereStatement.companyId = companyId;
+
+            if (!isAdm)
+                whereStatement.companyId = user.companyId
 
             if (id) whereStatement.id = id;
 

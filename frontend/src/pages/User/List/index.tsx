@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Col, Image } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
-import { Input } from 'components/_inputs';
+import { Input, Select } from 'components/_inputs';
 import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
 import { initialStateFilter, Users } from '../interfaces';
 import useFormState from 'hooks/useFormState';
@@ -62,8 +62,7 @@ const List: React.FC = () => {
         deleteName: `${item.name} da empresa ${item.company?.name}`,
         companyName: item.company?.name,
         createdAt: formatDateHour(item.createdAt),
-        updatedAt: formatDateHour(item.updatedAt),
-        
+        updatedAt: formatDateHour(item.updatedAt)
       }));
       dispatch({ pageNumber });
       setItems(dataItemsFormatted);
@@ -81,17 +80,6 @@ const List: React.FC = () => {
         actionButton={() => actionFilter()}
         loading={loading}
       >
-        <ShowByRoule roule={roules.administrator}>
-          <Col lg={8} md={12} sm={24} xs={24}>
-            <Input
-              label={'Empresa'}
-              placeholder="Ex.: Loja"
-              value={state.companyName}
-              onChange={(e) => dispatch({ companyName: e.target.value })}
-            />
-          </Col>
-        </ShowByRoule>
-
         <Col lg={8} md={12} sm={24} xs={24}>
           <Input
             label={'Nome'}
@@ -108,6 +96,16 @@ const List: React.FC = () => {
             onChange={(e) => dispatch({ email: e.target.value })}
           />
         </Col>
+        <ShowByRoule roule={roules.administrator}>
+          <Col lg={8} md={12} sm={24} xs={24}>
+            <Select
+              label={'Empresa'}
+              url={`${apiRoutes.companies}/all`}
+              value={state.companyId}
+              onChange={(companyId) => dispatch({ companyId })}
+            />
+          </Col>
+        </ShowByRoule>
       </PanelFilter>
       <GridList
         scroll={{ x: 600 }}

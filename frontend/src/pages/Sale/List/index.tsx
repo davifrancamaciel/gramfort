@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Col } from 'antd';
-import { startOfMonth, endOfMonth , startOfWeek, endOfWeek} from 'date-fns';
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
 
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
-import { Input, RangePicker, Switch } from 'components/_inputs';
-import { apiRoutes, appRoutes } from 'utils/defaultValues';
+import { Input, RangePicker, Switch, Select } from 'components/_inputs';
+import { apiRoutes, appRoutes, roules } from 'utils/defaultValues';
 import { initialStateFilter, Sale, SaleProduct } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
@@ -14,6 +14,7 @@ import { formatPrice } from 'utils/formatPrice';
 import PrintAll from './PrintAll';
 import Print from './Print';
 import moment from 'moment';
+import ShowByRoule from 'components/ShowByRoule';
 
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
@@ -169,6 +170,16 @@ const List: React.FC = () => {
             onChange={() => dispatch({ showCommission: !state.showCommission })}
           />
         </Col>
+        <ShowByRoule roule={roules.administrator}>
+          <Col lg={8} md={12} sm={24} xs={24}>
+            <Select
+              label={'Empresa'}
+              url={`${apiRoutes.companies}/all`}
+              value={state.companyId}
+              onChange={(companyId) => dispatch({ companyId })}
+            />
+          </Col>
+        </ShowByRoule>
       </PanelFilter>
       <GridList
         headerChildren={<PrintAll state={state} />}

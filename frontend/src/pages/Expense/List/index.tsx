@@ -10,6 +10,7 @@ import {
   apiRoutes,
   appRoutes,
   booleanFilter,
+  roules,
   systemColors
 } from 'utils/defaultValues';
 import { initialStateFilter, Expense, ExpenseTotal } from '../interfaces';
@@ -21,6 +22,7 @@ import Action from 'components/Action';
 import { getTitle, getType } from '../utils';
 import Card from './Card';
 import { Header } from './Card/styles';
+import ShowByRoule from 'components/ShowByRoule';
 
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
@@ -68,6 +70,7 @@ const List: React.FC = () => {
             e.expenseType?.name
           }`,
           expenseTypeName: e.expenseType?.name,
+          companyName: e.company?.name,
           value: formatPrice(Number(e.value) || 0),
           paymentDate: formatDate(e.paymentDate),
           createdAt: formatDateHour(e.createdAt),
@@ -100,15 +103,23 @@ const List: React.FC = () => {
         actionButton={() => actionFilter()}
         loading={loading}
       >
-        {/* <Col lg={3} md={8} sm={12} xs={24}>
-          <Input
-            label={'Código'}
-            type={'number'}
-            placeholder="Ex.: 100"
-            value={state.id}
-            onChange={(e) => dispatch({ id: e.target.value })}
+        <Col lg={6} md={24} sm={24} xs={24}>
+          <RangePicker
+            label="Data de vencimento"
+            value={[
+              state.paymentDateStart ? moment(state.paymentDateStart) : null,
+              state.paymentDateEnd ? moment(state.paymentDateEnd) : null
+            ]}
+            onChange={(value: any, dateString: any) => {
+              dispatch({
+                paymentDateStart: dateString[0]?.split('/').reverse().join('-')
+              });
+              dispatch({
+                paymentDateEnd: dateString[1]?.split('/').reverse().join('-')
+              });
+            }}
           />
-        </Col> */}
+        </Col>
         <Col lg={6} md={12} sm={12} xs={24}>
           <Select
             label={'Pagas'}
@@ -134,8 +145,8 @@ const List: React.FC = () => {
             onChange={(e) => dispatch({ title: e.target.value })}
           />
         </Col>
-       
-        <Col lg={6} md={12} sm={24} xs={24}>
+
+        <Col lg={6} md={12} sm={12} xs={24}>
           <Input
             label={path == appRoutes.expenses ? 'Consultor' : 'Fornecedor'}
             value={state.userName}
@@ -143,7 +154,7 @@ const List: React.FC = () => {
           />
         </Col>
         {path == appRoutes.expenses && (
-          <Col lg={6} md={12} sm={24} xs={24}>
+          <Col lg={6} md={12} sm={12} xs={24}>
             <Input
               label={'Veiculo'}
               value={state.vehicleModel}
@@ -152,23 +163,16 @@ const List: React.FC = () => {
           </Col>
         )}
 
-        <Col lg={6} md={24} sm={24} xs={24}>
-          <RangePicker
-            label="Data de vencimento"
-            value={[
-              state.paymentDateStart ? moment(state.paymentDateStart) : null,
-              state.paymentDateEnd ? moment(state.paymentDateEnd) : null
-            ]}
-            onChange={(value: any, dateString: any) => {
-              dispatch({
-                paymentDateStart: dateString[0]?.split('/').reverse().join('-')
-              });
-              dispatch({
-                paymentDateEnd: dateString[1]?.split('/').reverse().join('-')
-              });
-            }}
-          />
-        </Col>
+        <ShowByRoule roule={roules.administrator}>
+          <Col lg={6} md={12} sm={12} xs={24}>
+            <Select
+              label={'Empresa'}
+              url={`${apiRoutes.companies}/all`}
+              value={state.companyId}
+              onChange={(companyId) => dispatch({ companyId })}
+            />
+          </Col>
+        </ShowByRoule>
       </PanelFilter>
 
       <Header>
@@ -198,10 +202,11 @@ const List: React.FC = () => {
 
       <GridList
         size="small"
-        scroll={{ x: 840 }}
+        scroll={{ x: 640 }}
         columns={[
           // { title: 'Código', dataIndex: 'id' },
           { title: 'Tipo', dataIndex: 'expenseTypeName' },
+          { title: 'Empresa', dataIndex: 'companyName' },
           {
             title: 'Dia',
             dataIndex: 'paymentDate'

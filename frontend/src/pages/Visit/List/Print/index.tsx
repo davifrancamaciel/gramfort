@@ -16,37 +16,101 @@ const Print: React.FC<PropTypes> = ({ item }) => {
   return (
     <PrintContainer show={true}>
       <TableReport
-        title={`Visita ${item.id}`}
+        title={``}
         image={item?.company?.image || ''}
       >
         <div style={{ padding: '35px', fontSize: '15px' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <strong>VISITA TÉCNICA</strong>
+            <strong>
+              RECIBO DE PAGAMENTO DE VISITA TÉCNICA
+            </strong>
           </h2>
-          <p>
-            A empresa{' '}
-            <strong>Gramfort Hidrossemeadura Soluções Ambientais LTDA</strong>{' '}
-            CNPJ: 50.641.930/0001-00 com sede na Estrada União e Industria,
-            22.373 Galpão 04 — Pedro do Rio — Petrópolis — RJ identificou o
-            pagamento realizado no valor de <strong>{formatPrice(Number(item.value))}</strong> na
-            conta: Santander Ag 4421 CC 13002793-2 Gramfort Hidrossemeadura Pix:
-            CNPJ {item.company?.pixKey} referente a visita técnica para medição
-            de uma área para projeto de Hidrossemeadura, para{' '}
-            <strong>{item.client?.name}</strong>, visita em{' '}
-            {item.address} - {item.city} - {item.state}. Declaro ainda que esse
-            valor será abatido de um eventual contrato de prestação de serviço
-            do valor total acordado. Cosultor <strong>{item.user?.name}</strong>
+          <div
+            style={{
+              display: 'grid',
+              justifyContent: 'center'
+              ,textAlign:'center'
+            }}
+          >
+            <p>
+              Eu, <strong>{item.user?.name}</strong>, na qualidade de Consultor
+              Técnico da empresa{' '}
+              <strong>Gramfort Hidrossemeadura Soluções Ambientais LTDA</strong>
+              , inscrita no CNPJ sob nº 50.641.930/0001-00, com sede na Estrada
+              União e Indústria, 22.373, Galpão 04 – Pedro do Rio –
+              Petrópolis/RJ, declaro, para os devidos fins, que recebi nesta
+              data do(a) Sr(a). <strong>{item.client?.name}</strong> a quantia
+              de <strong>{formatPrice(Number(item.value))}</strong>, referente
+              ao pagamento de uma visita técnica.{' '}
+            </p>
+            <p>
+              A referida visita técnica será agendada e realizada no prazo de
+              até 15 (quinze) dias, no endereço {item.address} - {item.city}/
+              {item.state}.
+            </p>
+            <p>
+              Fica acordado entre as partes que o valor pago neste recibo será
+              integralmente deduzido do valor total, caso o cliente venha a
+              firmar contrato de prestação de serviços de hidrossemeadura com a
+              empresa. Por outro lado, caso não ocorra a formalização do
+              contrato de prestação de serviços – por qualquer motivo - entre as
+              partes, o valor pago não será reembolsado.
+            </p>
+            <p>
+              Data para visita {formatDate(item.date)} Horário:{' '}
+              {extractHour(item.date!)}
+            </p>
+          </div>
+          <p
+            style={{
+              marginTop: '50px',
+              display: 'grid',
+              justifyContent: 'center'
+            }}
+          >
+            Petrópolis, {formatDateText(item.createdAt!)}
           </p>
 
-          <p>
-            Data para visita {formatDate(item.date)} Horário:{' '}
-            {extractHour(item.date!)}
-          </p>
-          <p style={{ marginTop: '50px' }}>{formatDateText(item.createdAt!)}</p>
+          <div
+            style={{
+              marginTop: '100px',
+              display: 'grid',
+              justifyContent: 'center'
+            }}
+          >
+            <img alt={''} src={assinatura} style={{ width: '200px' }} />
 
-          <img alt={''} src={assinatura} style={{ width: '200px' }} />
-          <p>Valter Rodrigo dos Santos</p>
-          <p>CPF:101.311.397-70</p>
+            <p style={{ fontSize: '15px' }}>
+              <strong>Valter Rodrigo S Silva</strong>
+            </p>
+            <p
+              style={{
+                fontSize: '11px',
+                marginTop: '2px',
+                marginBottom: '2px'
+              }}
+            >
+              Gramfort Hidrossemeadura
+            </p>
+            <p
+              style={{
+                fontSize: '11px',
+                marginTop: '2px',
+                marginBottom: '2px'
+              }}
+            >
+              Soluções Ambientais LTDA
+            </p>
+            <p
+              style={{
+                fontSize: '11px',
+                marginTop: '2px',
+                marginBottom: '2px'
+              }}
+            >
+              - Diretor Geral -
+            </p>
+          </div>
         </div>
       </TableReport>
     </PrintContainer>

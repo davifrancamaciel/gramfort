@@ -17,7 +17,7 @@ const PrintContainer: React.FC<PropTypes> = ({ children, show, print }) => {
   const componentRef = useRef<HTMLHeadingElement>(null);
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: 'Relatório'
+    documentTitle: 'Gramfort Hidrossemeadura'
   });
 
   return (

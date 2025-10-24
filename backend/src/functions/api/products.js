@@ -30,10 +30,13 @@ module.exports.list = async (event, context) => {
             return handlerResponse(400, {}, 'Usuário não encontrado')
         if (!checkRouleProfileAccess(user.groups, roules.products))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
-        if (!checkRouleProfileAccess(user.groups, roules.administrator))
-            whereStatement.companyId = user.companyId
         if (event.queryStringParameters) {
-            const { id, name, active, priceMin, priceMax, inventoryCountMin, inventoryCountMax, userName, category } = event.queryStringParameters
+            const { id, name, active, priceMin, priceMax, inventoryCountMin, inventoryCountMax, userName, category, companyId } = event.queryStringParameters
+
+            if (companyId) whereStatement.companyId = companyId;
+
+            if (!checkRouleProfileAccess(user.groups, roules.administrator))
+                whereStatement.companyId = user.companyId
 
             if (id) whereStatement.id = id;
 

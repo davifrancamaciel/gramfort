@@ -78,20 +78,49 @@ const SliderMenu: React.FC = (props: any) => {
         <Menu.Item key={'/'} icon={<DashboardOutlined />}>
           <Link to={'/'}>Dashboard</Link>
         </Menu.Item>
-        {checkRouleProfileAccess(groupsUser, roules.products) && (
+        {checkRouleProfileAccess(groupsUser, roules.expenses) && (
           <SubMenu
-            key={`sub-/${appRoutes.products}`}
-            title={'Produtos'}
-            icon={<BarcodeOutlined />}
+            key={`sub-/${appRoutes.expenses}`}
+            title={'Despesas'}
+            icon={<ArrowDownOutlined />}
           >
-            <Menu.Item key={`/${appRoutes.products}`}>
-              <Link to={`/${appRoutes.products}`}>Lista</Link>
+            <Menu.Item key={`/${appRoutes.expenses}`}>
+              <Link to={`/${appRoutes.expenses}`}>Lista</Link>
             </Menu.Item>
-            <Menu.Item key={`/${appRoutes.products}/create`}>
-              <Link to={`/${appRoutes.products}/create`}>Novo</Link>
+            <Menu.Item key={`/${appRoutes.expenses}/create`}>
+              <Link to={`/${appRoutes.expenses}/create`}>Nova</Link>
             </Menu.Item>
           </SubMenu>
         )}
+        {checkRouleProfileAccess(groupsUser, roules.clients) && (
+          <SubMenu
+            key={`sub-/${appRoutes.clients}`}
+            title="Clientes"
+            icon={<UserOutlined />}
+          >
+            <Menu.Item key={`/${appRoutes.clients}`}>
+              <Link to={`/${appRoutes.clients}`}>Lista</Link>
+            </Menu.Item>
+            <Menu.Item key={`/${appRoutes.clients}/create`}>
+              <Link to={`/${appRoutes.clients}/create`}>Novo</Link>
+            </Menu.Item>
+          </SubMenu>
+        )}
+        {checkRouleProfileAccess(groupsUser, roules.visit) && (
+          <SubMenu
+            key={`sub-/${appRoutes.visits}`}
+            title={'Visitas'}
+            icon={<ScheduleOutlined />}
+          >
+            <Menu.Item key={`/${appRoutes.visits}`}>
+              <Link to={`/${appRoutes.visits}`}>Lista</Link>
+            </Menu.Item>
+            <Menu.Item key={`/${appRoutes.visits}/create`}>
+              <Link to={`/${appRoutes.visits}/create`}>Nova</Link>
+            </Menu.Item>
+          </SubMenu>
+        )}
+        {/* contrato */}
         {checkRouleProfileAccess(groupsUser, roules.sales) && (
           <SubMenu
             key={`sub-/${appRoutes.sales}`}
@@ -111,74 +140,18 @@ const SliderMenu: React.FC = (props: any) => {
             </Menu.Item> */}
           </SubMenu>
         )}
-        {checkRouleProfileAccess(groupsUser, roules.visit) && (
+        {/* aplicação */}
+        {checkRouleProfileAccess(groupsUser, roules.products) && (
           <SubMenu
-            key={`sub-/${appRoutes.visits}`}
-            title={'Visitas'}
-            icon={<ScheduleOutlined />}
+            key={`sub-/${appRoutes.products}`}
+            title={'Produtos'}
+            icon={<BarcodeOutlined />}
           >
-            <Menu.Item key={`/${appRoutes.visits}`}>
-              <Link to={`/${appRoutes.visits}`}>Lista</Link>
+            <Menu.Item key={`/${appRoutes.products}`}>
+              <Link to={`/${appRoutes.products}`}>Lista</Link>
             </Menu.Item>
-            <Menu.Item key={`/${appRoutes.visits}/create`}>
-              <Link to={`/${appRoutes.visits}/create`}>Nova</Link>
-            </Menu.Item>
-          </SubMenu>
-        )}
-        {checkRouleProfileAccess(groupsUser, roules.expenses) && (
-          <SubMenu
-            key={`sub-/${appRoutes.expenses}`}
-            title={'Despesas'}
-            icon={<ArrowDownOutlined />}
-          >
-            <Menu.Item key={`/${appRoutes.expenses}`}>
-              <Link to={`/${appRoutes.expenses}`}>Lista</Link>
-            </Menu.Item>
-            <Menu.Item key={`/${appRoutes.expenses}/create`}>
-              <Link to={`/${appRoutes.expenses}/create`}>Nova</Link>
-            </Menu.Item>
-          </SubMenu>
-        )}
-        {checkRouleProfileAccess(groupsUser, roules.shopping) && (
-          <SubMenu
-            key={`sub-/${appRoutes.shopping}`}
-            title={'Compras'}
-            icon={<ArrowDownOutlined />}
-          >
-            <Menu.Item key={`/${appRoutes.shopping}`}>
-              <Link to={`/${appRoutes.shopping}`}>Lista</Link>
-            </Menu.Item>
-            <Menu.Item key={`/${appRoutes.shopping}/create`}>
-              <Link to={`/${appRoutes.shopping}/create`}>Nova</Link>
-            </Menu.Item>
-          </SubMenu>
-        )}
-        {checkRouleProfileAccess(groupsUser, roules.vehicles) && (
-          <SubMenu
-            key={`sub-/${appRoutes.vehicles}`}
-            title={'Veiculos'}
-            icon={<CarOutlined />}
-          >
-            <Menu.Item key={`/${appRoutes.vehicles}`}>
-              <Link to={`/${appRoutes.vehicles}`}>Lista</Link>
-            </Menu.Item>
-            <Menu.Item key={`/${appRoutes.vehicles}/create`}>
-              <Link to={`/${appRoutes.vehicles}/create`}>Novo</Link>
-            </Menu.Item>
-          </SubMenu>
-        )}
-
-        {checkRouleProfileAccess(groupsUser, roules.clients) && (
-          <SubMenu
-            key={`sub-/${appRoutes.clients}`}
-            title="Clientes"
-            icon={<UserOutlined />}
-          >
-            <Menu.Item key={`/${appRoutes.clients}`}>
-              <Link to={`/${appRoutes.clients}`}>Lista</Link>
-            </Menu.Item>
-            <Menu.Item key={`/${appRoutes.clients}/create`}>
-              <Link to={`/${appRoutes.clients}/create`}>Novo</Link>
+            <Menu.Item key={`/${appRoutes.products}/create`}>
+              <Link to={`/${appRoutes.products}/create`}>Novo</Link>
             </Menu.Item>
           </SubMenu>
         )}
@@ -196,17 +169,17 @@ const SliderMenu: React.FC = (props: any) => {
             </Menu.Item>
           </SubMenu>
         )}
-        {checkRouleProfileAccess(groupsUser, roules.users) && (
+        {checkRouleProfileAccess(groupsUser, roules.shopping) && (
           <SubMenu
-            key={`sub-/${appRoutes.users}`}
-            title="Usuários"
-            icon={<UserOutlined />}
+            key={`sub-/${appRoutes.shopping}`}
+            title={'Compras'}
+            icon={<ArrowDownOutlined />}
           >
-            <Menu.Item key={`/${appRoutes.users}`}>
-              <Link to={`/${appRoutes.users}`}>Lista</Link>
+            <Menu.Item key={`/${appRoutes.shopping}`}>
+              <Link to={`/${appRoutes.shopping}`}>Lista</Link>
             </Menu.Item>
-            <Menu.Item key={`/${appRoutes.users}/create`}>
-              <Link to={`/${appRoutes.users}/create`}>Novo</Link>
+            <Menu.Item key={`/${appRoutes.shopping}/create`}>
+              <Link to={`/${appRoutes.shopping}/create`}>Nova</Link>
             </Menu.Item>
           </SubMenu>
         )}
@@ -224,6 +197,40 @@ const SliderMenu: React.FC = (props: any) => {
                 <Link to={`/${appRoutes.companies}/create`}>Nova</Link>
               </Menu.Item>
             </SubMenu>
+          </>
+        )}
+        {checkRouleProfileAccess(groupsUser, roules.vehicles) && (
+          <SubMenu
+            key={`sub-/${appRoutes.vehicles}`}
+            title={'Veiculos'}
+            icon={<CarOutlined />}
+          >
+            <Menu.Item key={`/${appRoutes.vehicles}`}>
+              <Link to={`/${appRoutes.vehicles}`}>Lista</Link>
+            </Menu.Item>
+            <Menu.Item key={`/${appRoutes.vehicles}/create`}>
+              <Link to={`/${appRoutes.vehicles}/create`}>Novo</Link>
+            </Menu.Item>
+          </SubMenu>
+        )}
+
+        {checkRouleProfileAccess(groupsUser, roules.users) && (
+          <SubMenu
+            key={`sub-/${appRoutes.users}`}
+            title="Usuários"
+            icon={<UserOutlined />}
+          >
+            <Menu.Item key={`/${appRoutes.users}`}>
+              <Link to={`/${appRoutes.users}`}>Lista</Link>
+            </Menu.Item>
+            <Menu.Item key={`/${appRoutes.users}/create`}>
+              <Link to={`/${appRoutes.users}/create`}>Novo</Link>
+            </Menu.Item>
+          </SubMenu>
+        )}
+
+        {checkRouleProfileAccess(groupsUser, roules.administrator) && (
+          <>
             <Menu.Item
               icon={<CloudServerOutlined />}
               key={`/${appRoutes.services}`}

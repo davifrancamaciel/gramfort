@@ -3,7 +3,12 @@ import { Col } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
-import { apiRoutes, appRoutes, booleanFilter } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  booleanFilter,
+  roules
+} from 'utils/defaultValues';
 import { initialStateFilter, Visit } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
@@ -11,6 +16,7 @@ import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import Action from 'components/Action';
 import Print from './Print';
+import ShowByRoule from 'components/ShowByRoule';
 
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
@@ -100,14 +106,6 @@ const List: React.FC = () => {
           />
         </Col>
 
-        <Col lg={8} md={12} sm={12} xs={24}>
-          <Input
-            label={'Consultor'}
-            value={state.userName}
-            onChange={(e) => dispatch({ userName: e.target.value })}
-          />
-        </Col>
-
         <Col lg={8} md={24} sm={24} xs={24}>
           <RangePicker
             label="Data de pagamento"
@@ -124,19 +122,6 @@ const List: React.FC = () => {
 
         <Col lg={8} md={24} sm={24} xs={24}>
           <RangePicker
-            label="Data de cadastro"
-            onChange={(value: any, dateString: any) => {
-              dispatch({
-                createdAtStart: dateString[0]?.split('/').reverse().join('-')
-              });
-              dispatch({
-                createdAtEnd: dateString[1]?.split('/').reverse().join('-')
-              });
-            }}
-          />
-        </Col>
-        <Col lg={8} md={24} sm={24} xs={24}>
-          <RangePicker
             label="Data"
             onChange={(value: any, dateString: any) => {
               dispatch({
@@ -148,6 +133,23 @@ const List: React.FC = () => {
             }}
           />
         </Col>
+        <Col lg={8} md={12} sm={12} xs={24}>
+          <Input
+            label={'Consultor'}
+            value={state.userName}
+            onChange={(e) => dispatch({ userName: e.target.value })}
+          />
+        </Col>
+        <ShowByRoule roule={roules.administrator}>
+          <Col lg={8} md={12} sm={12} xs={24}>
+            <Select
+              label={'Empresa'}
+              url={`${apiRoutes.companies}/all`}
+              value={state.companyId}
+              onChange={(companyId) => dispatch({ companyId })}
+            />
+          </Col>
+        </ShowByRoule>
       </PanelFilter>
       <GridList
         size="small"

@@ -1,9 +1,11 @@
+import { Company } from '../Company/interfaces';
 export interface ExpenseType {
   name: string;
 }
 export interface Expense {
   id?: string;
   expenseType?: ExpenseType;
+  company?: Company;
   expenseTypeId?: number;
   userId?: number;
   vehicleId?: number;
@@ -57,5 +59,5 @@ export const initialStateFilter: Filter = {
   title: '',
   description: '',
   pageNumber: 1,
-  pageSize: 20
+  pageSize: 50
 };

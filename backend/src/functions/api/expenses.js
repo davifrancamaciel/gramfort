@@ -7,6 +7,7 @@ const Expense = require('../../models/Expense')(db.sequelize, db.Sequelize);
 const ExpenseType = require('../../models/ExpenseType')(db.sequelize, db.Sequelize);
 const Vehicle = require('../../models/Vehicle')(db.sequelize, db.Sequelize);
 const User = require('../../models/User')(db.sequelize, db.Sequelize);
+const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
@@ -31,8 +32,13 @@ module.exports.list = async (event, context) => {
 
         const {
             id, expenseTypeName, title, description, paidOut, expenseTypeId, vehicleModel, userName,
-            paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision
+            paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision, companyId
         } = event.queryStringParameters
+
+        if (companyId) whereStatement.companyId = companyId;
+
+        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+            whereStatement.companyId = user.companyId
 
         if (id) whereStatement.id = id;
 
@@ -107,6 +113,7 @@ module.exports.list = async (event, context) => {
             offset: (Number(pageNumber) - 1) * Number(pageSize),
             order: [['expenseType', 'name', 'ASC'], ['paymentDate', 'ASC']],
             include: [
+                { model: Company, as: 'company', attributes: ['name'] },
                 {
                     model: ExpenseType,
                     as: 'expenseType',
@@ -136,7 +143,7 @@ module.exports.list = async (event, context) => {
         let data;
         if (Number(pageNumber) == 1) {
             const isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
-            data = await expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId);
+            data = await expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId);
         }
         return handlerResponse(200, { count, rows, data })
 
@@ -145,20 +152,18 @@ module.exports.list = async (event, context) => {
     }
 };
 
-const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId) => {
+const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId) => {
     if (expenseTypeId == 1)
         expenseTypeName = 'COMPRAS'
 
-    const queryDate = paymentDateStart && paymentDateEnd ? `AND e.paymentDate BETWEEN '${paymentDateStart}' AND '${paymentDateEnd}' ` : '';
-    const queyType = expenseTypeName ? ` AND t.name LIKE '%${expenseTypeName}%' ` : '';
+    const queryDate = paymentDateStart && paymentDateEnd ? `AND e.paymentDate BETWEEN '${paymentDateStart}' AND '${paymentDateEnd}'` : '';
+    const queryType = expenseTypeName ? `AND t.name LIKE '%${expenseTypeName}%'` : '';
+    const queryCompany = companyId ? `AND e.companyId = '${isAdm ? companyId : user.companyId}'` : '';
 
     const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
                     LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    
-                    WHERE e.id > 0 ${queryDate} ${queyType} 
+                    WHERE e.id > 0 ${queryDate} ${queryType} ${queryCompany} 
                     AND e.title LIKE '%${title}%'   
-                    ${isAdm ? '' : `AND e.companyId = '${user.companyId}'`} 
-                    
                     GROUP BY e.paidOut`
     return await executeSelect(query);
 }
