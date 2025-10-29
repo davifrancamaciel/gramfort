@@ -18,7 +18,8 @@ export const Container = styled.div`
       header {
         color: #968d8d;
         display: flex;
-        justify-content: center;
+        /* justify-content: center; */
+        /* justify-content: space-between; */
         align-items: center;
         border-bottom: #eee solid 1px;
         padding-bottom: 10px;

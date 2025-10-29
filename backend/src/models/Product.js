@@ -15,6 +15,7 @@ module.exports = function (sequelize, DataTypes) {
         description: { type: DataTypes.STRING(100) },
         inventoryCount: { type: DataTypes.INTEGER },
         active: { type: DataTypes.BOOLEAN },
+        isInput: { type: DataTypes.BOOLEAN },
     });
 
     Product.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });

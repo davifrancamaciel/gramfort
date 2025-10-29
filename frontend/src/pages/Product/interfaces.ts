@@ -19,6 +19,7 @@ export interface Product {
   active: boolean;
   createdAt?: string;
   updatedAt?: string;
+  isInput?: string;
 }
 
 export const initialStateForm: Product = {

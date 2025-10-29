@@ -32,7 +32,7 @@ module.exports.list = async (event, context) => {
 
         const {
             id, expenseTypeName, title, description, paidOut, expenseTypeId, vehicleModel, userName,
-            paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision, companyId
+            paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision, companyId, field, order
         } = event.queryStringParameters
 
         if (companyId) whereStatement.companyId = companyId;
@@ -106,12 +106,18 @@ module.exports.list = async (event, context) => {
         if (!checkRouleProfileAccess(user.groups, roules.expenses))
             whereStatement.userId = user.userId;
 
+        let arrayOrder = [[field ? field : 'paymentDate', order ? order : 'asc']]
+        if (field === 'expenseTypeName')
+            arrayOrder = [['expenseType', 'name', order], ['paymentDate', 'asc']]
+        console.log(arrayOrder)
+
         const { pageSize, pageNumber } = event.queryStringParameters
         const { count, rows } = await Expense.findAndCountAll({
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * Number(pageSize),
-            order: [['expenseType', 'name', 'ASC'], ['paymentDate', 'ASC']],
+            // order: [['expenseType', 'name', 'ASC'], ['paymentDate', 'ASC']],
+            order: arrayOrder,
             include: [
                 { model: Company, as: 'company', attributes: ['name'] },
                 {

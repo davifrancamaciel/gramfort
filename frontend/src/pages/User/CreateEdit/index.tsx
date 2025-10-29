@@ -189,7 +189,7 @@ const CreateEdit: React.FC = (props: any) => {
             <Input
               label={'Email'}
               required={true}
-              disabled={type === 'update'}
+              disabled={type === 'update' && path === userType.USER}
               type={'email'}
               placeholder="Digite o email do usuário"
               value={state.email}

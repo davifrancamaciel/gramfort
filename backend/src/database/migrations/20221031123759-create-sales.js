@@ -29,8 +29,7 @@ module.exports = {
         value: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
         commission: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
         note: { type: Sequelize.STRING(500), allowNull: true, },
-        invoiceNumber: { type: Sequelize.STRING(50) },
-        germinationLevel: { type: Sequelize.STRING(100) },
+        invoiceNumber: { type: Sequelize.STRING(50) },      
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,

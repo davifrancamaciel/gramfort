@@ -9,7 +9,8 @@ module.exports = function (sequelize, DataTypes) {
         productId: { type: DataTypes.INTEGER },
         value: { type: DataTypes.DECIMAL },
         valueAmount: { type: DataTypes.DECIMAL },
-        amount: { type: DataTypes.DECIMAL },        
+        amount: { type: DataTypes.DECIMAL }, 
+        description: { type: DataTypes.STRING(100) },       
     });
 
     SaleProduct.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });

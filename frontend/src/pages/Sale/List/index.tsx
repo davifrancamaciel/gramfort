@@ -24,8 +24,8 @@ const List: React.FC = () => {
 
   useEffect(() => {
     const date = new Date();
-    const createdAtStart = startOfWeek(date).toISOString();
-    const createdAtEnd = endOfWeek(date).toISOString();
+    const createdAtStart = startOfMonth(date).toISOString();
+    const createdAtEnd = endOfMonth(date).toISOString();
     actionFilter(1, createdAtStart, createdAtEnd);
   }, []);
 
@@ -70,6 +70,7 @@ const List: React.FC = () => {
   const formatProductName = (productsArray: SaleProduct[]) => {
     const limit = 50;
     let products = productsArray
+      .filter((p: SaleProduct) => !p.product.isInput)
       .map((p: SaleProduct) => p.product.name)
       .join(', ');
     return products.length > limit
@@ -160,18 +161,9 @@ const List: React.FC = () => {
             onChange={(e) => dispatch({ valueMax: e.target.value })}
           />
         </Col>
-        <Col lg={5} md={8} sm={12} xs={24}>
-          <Switch
-            label={'Exibir comissão'}
-            title="Sim / Não"
-            checked={state.showCommission}
-            checkedChildren="Sim"
-            unCheckedChildren="Não"
-            onChange={() => dispatch({ showCommission: !state.showCommission })}
-          />
-        </Col>
+
         <ShowByRoule roule={roules.administrator}>
-          <Col lg={8} md={12} sm={24} xs={24}>
+          <Col lg={5} md={6} sm={12} xs={24}>
             <Select
               label={'Empresa'}
               url={`${apiRoutes.companies}/all`}
@@ -180,6 +172,16 @@ const List: React.FC = () => {
             />
           </Col>
         </ShowByRoule>
+        {/* <Col lg={5} md={8} sm={12} xs={24}>
+          <Switch
+            label={'Exibir comissão'}
+            title="Sim / Não"
+            checked={state.showCommission}
+            checkedChildren="Sim"
+            unCheckedChildren="Não"
+            onChange={() => dispatch({ showCommission: !state.showCommission })}
+          />
+        </Col> */}
       </PanelFilter>
       <GridList
         headerChildren={<PrintAll state={state} />}

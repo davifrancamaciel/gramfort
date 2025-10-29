@@ -14,7 +14,7 @@ import api from 'services/api-aws-amplify';
 import { SaleProduct, Product } from '../../interfaces';
 import { IOptions } from '../../../../utils/commonInterfaces';
 
-const Products: React.FC<PropTypes> = ({ products, setProducts }) => {
+const Products: React.FC<PropTypes> = ({ products, setProducts, isInput }) => {
   const [loading, setLoading] = useState(false);
   const [productsOptions, setProductsOptions] = useState<Product[]>([]);
   const [options, setOptions] = useState<IOptions[]>([]);
@@ -60,6 +60,21 @@ const Products: React.FC<PropTypes> = ({ products, setProducts }) => {
     setProducts(newProducts);
   };
 
+  const changeDescription = (sp: SaleProduct) => {
+    const newProducts = products.map((product: SaleProduct) => {
+      return product.id === sp.id
+        ? {
+            ...product,
+            // amount: formatNumberWhithDecimalCaseOnChange(sp.amountStr),
+            // value: sp?.value,
+            // valueAmount: formatNumberWhithDecimalCaseOnChange(sp.amountStr) *  product?.value,
+            description: sp.description
+          }
+        : product;
+    });
+    setProducts(newProducts);
+  };
+
   const changeValue = (sp: SaleProduct) => {
     const newProducts = products.map((product: SaleProduct) => {
       return product.id === sp.id
@@ -90,8 +105,8 @@ const Products: React.FC<PropTypes> = ({ products, setProducts }) => {
     try {
       setLoading(true);
       const resp = await api.get(`${apiRoutes.products}/all`);
-
-      setOptions(resp.data.map((x: IOptions) => x));
+      const data = resp.data.filter((p: Product) => p.isInput === isInput);
+      setOptions(data.map((x: IOptions) => x));
       setProductsOptions(resp.data);
       setLoading(false);
     } catch (error) {
@@ -105,7 +120,7 @@ const Products: React.FC<PropTypes> = ({ products, setProducts }) => {
         <Row gutter={[16, 24]} key={index} style={{ marginBottom: '15px' }}>
           <Col lg={12} md={24} sm={24} xs={24}>
             <Select
-              label={'Produto'}
+              label={isInput ? 'Insumo' : 'Produto'}
               options={options}
               loading={loading}
               value={p.productId}
@@ -166,6 +181,19 @@ const Products: React.FC<PropTypes> = ({ products, setProducts }) => {
                 }}
                 icon={<DeleteOutlined />}
                 onClick={() => remove(p)}
+              />
+            </Col>
+          )}
+
+          {isInput && (
+            <Col lg={24} md={24} sm={24} xs={24}>
+              <Input
+                label={'Descrição'}
+                placeholder="Gasto com quentinhas"
+                value={p.description}
+                onChange={(e) =>
+                  changeDescription({ ...p, description: e.target.value })
+                }
               />
             </Col>
           )}

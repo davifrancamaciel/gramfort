@@ -34,7 +34,9 @@ const TableReport: React.FC<PropTypes> = ({
                 }}
                 colSpan={headerListItens?.length ? headerListItens.length : 5}
               >
-                <header>
+                <header
+                  style={{ justifyContent: title ? 'space-between' : 'center' }}
+                >
                   <img alt={''} src={image} />
                   <h2>{title}</h2>
                 </header>

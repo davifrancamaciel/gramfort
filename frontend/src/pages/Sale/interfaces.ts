@@ -7,6 +7,7 @@ export interface Product {
   name: string;
   size: string;
   price: number;
+  isInput: boolean;
 }
 export interface SaleProduct {
   id?: string;
@@ -17,6 +18,7 @@ export interface SaleProduct {
   amount: number;
   amountStr?: string;
   product: Product;
+  description?: string;
 }
 export interface Sale {
   company?: Company;
@@ -25,7 +27,9 @@ export interface Sale {
   client?: User;
   products: Product[];
   productsSales: SaleProduct[];
+  inputs: Product[];
   value?: number;
+  valueInput?: number;
   commission?: number;
   note?: string;
   userId?: string;
@@ -35,11 +39,19 @@ export interface Sale {
   createdAt?: string;
   updatedAt?: string;
   companyId?: string;
+  invoiceNumber?: string;
+  germinationLevel?: string;
+  contact?: string;
+  capture?: string;
+  nature?: string;
+  saleDate?: string;
+  distance?: number;
 }
 
 export const initialStateForm: Sale = {
   id: undefined,
   products: [],
+  inputs: [],
   productsSales: []
 };
 
@@ -61,5 +73,5 @@ export const initialStateFilter: Filter = {
   product: '',
   pageNumber: 1,
   pageSize: 10,
-  showCommission: true
+  showCommission: false
 };

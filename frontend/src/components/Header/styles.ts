@@ -32,6 +32,11 @@ export const ContainerLogo = styled.div`
     padding-top: 10px;
     padding-bottom: 10px;
     border-bottom: 1px solid #d9d9d9;
+    > a {
+      img {
+        max-width: 150px;
+      }
+    }
   }
 `;
 export const ContainerMenu = styled.div`

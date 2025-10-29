@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import { Col, Card as CardAnt } from 'antd';
+import { Col, Card as CardAnt, TableProps } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
@@ -24,6 +24,11 @@ import Card from './Card';
 import { Header } from './Card/styles';
 import ShowByRoule from 'components/ShowByRoule';
 
+interface DataType {
+  paymentDate: string;
+  expenseTypeName: string;
+}
+
 const List: React.FC = () => {
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Expense[]>([]);
@@ -43,7 +48,9 @@ const List: React.FC = () => {
   const actionFilter = async (
     pageNumber: number = 1,
     paymentDateStart = state.paymentDateStart,
-    paymentDateEnd = state.paymentDateEnd
+    paymentDateEnd = state.paymentDateEnd,
+    field = '',
+    order: string = 'asc'
   ) => {
     try {
       dispatch({ pageNumber, paymentDateStart, paymentDateEnd });
@@ -58,7 +65,9 @@ const List: React.FC = () => {
         pageNumber,
         expenseTypeId,
         paymentDateStart,
-        paymentDateEnd
+        paymentDateEnd,
+        field,
+        order
       });
       setLoading(false);
 
@@ -94,6 +103,23 @@ const List: React.FC = () => {
       console.log(error);
       setLoading(false);
     }
+  };
+
+  const handleTableChange: TableProps<DataType>['onChange'] = (
+    pagination,
+    filters,
+    sorter
+  ) => {
+    const sortOrder = Array.isArray(sorter) ? undefined : sorter.order;
+    const sortField = Array.isArray(sorter) ? undefined : sorter.field;
+    const order = sortOrder === 'ascend' ? 'asc' : 'desc';
+    actionFilter(
+      1,
+      state.paymentDateStart,
+      state.paymentDateEnd,
+      sortField?.toString(),
+      order
+    );
   };
 
   return (
@@ -205,11 +231,12 @@ const List: React.FC = () => {
         scroll={{ x: 640 }}
         columns={[
           // { title: 'Código', dataIndex: 'id' },
-          { title: 'Tipo', dataIndex: 'expenseTypeName' },
           { title: 'Empresa', dataIndex: 'companyName' },
+          { title: 'Tipo', dataIndex: 'expenseTypeName', sorter: true },
           {
             title: 'Dia',
-            dataIndex: 'paymentDate'
+            dataIndex: 'paymentDate',
+            sorter: true
           },
           { title: 'Titulo', dataIndex: 'title' },
           { title: 'Valor', dataIndex: 'value' },
@@ -229,6 +256,7 @@ const List: React.FC = () => {
           routeUpdate: `/${path.toLowerCase()}/edit`,
           routeDelete: `/${appRoutes.expenses}`
         }}
+        onChange={handleTableChange}
       />
     </div>
   );

@@ -21,6 +21,7 @@ interface PropTypes {
 
 interface ISummaryTotals {
   totalSales: string;
+  totalSalesInput: string;
   totalCommission: string;
 }
 
@@ -54,17 +55,19 @@ const Print: React.FC<PropTypes> = ({ state }) => {
     const summary = items.reduce(
       (acc, r) => {
         acc.totalSales += Number(priceToNumber(r.value!.toString()));
+        acc.totalSalesInput += Number(priceToNumber(r.valueInput!.toString()));
         acc.totalCommission +=
           Number(priceToNumber(r.value!.toString())) *
           (Number(r.commission) / 100);
 
         return acc;
       },
-      { totalSales: 0, totalCommission: 0 }
+      { totalSales: 0, totalCommission: 0, totalSalesInput:0 }
     );
 
     setTotalSummary({
       totalSales: formatPrice(summary.totalSales),
+      totalSalesInput: formatPrice(summary.totalSalesInput),
       totalCommission: formatPrice(summary.totalCommission)
     });
 
@@ -192,6 +195,9 @@ const Print: React.FC<PropTypes> = ({ state }) => {
           <Summary>
             <span>
               Valor total de vendas no periodo {totalSummary.totalSales}
+            </span>
+            <span>
+              Valor total de insumos no periodo {totalSummary.totalSalesInput}
             </span>
             {state.showCommission && (
               <span>

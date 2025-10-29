@@ -105,7 +105,7 @@ module.exports.list = async (event, context) => {
         const salesProductsList = await SaleProduct.findAll({
             where: { saleId: { [Op.in]: salesIds } },
             attributes: ['amount', 'valueAmount', 'value', 'productId', 'saleId'],
-            include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'size'] }],
+            include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'size', 'isInput'] }],
         })
         const newRows = rows.map(s => {
             const productsSales = salesProductsList.filter(sp => sp.saleId === s.id)
@@ -148,8 +148,8 @@ module.exports.listById = async (event) => {
                 {
                     model: SaleProduct,
                     as: 'productsSales',
-                    attributes: ['id', 'amount', 'valueAmount', 'value', 'productId'],
-                    include: [{ model: Product, as: 'product', attributes: ['name', 'price'] }]
+                    attributes: ['id', 'amount', 'valueAmount', 'value', 'productId', 'description'],
+                    include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'isInput'] }]
                 },]
         })
         if (!result)
@@ -189,6 +189,9 @@ module.exports.create = async (event) => {
 
         if (checkRouleProfileAccess(user.groups, roules.saleUserIdChange) && body.userId)
             objOnSave.userId = body.userId;
+
+        if (!objOnSave.saletDate)
+            objOnSave.saletDate = new Date();
 
         const result = await createSale(objOnSave, body);
 
@@ -276,18 +279,13 @@ module.exports.delete = async (event) => {
 
 const createProductsSales = async (body, result, isDelete) => {
     const { companyId, id } = result
+    console.log('isDelete', isDelete)
     if (isDelete)
         await executeDelete(`DELETE FROM saleProducts WHERE saleId = ${id} AND companyId = '${companyId}'`);
 
-    const list = body.productsSales.map(ps => ({
-        companyId,
-        saleId: id,
-        productId: ps.productId,
-        value: ps.value,
-        valueAmount: ps.valueAmount,
-        amount: ps.amount,
-    }))
-    await SaleProduct.bulkCreate(list);
+    await createSalesProduct(companyId, id, body.inputsSales);
+
+    const list = await createSalesProduct(companyId, id, body.productsSales);
 
     if (!isDelete) {
         for (let i = 0; i < list.length; i++) {
@@ -300,6 +298,22 @@ const createProductsSales = async (body, result, isDelete) => {
     }
 }
 
+const createSalesProduct = async (companyId, saleId, productsSales) => {
+    const list = productsSales.map(ps => ({
+        companyId,
+        saleId,
+        productId: ps.productId,
+        value: ps.value,
+        valueAmount: ps.valueAmount,
+        amount: ps.amount,
+        description: ps.description,
+    }))
+
+    await SaleProduct.bulkCreate(list);
+
+    return list;
+}
+
 const getCommission = async (userId) => {
     const [queryResult] = await executeSelect(`SELECT commissionMonth FROM users WHERE id = ${userId};`);
     return queryResult.commissionMonth;
@@ -309,6 +323,7 @@ const createSale = async (objOnSave, body) => {
 
     objOnSave.commission = await getCommission(objOnSave.userId);
     objOnSave.value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+    objOnSave.valueInput = body.inputsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
 
     const result = await Sale.create(objOnSave);
 

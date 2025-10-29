@@ -75,7 +75,7 @@ const CreateEdit: React.FC = (props: any) => {
 
   return (
     <PanelCrud
-      title={`${type === 'update' ? 'Editar' : 'Novo'} produto`}
+      title={`${type === 'update' ? 'Editar' : 'Novo'} produto/insumo`}
       type={type}
       onClickActionButton={action}
       loadingBtnAction={false}
@@ -159,6 +159,16 @@ const CreateEdit: React.FC = (props: any) => {
               checkedChildren="Ativo"
               unCheckedChildren="Inativo"
               onChange={() => dispatch({ active: !state.active })}
+            />
+          </Col>
+          <Col lg={6} md={12} sm={24} xs={24}>
+            <Switch
+              label={'É um Insumo'}
+              title="Não / Sim"
+              checked={state.isInput}
+              checkedChildren="Sim"
+              unCheckedChildren="Não"
+              onChange={() => dispatch({ isInput: !state.isInput })}
             />
           </Col>
         </Row>

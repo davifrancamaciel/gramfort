@@ -15,11 +15,26 @@ module.exports = function (sequelize, DataTypes) {
                 return JSON.parse(this.products);
             },
         },
+        inputs: { type: DataTypes.TEXT },
+        inputsFormatted: {
+            type: DataTypes.VIRTUAL,
+            get() {
+                return JSON.parse(this.inputs);
+            },
+        },
         note: { type: DataTypes.STRING(500) },
         value: { type: DataTypes.DECIMAL },
+        valueInput: { type: DataTypes.DECIMAL },
         commission: { type: DataTypes.DECIMAL },
         invoiceNumber: { type: DataTypes.STRING(50) },
-        germinationLevel: { type: DataTypes.STRING(100) },
+      
+        contact: { type: DataTypes.STRING(100) },
+        capture: { type: DataTypes.STRING(30) },
+        nature: { type: DataTypes.STRING(30) },
+        saleDate: { type: DataTypes.DATE },
+        distance: { type: DataTypes.INTEGER },
+        germinationLevel: { type: DataTypes.INTEGER },
+        satisfaction: { type: DataTypes.INTEGER },
     });
 
     Sale.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
