@@ -17,8 +17,10 @@ import { formatPrice } from 'utils/formatPrice';
 import Action from 'components/Action';
 import Print from './Print';
 import ShowByRoule from 'components/ShowByRoule';
+import { useAppContext } from 'hooks/contextLib';
 
 const List: React.FC = () => {
+  const { companies } = useAppContext();
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Visit[]>([]);
 
@@ -52,13 +54,29 @@ const List: React.FC = () => {
           paymentDate: formatDate(item.paymentDate),
           createdAt: formatDateHour(item.createdAt),
           updatedAt: formatDateHour(item.updatedAt),
-          date: formatDateHour(item.date),
+          date: formatDate(item.date),
           paidOut: (
             <Action
               item={item}
               setUpdate={() => {}}
               apiRoutes={apiRoutes.visits}
               propName="paidOut"
+            />
+          ),
+          proposal: (
+            <Action
+              item={item}
+              setUpdate={() => {}}
+              apiRoutes={apiRoutes.visits}
+              propName="proposal"
+            />
+          ),
+          sale: (
+            <Action
+              item={item}
+              setUpdate={() => {}}
+              apiRoutes={apiRoutes.visits}
+              propName="sale"
             />
           )
         };
@@ -144,7 +162,7 @@ const List: React.FC = () => {
           <Col lg={8} md={12} sm={12} xs={24}>
             <Select
               label={'Empresa'}
-              url={`${apiRoutes.companies}/all`}
+              options={companies}
               value={state.companyId}
               onChange={(companyId) => dispatch({ companyId })}
             />
@@ -155,22 +173,26 @@ const List: React.FC = () => {
         size="small"
         scroll={{ x: 840 }}
         columns={[
-          { title: 'Código', dataIndex: 'id' },
+          // { title: 'Código', dataIndex: 'id' },
           { title: 'Empresa', dataIndex: 'companyName' },
-          {
-            title: 'Data',
-            dataIndex: 'date'
-          },
-          { title: 'Cliente', dataIndex: 'clientName' },
-          { title: 'Cosultor', dataIndex: 'userName' },
-          { title: 'Valor', dataIndex: 'value' },
-          { title: 'Criada em', dataIndex: 'createdAt' },
-          { title: 'Alterada em', dataIndex: 'updatedAt' },
           {
             title: 'Data PGTO',
             dataIndex: 'paymentDate'
           },
+          {
+            title: 'Data',
+            dataIndex: 'date'
+          },
+          { title: 'Valor', dataIndex: 'value' },
+          { title: 'Cliente', dataIndex: 'clientName' },
+          { title: 'Consultor', dataIndex: 'userName' },
+          { title: 'KM', dataIndex: 'km' },
+          { title: 'Cidade', dataIndex: 'city' },
           { title: 'Paga', dataIndex: 'paidOut' },
+          { title: 'Proposta', dataIndex: 'proposal' },
+          { title: 'Venda', dataIndex: 'sale' },
+          // { title: 'Criada em', dataIndex: 'createdAt' },
+          // { title: 'Alterada em', dataIndex: 'updatedAt' },
           { title: '', dataIndex: 'print' }
         ]}
         dataSource={items}

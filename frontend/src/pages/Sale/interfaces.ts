@@ -46,13 +46,16 @@ export interface Sale {
   nature?: string;
   saleDate?: string;
   distance?: number;
+  demand?: string;
+  invoice: boolean;
 }
 
 export const initialStateForm: Sale = {
   id: undefined,
   products: [],
   inputs: [],
-  productsSales: []
+  productsSales: [],
+  invoice: false
 };
 
 export interface Filter {
@@ -72,6 +75,6 @@ export const initialStateFilter: Filter = {
   id: '',
   product: '',
   pageNumber: 1,
-  pageSize: 10,
+  pageSize: 100,
   showCommission: false
 };

@@ -19,6 +19,7 @@ import { getTitle, getType } from '../utils';
 
 const List: React.FC = () => {
   const query = useQuery();
+  const { companies } = useAppContext();
   const { userAuthenticated } = useAppContext();
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Users[]>([]);
@@ -100,7 +101,7 @@ const List: React.FC = () => {
           <Col lg={8} md={12} sm={24} xs={24}>
             <Select
               label={'Empresa'}
-              url={`${apiRoutes.companies}/all`}
+              options={companies}
               value={state.companyId}
               onChange={(companyId) => dispatch({ companyId })}
             />

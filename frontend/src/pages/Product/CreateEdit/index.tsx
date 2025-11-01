@@ -10,8 +10,10 @@ import api from 'services/api-aws-amplify';
 import ShowByRoule from 'components/ShowByRoule';
 import UploadImages from 'components/UploadImages';
 import { formatNumberWhithDecimalCaseOnChange } from 'utils/formatPrice';
+import { useAppContext } from 'hooks/contextLib';
 
 const CreateEdit: React.FC = (props: any) => {
+  const { companies } = useAppContext();
   const history = useHistory();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
@@ -95,7 +97,7 @@ const CreateEdit: React.FC = (props: any) => {
             <Col lg={6} md={12} sm={24} xs={24}>
               <Select
                 label={'Empresa'}
-                url={`${apiRoutes.companies}/all`}
+                options={companies}
                 value={state.companyId}
                 onChange={(companyId) => dispatch({ companyId })}
               />
@@ -163,7 +165,7 @@ const CreateEdit: React.FC = (props: any) => {
           </Col>
           <Col lg={6} md={12} sm={24} xs={24}>
             <Switch
-              label={'É um Insumo'}
+              label={'É um custo'}
               title="Não / Sim"
               checked={state.isInput}
               checkedChildren="Sim"

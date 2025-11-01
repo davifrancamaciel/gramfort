@@ -57,7 +57,7 @@ export const initialStateFilter: Filter = {
   type: '',
   companyName: '',
   pageNumber: 1,
-  pageSize: 10
+  pageSize: 100
 };
 
 export interface UserCognito {

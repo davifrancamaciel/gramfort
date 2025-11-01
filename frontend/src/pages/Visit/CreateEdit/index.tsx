@@ -20,8 +20,10 @@ import {
 } from 'utils/formatPrice';
 import UploadImages from 'components/UploadImages';
 import { extractHour, setHour } from 'utils/formatDate';
+import { useAppContext } from 'hooks/contextLib';
 
 const CreateEdit: React.FC = (props: any) => {
+  const { companies } = useAppContext();
   const history = useHistory();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
@@ -109,7 +111,7 @@ const CreateEdit: React.FC = (props: any) => {
         <Col lg={8} md={8} sm={12} xs={24}>
           <Select
             label={'Empresa'}
-            url={`${apiRoutes.companies}/all`}
+           options={companies}
             value={state.companyId}
             onChange={(companyId) => dispatch({ companyId })}
           />
@@ -220,16 +222,7 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={() => dispatch({ paidOut: !state.paidOut })}
         />
       </Col>
-      <Col lg={3} md={4} sm={6} xs={24}>
-        <Switch
-          label={'Realizada'}
-          title="Não / Sim"
-          checked={state.carriedOut}
-          checkedChildren="Sim"
-          unCheckedChildren="Não"
-          onChange={() => dispatch({ carriedOut: !state.carriedOut })}
-        />
-      </Col>
+      
       <Col lg={3} md={4} sm={6} xs={24}>
         <Switch
           label={'Proposta'}

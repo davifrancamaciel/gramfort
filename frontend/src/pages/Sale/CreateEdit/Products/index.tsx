@@ -120,7 +120,7 @@ const Products: React.FC<PropTypes> = ({ products, setProducts, isInput }) => {
         <Row gutter={[16, 24]} key={index} style={{ marginBottom: '15px' }}>
           <Col lg={12} md={24} sm={24} xs={24}>
             <Select
-              label={isInput ? 'Insumo' : 'Produto'}
+              label={isInput ? 'Custo' : 'Produto'}
               options={options}
               loading={loading}
               value={p.productId}

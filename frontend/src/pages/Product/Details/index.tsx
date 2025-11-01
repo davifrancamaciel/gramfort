@@ -55,7 +55,7 @@ const Details: React.FC = (props: any) => {
       loadingBtnAction={false}
       loadingPanel={loading}
       onClickActionButton={action}
-      title={`Detalhes do produto/nsumo código (${props.match.params.id})`}
+      title={`Detalhes do produto/insumo código (${props.match.params.id})`}
     >
       <Col lg={6} md={24} sm={24} xs={24}>
         <Row gutter={[16, 24]}>
@@ -97,7 +97,7 @@ const Details: React.FC = (props: any) => {
             <ViewData label="Ativo" value={state.activeTag} />
           </Col>
           <Col lg={8} md={12} sm={12} xs={24}>
-            <ViewData label="É um insumo" value={state.isInputTag} />
+            <ViewData label="É um custo" value={state.isInputTag} />
           </Col>
           <Col lg={8} md={12} sm={12} xs={24}>
             <ViewData label="Total vendido" value={state.totalSaled} />

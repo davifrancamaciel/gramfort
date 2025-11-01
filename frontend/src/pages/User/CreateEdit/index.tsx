@@ -27,8 +27,10 @@ import BooleanTag from 'components/BooleanTag';
 import { getTitle, getType, arrayCapture } from '../utils';
 
 import { formatDifferenceInYears, getPeriod } from 'utils/formatDate';
+import { useAppContext } from 'hooks/contextLib';
 
 const CreateEdit: React.FC = (props: any) => {
+  const { companies } = useAppContext();
   const history = useHistory();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
@@ -171,7 +173,7 @@ const CreateEdit: React.FC = (props: any) => {
             <Col lg={8} md={8} sm={12} xs={24}>
               <Select
                 label={'Empresa'}
-                url={`${apiRoutes.companies}/all`}
+                options={companies}
                 value={state.companyId}
                 onChange={(companyId) => dispatch({ companyId })}
               />

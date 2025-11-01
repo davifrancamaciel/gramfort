@@ -226,7 +226,7 @@ module.exports.create = async (event) => {
             objOnSave.paymentDate = new Date()
 
         if (objOnSave.dividedIn > 1) {
-            // objOnSave.title = `1ª parcela de ${objOnSave.dividedIn} ${objOnSave.title ? objOnSave.title : ''}`
+            objOnSave.title = `${objOnSave.title ? objOnSave.title : ''} 1/${objOnSave.dividedIn}`
             objOnSave.value = Number(body.value) / objOnSave.dividedIn
         }
 
@@ -237,7 +237,7 @@ module.exports.create = async (event) => {
             for (let i = 1; i < objOnSave.dividedIn; i++) {
                 const obtOnSavePortion = {
                     ...objOnSave,
-                    // title: objOnSave.title.replace('1ª', `${i + 1}ª`),
+                    title: objOnSave.title.replace('1/', `${i + 1}/`),
                     expenseDadId: result.id,
                     paymentDate: addMonths(parseISO(objOnSave.paymentDate), i)
                 }

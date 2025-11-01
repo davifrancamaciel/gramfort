@@ -20,9 +20,11 @@ import {
 } from 'utils/formatPrice';
 import { getTitle, getType, paymentMethods } from '../utils';
 import { IOptions } from 'utils/commonInterfaces';
+import { useAppContext } from 'hooks/contextLib';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
+  const { companies } = useAppContext();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ const CreateEdit: React.FC = (props: any) => {
       dispatch({
         ...resp.data,
         value: formatValueWhithDecimalCaseOnChange(resp.data?.value),
-        amount: formatValueWhithDecimalCaseOnChange(resp.data?.amount),
+        amount: formatValueWhithDecimalCaseOnChange(resp.data?.amount)
       });
       setLoading(false);
     } catch (error) {
@@ -139,7 +141,7 @@ const CreateEdit: React.FC = (props: any) => {
         <Col lg={8} md={8} sm={12} xs={24}>
           <Select
             label={'Empresa'}
-            url={`${apiRoutes.companies}/all`}
+            options={companies}
             value={state.companyId}
             onChange={(companyId) => dispatch({ companyId })}
           />

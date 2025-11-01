@@ -75,3 +75,20 @@ export const arrayNature: IOptions[] = natureArray.map((item: string) => ({
   value: item,
   label: item
 }));
+
+const demandArray = [
+  'Casa',
+  'Sítio',
+  'Fazenda/Haras',
+  'Condomínio',
+  'Comercial',
+  'Rodovia/Estrada',
+  'Empreendimento ',
+  'Prefeitura ',
+  'Lote/Terreno',
+  'Outros',
+];
+export const arrayDemand: IOptions[] = demandArray.map((item: string) => ({
+  value: item,
+  label: item
+}));

@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Col, Divider, notification } from 'antd';
-import { DatePicker, Input, Select, Textarea } from 'components/_inputs';
+import {
+  DatePicker,
+  Input,
+  Select,
+  Switch,
+  Textarea
+} from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
 import useFormState from 'hooks/useFormState';
@@ -13,16 +19,19 @@ import { formatPrice } from 'utils/formatPrice';
 import { useAppContext } from 'hooks/contextLib';
 import ShowByRoule from 'components/ShowByRoule';
 import { arrayCapture, arrayLevel, arrayNature } from 'pages/User/utils';
+import { arrayDemand } from '../../User/utils';
 
 const CreateEdit: React.FC = (props: any) => {
+  const { companies } = useAppContext();
   const history = useHistory();
   const { users, setUsers } = useAppContext();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
-  const [total, setTotal] = useState<string>();
-  const [totalInput, setTotalInput] = useState<string>();
+  const [total, setTotal] = useState<number>(0);
+  const [totalBalance, setTotalBalance] = useState<number>(0);
+  const [totalInput, setTotalInput] = useState<number>(0);
 
   useEffect(() => {
     onLoadUsersSales();
@@ -37,15 +46,19 @@ const CreateEdit: React.FC = (props: any) => {
     const totalSale = state.products
       .filter((p: SaleProduct) => p.value)
       .reduce((acc: number, p: SaleProduct) => acc + Number(p.valueAmount), 0);
-    setTotal(formatPrice(totalSale));
+    setTotal(totalSale);
   }, [state.products]);
 
   useEffect(() => {
-    const totalSale = state.inputs
+    const totalInput = state.inputs
       .filter((p: SaleProduct) => p.value)
       .reduce((acc: number, p: SaleProduct) => acc + Number(p.valueAmount), 0);
-    setTotalInput(formatPrice(totalSale));
+    setTotalInput(totalInput);
   }, [state.inputs]);
+
+  useEffect(() => {
+    setTotalBalance(total - totalInput);
+  }, [total, totalInput]);
 
   const get = async (id: string) => {
     try {
@@ -152,24 +165,27 @@ const CreateEdit: React.FC = (props: any) => {
       loadingBtnAction={loading}
       loadingPanel={loadingEdit}
     >
-      <Divider>Total {total}</Divider>
+      <Divider>Produtos da venda</Divider>
       <Products
         products={state.products}
         setProducts={setProducts}
         isInput={false}
       />
-      <Divider>Total {total}</Divider>
-      <Divider>Total de insumos {totalInput}</Divider>
+      <Divider>Total {formatPrice(total!)}</Divider>
+      <Divider>Relação de custos</Divider>
       <Products
         products={state.inputs}
         setProducts={setInputs}
         isInput={true}
       />
-      <Divider>Total de insumos {totalInput}</Divider>
+      <Divider>
+        Total de custos {formatPrice(totalInput!)} Saldo{' '}
+        {formatPrice(totalBalance!)}
+      </Divider>
 
       <Col lg={6} md={8} sm={12} xs={24}>
         <DatePicker
-          label={'Data da venda'}
+          label={'Data aplicação'}
           value={state.saleDate}
           onChange={(saleDate) => dispatch({ saleDate })}
         />
@@ -180,6 +196,14 @@ const CreateEdit: React.FC = (props: any) => {
           options={arrayCapture}
           value={state?.capture}
           onChange={(capture) => dispatch({ capture })}
+        />
+      </Col>
+      <Col lg={6} md={8} sm={12} xs={24}>
+        <Select
+          label={'Demanda'}
+          options={arrayDemand}
+          value={state?.demand}
+          onChange={(demand) => dispatch({ demand })}
         />
       </Col>
       <Col lg={6} md={8} sm={12} xs={24}>
@@ -207,14 +231,7 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(e) => dispatch({ contact: e.target.value })}
         />
       </Col>
-      <Col lg={6} md={8} sm={12} xs={24}>
-        <Input
-          label={'N nota'}
-          placeholder=""
-          value={state.invoiceNumber}
-          onChange={(e) => dispatch({ invoiceNumber: e.target.value })}
-        />
-      </Col>
+
       <Col lg={6} md={8} sm={12} xs={24}>
         <Select
           label={'Germinação'}
@@ -256,12 +273,22 @@ const CreateEdit: React.FC = (props: any) => {
         <Col lg={6} md={8} sm={12} xs={24}>
           <Select
             label={'Empresa'}
-            url={`${apiRoutes.companies}/all`}
+            options={companies}
             value={state.companyId}
             onChange={(companyId) => dispatch({ companyId })}
           />
         </Col>
       </ShowByRoule>
+      <Col lg={6} md={8} sm={12} xs={24}>
+        <Switch
+          label={'NF'}
+          title="Sim / Não"
+          checked={state.invoice}
+          checkedChildren="Não"
+          unCheckedChildren="Sim"
+          onChange={() => dispatch({ invoice: !state.invoice })}
+        />
+      </Col>
       <Col lg={24} md={24} sm={24} xs={24}>
         <Textarea
           label={'Observações'}

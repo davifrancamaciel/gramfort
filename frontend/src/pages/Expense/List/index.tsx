@@ -23,6 +23,7 @@ import { getTitle, getType } from '../utils';
 import Card from './Card';
 import { Header } from './Card/styles';
 import ShowByRoule from 'components/ShowByRoule';
+import { useAppContext } from 'hooks/contextLib';
 
 interface DataType {
   paymentDate: string;
@@ -30,6 +31,7 @@ interface DataType {
 }
 
 const List: React.FC = () => {
+  const { companies } = useAppContext();
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(false);
@@ -193,7 +195,7 @@ const List: React.FC = () => {
           <Col lg={6} md={12} sm={12} xs={24}>
             <Select
               label={'Empresa'}
-              url={`${apiRoutes.companies}/all`}
+              options={companies}
               value={state.companyId}
               onChange={(companyId) => dispatch({ companyId })}
             />

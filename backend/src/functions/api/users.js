@@ -67,7 +67,7 @@ module.exports.list = async (event) => {
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * Number(pageSize),
-            order: Number(pageSize) === 500 ? [['name', 'ASC']] : [['id', 'DESC']],
+            order: [['name', 'ASC']],
             include: [
                 {
                     model: Company,

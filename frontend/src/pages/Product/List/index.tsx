@@ -19,8 +19,10 @@ import { useQuery } from 'hooks/queryString';
 import ExportCSV from './Export';
 import Action from 'components/Action';
 import ShowByRoule from 'components/ShowByRoule';
+import { useAppContext } from 'hooks/contextLib';
 
 const List: React.FC = () => {
+  const { companies } = useAppContext();
   const query = useQuery();
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Product[]>([]);
@@ -50,6 +52,7 @@ const List: React.FC = () => {
       const itemsFormatted = rows.map((p: Product) => ({
         ...p,
         companyName: p.company?.name,
+        categoryName: p.category?.name,
         image: (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Image style={{ height: '60px' }} src={p.image} />
@@ -180,7 +183,7 @@ const List: React.FC = () => {
           <Col lg={4} md={12} sm={24} xs={24}>
             <Select
               label={'Empresa'}
-              url={`${apiRoutes.companies}/all`}
+              options={companies}
               value={state.companyId}
               onChange={(companyId) => dispatch({ companyId })}
             />
@@ -193,9 +196,13 @@ const List: React.FC = () => {
         columns={[
           { title: 'Imagem', dataIndex: 'image' },
           { title: 'Código', dataIndex: 'id' },
+          // {
+          //   title: 'Empresa',
+          //   dataIndex: 'companyName'
+          // },
           {
-            title: 'Empresa',
-            dataIndex: 'companyName'
+            title: 'Categoria',
+            dataIndex: 'categoryName'
           },
           { title: 'Nome do produto', dataIndex: 'name' },
           { title: 'Preço', dataIndex: 'price' },
@@ -206,7 +213,7 @@ const List: React.FC = () => {
           { title: 'Criado em', dataIndex: 'createdAt' },
           { title: 'Alterado em', dataIndex: 'updatedAt' },
           { title: 'Ativo', dataIndex: 'active' },
-          { title: 'É insumo', dataIndex: 'isInput' },
+          { title: 'É custo', dataIndex: 'isInput' },
         ]}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}

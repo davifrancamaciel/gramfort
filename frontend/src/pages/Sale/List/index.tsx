@@ -9,14 +9,17 @@ import { apiRoutes, appRoutes, roules } from 'utils/defaultValues';
 import { initialStateFilter, Sale, SaleProduct } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
-import { formatDateHour } from 'utils/formatDate';
+import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import PrintAll from './PrintAll';
 import Print from './Print';
 import moment from 'moment';
 import ShowByRoule from 'components/ShowByRoule';
+import BooleanTag from 'components/BooleanTag';
+import { useAppContext } from 'hooks/contextLib';
 
 const List: React.FC = () => {
+  const { companies } = useAppContext();
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,10 +55,25 @@ const List: React.FC = () => {
           ...p,
           userName: p.user!.name,
           clientName: p.client?.name,
+          companyName: p.company?.name,
           valueFormatted: formatPrice(Number(p.value!)),
+          valueInputFormatted: formatPrice(Number(p.valueInput!)),
+          balanceFormatted: formatPrice(
+            Number(p.value!) - Number(p.valueInput!)
+          ),
           productsFormatted: formatProductName(p.productsSales),
           createdAt: formatDateHour(p.createdAt),
-          updatedAt: formatDateHour(p.updatedAt)
+          updatedAt: formatDateHour(p.updatedAt),
+          saleDate: formatDate(p.saleDate),
+          invoiceAction: (
+            // <Action
+            //   item={p}
+            //   setUpdate={() => {}}
+            //   apiRoutes={apiRoutes.sales}
+            //   propName="invoice"
+            // />
+            <BooleanTag value={p.invoice} />
+          )
         };
         return { ...sale, print: <Print sale={sale} /> };
       });
@@ -128,7 +146,7 @@ const List: React.FC = () => {
         </Col>
         <Col lg={9} md={12} sm={24} xs={24}>
           <RangePicker
-            label="Data de venda"
+            label="Data aplicação"
             value={[
               state.createdAtStart ? moment(state.createdAtStart) : null,
               state.createdAtEnd ? moment(state.createdAtEnd) : null
@@ -165,8 +183,8 @@ const List: React.FC = () => {
         <ShowByRoule roule={roules.administrator}>
           <Col lg={5} md={6} sm={12} xs={24}>
             <Select
-              label={'Empresa'}
-              url={`${apiRoutes.companies}/all`}
+              label={'Empresa'}              
+              options={companies}
               value={state.companyId}
               onChange={(companyId) => dispatch({ companyId })}
             />
@@ -188,12 +206,19 @@ const List: React.FC = () => {
         scroll={{ x: 840 }}
         columns={[
           { title: 'Código', dataIndex: 'id' },
-          { title: 'Produtos', dataIndex: 'productsFormatted' },
+          { title: 'Data', dataIndex: 'saleDate' },
+          { title: 'Empresa', dataIndex: 'companyName' },
+          // { title: 'Produtos', dataIndex: 'productsFormatted' },
           { title: 'Valor', dataIndex: 'valueFormatted' },
+          { title: 'Custo', dataIndex: 'valueInputFormatted' },
+          { title: 'Saldo', dataIndex: 'balanceFormatted' },
           { title: 'Cliente', dataIndex: 'clientName' },
+          { title: 'Contato', dataIndex: 'contact' },
           { title: 'Vendedor', dataIndex: 'userName' },
-          { title: 'Criada em', dataIndex: 'createdAt' },
-          { title: 'Alterada em', dataIndex: 'updatedAt' },
+          { title: 'Captação', dataIndex: 'capture' },
+          { title: 'NF', dataIndex: 'invoiceAction' },
+          // { title: 'Criada em', dataIndex: 'createdAt' },
+          // { title: 'Alterada em', dataIndex: 'updatedAt' },
           { title: '', dataIndex: 'print' }
         ]}
         dataSource={items}

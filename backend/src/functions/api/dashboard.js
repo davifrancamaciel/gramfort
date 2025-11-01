@@ -19,7 +19,7 @@ module.exports.cards = async (event, context) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        let data = {            
+        let data = {
             sales: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 },
             user: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 }
         }
@@ -28,26 +28,31 @@ module.exports.cards = async (event, context) => {
         let date = new Date();
         const { queryStringParameters } = event
         if (queryStringParameters && queryStringParameters.dateReference)
-            date = new Date(queryStringParameters.dateReference)        
-
+            date = new Date(queryStringParameters.dateReference)
+        const { companyId } = queryStringParameters;
         if (checkRouleProfileAccess(user.groups, roules.sales)) {
-            data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false)
+            data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId)
             const query = `SELECT id FROM companies WHERE id = '${user.companyId}' AND individualCommission = true`;
             const [individualCommission] = await executeSelect(query);
             if (individualCommission || isAdm)
-                data.user = await salesRepository.salesMonthDashboard(date, isAdm, user, true);
+                data.user = await salesRepository.salesMonthDashboard(date, isAdm, user, true, companyId);
             else
                 data.user = data.sales;
         }
 
-        if (checkRouleProfileAccess(user.groups, roules.expenses))
-            data.expenses = await expensesMonth(date, isAdm, user)
+        if (checkRouleProfileAccess(user.groups, roules.expenses)) {
+            data.expenses = await expensesMonth(date, isAdm, user, companyId);
+            data.expensesByType = await expensesMonthByType(date, isAdm, user, companyId);
+        }
 
         return handlerResponse(200, data)
     } catch (err) {
         return await handlerErrResponse(err)
     }
 };
+
+const andCompany = (alias, companyId) =>
+    companyId ? `AND ${alias}.companyId = '${companyId}'` : ''
 
 module.exports.productGraphBar = async (event, context) => {
     try {
@@ -61,7 +66,7 @@ module.exports.productGraphBar = async (event, context) => {
         let data = null;
 
         if (pathParameters.type === 'products')
-            data = await productsSalesTotal(isAdm, user);       
+            data = await productsSalesTotal(isAdm, user);
 
         return handlerResponse(200, data)
     } catch (err) {
@@ -138,11 +143,25 @@ module.exports.expensesUpdate = async (event, context) => {
     }
 };
 
-const expensesMonth = async (date, isAdm, user) => {
-    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth FROM expenses e 
+const expensesMonth = async (date, isAdm, user, companyId) => {
+    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
+                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
                     WHERE e.paymentDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
-                    AND e.saleId IS NULL ${isAdm ? '' : `AND e.companyId = '${user.companyId}'`}`
-    const [result] = await executeSelect(query);
+                    AND e.saleId IS NULL ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
+                    GROUP BY e.paidOut`
+
+    const result = await executeSelect(query);
+    return result
+}
+
+const expensesMonthByType = async (date, isAdm, user, companyId) => {
+    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, t.name, t.id FROM expenses e 
+                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
+                    WHERE e.paymentDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                    AND e.saleId IS NULL ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
+                    GROUP BY e.expenseTypeId`
+
+    const result = await executeSelect(query);
     return result
 }
 
@@ -155,3 +174,4 @@ const productsSalesTotal = async (isAdm, user) => {
                     ORDER BY SUM(sp.amount) DESC LIMIT 100`;
     return await executeSelect(query);
 }
+

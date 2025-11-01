@@ -3,19 +3,36 @@
 const { startOfMonth, endOfMonth } = require('date-fns');
 const { executeSelect } = require("../services/ExecuteQueryService");
 
-const salesMonthDashboard = async (date, isAdm, user, individualCommission) => {
+const salesMonthDashboard = async (date, isAdm, user, individualCommission, companyId) => {
     const query = ` SELECT 
                         COUNT(s.id) count, 
                         COUNT(DISTINCT s.userId) users,                        
                         SUM(s.value) totalValueMonth, 
+                        SUM(s.valueInput) totalValueInputMonth, 
                         SUM(s.value * (s.commission / 100)) totalValueCommissionMonth
                     FROM sales s 
-                    WHERE s.createdAt BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
-                    ${isAdm ? '' : `AND s.companyId = '${user.companyId}'`}
+                    WHERE s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                    ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}
                     ${individualCommission ? ` AND s.userId = ${user.userId}` : ''}`
     const [result] = await executeSelect(query);
+    const [m2] = await productsM2(date, isAdm, user, companyId);
+    return { ...result, ...m2 }
+}
+
+const productsM2 = async (date, isAdm, user, companyId) => {
+    const query = ` SELECT SUM(sp.amount) m2 FROM saleProducts sp 
+                    INNER JOIN sales s ON s.id = sp.saleId 
+                    INNER JOIN products p ON p.id = sp.productId 
+                    WHERE s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' AND 
+                          p.categoryId = 4 ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
+
+    const result = await executeSelect(query);
     return result
 }
+
+const andCompany = (companyId) =>
+    companyId ? `AND s.companyId = '${companyId}'` : ''
+
 
 const salesMonthExpenseCommission = async (date) => {
     const query = ` SELECT 

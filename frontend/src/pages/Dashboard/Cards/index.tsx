@@ -6,15 +6,17 @@ import {
   CheckOutlined,
   ArrowDownOutlined,
   ArrowUpOutlined,
-  BarChartOutlined,
   LeftOutlined,
   RightOutlined,
-  DollarOutlined
+  DollarOutlined,
+  MediumOutlined
 } from '@ant-design/icons';
 
 import {
   CardPropTypes,
-  CardsReuslt,
+  CardsResult,
+  CardValues,
+  ExpenseResult,
   initialStateCards
 } from './Card/interfaces';
 import { roules, systemColors } from 'utils/defaultValues';
@@ -27,13 +29,32 @@ import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import Card from './Card';
 import { Container, Header } from './styles';
 import { formatDateEn } from 'utils/formatDate';
+import ShowByRoule from 'components/ShowByRoule';
+import { Col } from 'antd';
+import { Select } from 'components/_inputs';
 
 const Cards: React.FC = () => {
+  const { companies } = useAppContext();
   const { userAuthenticated } = useAppContext();
+  const [companyId, setCompanyId] = useState();
   const [groups, setGroups] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [cards, setCards] = useState<CardsReuslt>(initialStateCards);
+  const [cards, setCards] = useState<CardsResult>(initialStateCards);
   const [date, setDate] = useState(new Date());
+  const [expensePaidOutYes, setExpensePaidOutYes] = useState<CardValues>(
+    {} as CardValues
+  );
+  const [expensePaidOutNo, setExpensePaidOutNo] = useState<CardValues>(
+    {} as CardValues
+  );
+  const [investment, setInvestiment] = useState<CardValues>({} as CardValues);
+  const [input, setInput] = useState<CardValues>({} as CardValues);
+  const [expenses, setExpenses] = useState<CardValues>({} as CardValues);
+  const [faturamento, setFaturamento] = useState<number>(0);
+  const [liquido, setLiquido] = useState<number>(0);
+  const [box, setBox] = useState<number>(0);
+  const [bruto, setBruto] = useState<number>(0);
+
   const [dateEn, setDateEn] = useState('');
   const dateFormated = useMemo(
     () => format(date, "MMMM 'de' yyyy", { locale: pt }),
@@ -46,172 +67,266 @@ const Cards: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    action(date);
+    action(date, companyId);
     setDateEn(formatDateEn(date.toISOString()));
   }, [date]);
 
-  const action = async (date: Date) => {
+  useEffect(() => {
+    action(date, companyId);
+  }, [companyId]);
+
+  useEffect(() => {
+    setExpensePaidOutYes(getValueExpenses(cards, 1));
+    setExpensePaidOutNo(getValueExpenses(cards, 0));
+
+    const _investment = getValueExpensesByTypes(cards, [8], true);
+    setInvestiment(_investment);
+
+    const _input = getValueExpensesByTypes(cards, [17], true);
+    setInput(_input);
+
+    const _expenses = getValueExpensesByTypes(cards, [17, 8], false);
+    setExpenses(_expenses);
+
+    const _bruto =
+      cards?.sales.totalValueMonth! - cards?.sales.totalValueInputMonth!;
+    setBruto(_bruto);
+
+    const _liquido = _bruto - _expenses.totalValueMonth;
+    setLiquido(_liquido);
+
+    setFaturamento(cards?.sales.totalValueMonth!);
+    setBox(
+      _bruto -
+        _expenses.totalValueMonth -
+        _input.totalValueMonth -
+        _investment.totalValueMonth
+    );
+  }, [cards]);
+
+  const action = async (date: Date, companyId?: string) => {
     try {
       setLoading(true);
-      const url = `${apiRoutes.dashboard}/cards`;
+
+      const url = `${apiRoutes.dashboard}/cards?companyId=${
+        companyId ? companyId : ''
+      }`;
       const resp = await api.get(url, { dateReference: date.toISOString() });
 
       resp?.data && setCards(resp?.data);
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
   };
 
-  const handleCardSaleMonth = (cards: CardsReuslt) => {
+  const handleCardSaleMonth = (cards: CardsResult) => {
     return {
       loading,
-      value: formatPrice(cards?.sales.totalValueMonth!),
+      value: formatPrice(faturamento),
       color: systemColors.GREEN,
-      text: `Valor total das ${cards?.sales.count!} vendas no mês`,
+      text: `Faturamento das ${cards?.sales.count!} vendas`,
+      icon: <ArrowDownOutlined />,
+      url: `${appRoutes.sales}?dateReference=${dateEn}`
+    } as CardPropTypes;
+  };
+
+  const handleCardSaleInputMonth = (cards: CardsResult) => {
+    return {
+      loading,
+      value: formatPrice(cards?.sales.totalValueInputMonth!),
+      color: systemColors.LIGHT_PINK,
+      text: `Custos em vendas`,
+      icon: <ArrowUpOutlined />,
+      url: `${appRoutes.sales}?dateReference=${dateEn}`
+    } as CardPropTypes;
+  };
+
+  const handleCardFaturamentotMonth = (cards: CardsResult) => {
+    return {
+      loading,
+      value: formatPrice(bruto),
+      color: systemColors.BLUE,
+      text: `Saldo bruto`,
       icon: <DollarOutlined />,
       url: `${appRoutes.sales}?dateReference=${dateEn}`
     } as CardPropTypes;
   };
 
-  const handleCardSaleCommision = (cards: CardsReuslt) => {
-    const { totalValueMonth, totalValueCommissionMonth, count } = cards?.sales;
-    const commission = (totalValueCommissionMonth / totalValueMonth) * 100;
-    return {
-      loading,
-      value: formatPrice(totalValueCommissionMonth),
-      color: systemColors.YELLOW,
-      text: `Commissão a pagar de ${
-        commission ? parseFloat(commission.toString()).toFixed(2) : 0
-      }% sob ${count} vendas no mês seguinte`,
-      icon: <ArrowDownOutlined />,
-      url: `${appRoutes.sales}`
-    } as CardPropTypes;
+  const getValueExpenses = (cards: CardsResult, filter: number) => {
+    try {
+      const { totalValueMonth, count } = cards?.expenses.find(
+        (x: ExpenseResult) => x.paidOut === filter
+      )!;
+      return { totalValueMonth: Number(totalValueMonth), count };
+    } catch (error) {
+      return { totalValueMonth: 0, count: 0 };
+    }
   };
 
-  const handleCardSaleCommisionUser = (cards: CardsReuslt) => {
-    const { totalValueMonth, totalValueCommissionMonth, count, users } =
-      cards?.user;
-    const commission = (totalValueCommissionMonth / totalValueMonth) * 100;
-    return {
-      loading,
-      value: formatPrice((totalValueCommissionMonth / users) | 0),
-      color: systemColors.BLUE,
-      text: `Minha commissão sob ${count} vendas a receber de ${
-        commission ? parseFloat(commission.toString()).toFixed(2) : 0
-      }% no mês seguinte`,
-      icon: <ArrowUpOutlined />,
-      url: `${appRoutes.sales}/my-commisions`
-    } as CardPropTypes;
-  };
+  const getValueExpensesByTypes = (
+    cards: CardsResult,
+    filter: Array<number>,
+    include: boolean
+  ) => {
+    try {
+      let result = cards?.expensesByType.filter((x: ExpenseResult) =>
+        filter.includes(x.id)
+      );
+      if (!include) {
+        result = cards?.expensesByType.filter(
+          (x: ExpenseResult) => !filter.includes(x.id)
+        );
+      }
+      console.log(result);
+      const summary = result.reduce(
+        (acc, r) => {
+          acc.totalValueMonth += Number(r.totalValueMonth);
+          acc.count += r.count;
+          return acc;
+        },
+        { totalValueMonth: 0, count: 0 }
+      );
 
-  const handleCardExpenseMonth = (cards: CardsReuslt) => {
-    const { totalValueMonth, count } = cards?.expenses;
-    return {
-      loading,
-      value: formatPrice(totalValueMonth),
-      color: systemColors.ORANGE,
-      text: `Valor total das ${count} despesas no mês`,
-      icon: <ArrowUpOutlined />,
-      url: `${appRoutes.expenses}?dateReference=${dateEn}`
-    } as CardPropTypes;
-  };
-
-  const handleCardSaleExpenseMonth = (cards: CardsReuslt) => {
-   
-    const { totalValueMonth: totalValueMonthExpensesStr } = cards?.expenses;
-    const { totalValueMonth: totalValueMonthSalesStr } = cards?.sales;
-
-    const totalValueMonthExpenses = Number(totalValueMonthExpensesStr || 0);
-    const totalValueMonthSales = Number(totalValueMonthSalesStr || 0);    
-    const totalSales = totalValueMonthSales ;
-
-    const isPositive = totalValueMonthExpenses < totalSales;
-    return {
-      loading,
-      value: formatPrice(totalSales - totalValueMonthExpenses),
-      color: isPositive ? systemColors.GREEN : systemColors.RED,
-      text: `Valor das vendas menos as despesas`,
-      icon: isPositive ? <ArrowUpOutlined /> : <ArrowDownOutlined />,
-
-      url: `${appRoutes.expenses}`
-    } as CardPropTypes;
+      return summary;
+    } catch (error) {
+      return { totalValueMonth: 0, count: 0 };
+    }
   };
 
   const handlePrevMonth = () => setDate(subMonths(date, 1));
 
   const handleNextMonth = () => setDate(addMonths(date, 1));
 
+  const getPercent = (liquido: number, faturamento: number) => {
+    const result = Number(liquido / faturamento);
+    if (!result || result === -Infinity || result === NaN) return 0;
+    return parseFloat(Number(result * 100).toString()).toFixed(2);
+  };
+
+  const getM2 = (m2: number) => {
+    if (!m2) return 0;
+    return parseFloat(m2.toString()).toFixed(0);
+  };
+
   return (
     <>
+      <ShowByRoule roule={roules.administrator}></ShowByRoule>
       <Container>
-        <span onClick={handlePrevMonth}>
-          <LeftOutlined />
-        </span>
-        <strong>{dateFormated}</strong>
-        <span onClick={handleNextMonth}>
-          <RightOutlined />
-        </span>
+        <Col lg={5} md={6} sm={12} xs={8}>
+          <Select
+            placeholder={'Empresa'}
+            options={companies}
+            value={companyId}
+            onChange={(companyId) => setCompanyId(companyId)}
+          />
+        </Col>
+        <Col
+          lg={10}
+          md={10}
+          sm={12}
+          xs={14}
+          style={{ display: 'flex', justifyContent: 'end' }}
+        >
+          <span onClick={handlePrevMonth}>
+            <LeftOutlined />
+          </span>
+          <strong>{dateFormated}</strong>
+          <span onClick={handleNextMonth}>
+            <RightOutlined />
+          </span>
+        </Col>
       </Container>
       <Header>
-        {/* {Boolean(checkRouleProfileAccess(groups, roules.wines)) && (
+        {Boolean(checkRouleProfileAccess(groups, roules.expenses)) && (
           <>
             <Card
               loading={loading}
-              value={`${formatPrice(cards?.winesSalesMonthValue.total ?? 0)}`}
+              value={formatPrice(expensePaidOutYes.totalValueMonth)}
               color={systemColors.GREEN}
-              text={'Valor total das vendas no mês'}
-              icon={<DollarOutlined />}
-              url={`${appRoutes.wines}/sales?dateReference=${dateEn}`}
-            />
-            <Card
-              loading={loading}
-              value={`${cards?.winesSalesDay.count ?? 0}`}
-              color={systemColors.GREEN}
-              text={'Garrafas vendidas ontem'}
-              icon={<BarChartOutlined />}
-              url={`${appRoutes.wines}/sale-history`}
-            />
-            <Card
-              loading={loading}
-              value={`${cards?.winesSalesMonth.count ?? 0}`}
-              color={systemColors.LIGHT_BLUE}
-              text={'Garrafas vendidas no mês'}
-              icon={<BarChartOutlined />}
-              url={`${appRoutes.wines}/sale-history?dateReference=${dateEn}`}
-            />
-            <Card
-              loading={loading}
-              value={`${cards?.winesActive.count}`}
-              color={systemColors.BLUE}
-              text={'Vinhos disponíveis para integração'}
+              text={`Despesas PAGAS (${expensePaidOutYes.count})`}
               icon={<CheckOutlined />}
-              url={`${appRoutes.wines}?active=true`}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
             />
             <Card
               loading={loading}
-              value={`${cards?.winesNotActive.count}`}
+              value={formatPrice(expensePaidOutNo.totalValueMonth)}
               color={systemColors.RED}
-              text={'Vinhos não integrados'}
+              text={`Despesas A PAGAR (${expensePaidOutNo.count})`}
               icon={<WarningOutlined />}
-              url={`${appRoutes.wines}?active=false`}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(
+                expensePaidOutYes.totalValueMonth +
+                  expensePaidOutNo.totalValueMonth
+              )}
+              color={systemColors.LIGHT_BLUE}
+              text={`Todas despesas (${
+                expensePaidOutYes.count + expensePaidOutNo.count
+              })`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(expenses.totalValueMonth)}
+              color={systemColors.ORANGE}
+              text={`DESPESAS (${expenses.count})`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(investment.totalValueMonth)}
+              color={systemColors.ORANGE}
+              text={`INVESTIMENTOS (${investment.count})`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(input.totalValueMonth)}
+              color={systemColors.ORANGE}
+              text={`INSUMOS (${input.count})`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
             />
           </>
-        )} */}
+        )}
         {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
           <>
             <Card {...handleCardSaleMonth(cards)} />
-            <Card {...handleCardSaleCommision(cards)} />
+            <Card {...handleCardSaleInputMonth(cards)} />
+            <Card {...handleCardFaturamentotMonth(cards)} />
+            <Card
+              loading={loading}
+              value={formatPrice(liquido)}
+              color={systemColors.YELLOW}
+              text={`LUCRO LIQUIDO`}
+              subText={`Lucratividade ${getPercent(liquido, faturamento)}%`}
+              icon={<DollarOutlined />}
+              url={`${appRoutes.sales}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(box)}
+              color={systemColors.YELLOW}
+              text={`SALDO CAIXA`}
+              icon={<DollarOutlined />}
+              url={`${appRoutes.sales}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={`${getM2(cards?.sales.m2!)}`}
+              color={systemColors.BLUE}
+              text={`M2 APLICADO`}
+              icon={<MediumOutlined />}
+              url={`${appRoutes.sales}?dateReference=${dateEn}`}
+            />
           </>
-        )}
-        {Boolean(checkRouleProfileAccess(groups, roules.expenses)) && (
-          <>
-            <Card {...handleCardExpenseMonth(cards)} />
-            <Card {...handleCardSaleExpenseMonth(cards)} />
-          </>
-        )}
-        {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
-          <Card {...handleCardSaleCommisionUser(cards)} />
         )}
       </Header>
     </>

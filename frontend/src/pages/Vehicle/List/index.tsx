@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Col, Image } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
-import { Input, RangePicker, Select } from 'components/_inputs';
+import { Input, Select } from 'components/_inputs';
 import { apiRoutes, appRoutes, roules } from 'utils/defaultValues';
 import { initialStateFilter, Vehicle, years } from '../interfaces';
 import useFormState from 'hooks/useFormState';
@@ -10,8 +10,10 @@ import api from 'services/api-aws-amplify';
 import { formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import ShowByRoule from 'components/ShowByRoule';
+import { useAppContext } from 'hooks/contextLib';
 
 const List: React.FC = () => {
+  const { companies } = useAppContext();
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Vehicle[]>([]);
 
@@ -96,7 +98,7 @@ const List: React.FC = () => {
           <Col lg={8} md={12} sm={24} xs={24}>
             <Select
               label={'Empresa'}
-              url={`${apiRoutes.companies}/all`}
+              options={companies}
               value={state.companyId}
               onChange={(companyId) => dispatch({ companyId })}
             />

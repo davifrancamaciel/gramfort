@@ -18,7 +18,6 @@ module.exports = function (sequelize, DataTypes) {
         date: { type: DataTypes.DATE },     
         paymentDate: { type: DataTypes.DATE },     
         paidOut: { type: DataTypes.BOOLEAN },
-        carriedOut: { type: DataTypes.BOOLEAN },
         proposal: { type: DataTypes.BOOLEAN },
         sale: { type: DataTypes.BOOLEAN },
     });

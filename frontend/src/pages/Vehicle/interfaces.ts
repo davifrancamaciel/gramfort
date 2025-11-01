@@ -38,7 +38,7 @@ export const initialStateFilter: Filter = {
   model: '',  
   description: '',
   pageNumber: 1,
-  pageSize: 20
+  pageSize: 100
 };
 
 const arrYears = (): number[] => {

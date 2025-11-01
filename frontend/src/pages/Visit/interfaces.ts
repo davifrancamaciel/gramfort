@@ -14,7 +14,6 @@ export interface Visit {
 
   value?: number;
   paidOut: boolean;
-  carriedOut: boolean;
   proposal: boolean;
   sale: boolean;
   paymentDate?: string;
@@ -34,7 +33,6 @@ export const initialStateForm: Visit = {
   updatedAt: '',
   date: new Date().toISOString(),
   paidOut: false,
-  carriedOut: false,
   proposal: false,
   sale: false
 };
@@ -61,5 +59,5 @@ export const initialStateFilter: Filter = {
   title: '',
   description: '',
   pageNumber: 1,
-  pageSize: 20
+  pageSize: 100
 };

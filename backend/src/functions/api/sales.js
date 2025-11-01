@@ -67,16 +67,16 @@ module.exports.list = async (event, context) => {
                     ],
                 };
             if (createdAtStart)
-                whereStatement.createdAt = {
+                whereStatement.saleDate = {
                     [Op.gte]: startOfDay(parseISO(createdAtStart)),
                 };
 
             if (createdAtEnd)
-                whereStatement.createdAt = {
+                whereStatement.saleDate = {
                     [Op.lte]: endOfDay(parseISO(createdAtEnd)),
                 };
             if (createdAtStart && createdAtEnd)
-                whereStatement.createdAt = {
+                whereStatement.saleDate = {
                     [Op.between]: [
                         startOfDay(parseISO(createdAtStart)),
                         endOfDay(parseISO(createdAtEnd)),
@@ -89,7 +89,7 @@ module.exports.list = async (event, context) => {
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * pageSize,
-            order: [['id', 'DESC']],
+            order: [['saleDate', 'ASC']],
             include: [{
                 model: User, as: 'user', attributes: ['name'], where: whereStatementUser
             }, {
@@ -221,9 +221,11 @@ module.exports.update = async (event) => {
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
 
         const value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+        const valueInput = body.inputsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
         const objOnSave = {
             ...body,
             value,
+            valueInput,
             userId: user.userId,
         }
         if (checkRouleProfileAccess(user.groups, roules.saleUserIdChange) && body.userId)

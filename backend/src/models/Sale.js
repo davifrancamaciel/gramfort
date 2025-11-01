@@ -35,6 +35,8 @@ module.exports = function (sequelize, DataTypes) {
         distance: { type: DataTypes.INTEGER },
         germinationLevel: { type: DataTypes.INTEGER },
         satisfaction: { type: DataTypes.INTEGER },
+        invoice: { type: DataTypes.BOOLEAN },
+        demand: { type: DataTypes.STRING(30) },
     });
 
     Sale.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
