@@ -39,7 +39,7 @@ export const apiRoutes = {
   visits: appRoutes.visits,
   vehicles: appRoutes.vehicles,
   expenseTypes: 'expense-types',
-  categories: 'categories',
+  categories: 'categories'
 };
 
 export const apiRoutesArray = [
@@ -54,7 +54,7 @@ export const apiRoutesArray = [
   apiRoutes.services,
   apiRoutes.visits,
   apiRoutes.vehicles,
-  apiRoutes.categories,
+  apiRoutes.categories
 ];
 
 export const roules = {
@@ -96,3 +96,25 @@ export const pageItemsFilter: IOptions[] = [
   { value: '500', label: '500' },
   { value: '1000', label: '1.000' }
 ];
+
+export const expensesTypesEnum = {
+  COMPRAS: 1,
+  OUTROS: 2,
+  COMI: 3,
+  DFIX: 4,
+  PAGAMENTO: 5,
+  IMPOSTOS: 6,
+  SEGURO: 7,
+  INVESTIMENTOS: 8,
+  MKT: 9,
+  MPUB: 10,
+  COMB: 11,
+  PEDAGIO: 12,
+  ALIMENTACAO: 13,
+  MANUTENCAO: 14,
+  EXTRAS: 15,
+  EQUIPAMENTOS: 16,
+  INSUMOS: 17,
+  IPVA: 18,
+  REAP: 19
+};

@@ -23,7 +23,7 @@ import { roules, systemColors } from 'utils/defaultValues';
 import { useAppContext } from 'hooks/contextLib';
 
 import api from 'services/api-aws-amplify';
-import { apiRoutes, appRoutes } from 'utils/defaultValues';
+import { apiRoutes, appRoutes, expensesTypesEnum } from 'utils/defaultValues';
 import { formatPrice } from 'utils/formatPrice';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import Card from './Card';
@@ -49,6 +49,7 @@ const Cards: React.FC = () => {
   );
   const [investment, setInvestiment] = useState<CardValues>({} as CardValues);
   const [input, setInput] = useState<CardValues>({} as CardValues);
+  const [others, setOthers] = useState<CardValues>({} as CardValues);
   const [expenses, setExpenses] = useState<CardValues>({} as CardValues);
   const [faturamento, setFaturamento] = useState<number>(0);
   const [liquido, setLiquido] = useState<number>(0);
@@ -79,13 +80,36 @@ const Cards: React.FC = () => {
     setExpensePaidOutYes(getValueExpenses(cards, 1));
     setExpensePaidOutNo(getValueExpenses(cards, 0));
 
-    const _investment = getValueExpensesByTypes(cards, [8], true);
+    const _investment = getValueExpensesByTypes(
+      cards,
+      [expensesTypesEnum.INVESTIMENTOS],
+      true
+    );
     setInvestiment(_investment);
 
-    const _input = getValueExpensesByTypes(cards, [17], true);
+    const _input = getValueExpensesByTypes(
+      cards,
+      [expensesTypesEnum.INSUMOS],
+      true
+    );
     setInput(_input);
 
-    const _expenses = getValueExpensesByTypes(cards, [17, 8], false);
+    const _others = getValueExpensesByTypes(
+      cards,
+      [expensesTypesEnum.OUTROS],
+      true
+    );
+    setOthers(_others);
+
+    const _expenses = getValueExpensesByTypes(
+      cards,
+      [
+        expensesTypesEnum.INSUMOS,
+        expensesTypesEnum.INVESTIMENTOS,
+        expensesTypesEnum.OUTROS
+      ],
+      false
+    );
     setExpenses(_expenses);
 
     const _bruto =
@@ -291,6 +315,14 @@ const Cards: React.FC = () => {
               value={formatPrice(input.totalValueMonth)}
               color={systemColors.ORANGE}
               text={`INSUMOS (${input.count})`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(others.totalValueMonth)}
+              color={systemColors.LIGHT_GREY}
+              text={`OUTROS (${others.count})`}
               icon={<ArrowUpOutlined />}
               url={`${appRoutes.expenses}?dateReference=${dateEn}`}
             />

@@ -20,6 +20,7 @@ module.exports = function (sequelize, DataTypes) {
         hiringDate: { type: DataTypes.DATE },
         salesRepresentative: { type: DataTypes.STRING(255) },
         capture: { type: DataTypes.STRING(300), },
+        nature: { type: DataTypes.STRING(30) },
     });
 
     User.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });

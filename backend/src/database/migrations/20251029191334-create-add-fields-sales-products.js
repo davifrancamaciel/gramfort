@@ -9,6 +9,7 @@ module.exports = {
 
       queryInterface.addColumn('sales', "invoice", { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false });
       queryInterface.addColumn('sales', "demand", { type: Sequelize.STRING(30), });
+      queryInterface.addColumn('users', "nature", { type: Sequelize.STRING(30), });
 
       await transaction.commit();
     } catch (err) {
@@ -20,7 +21,8 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     return Promise.all([
       queryInterface.removeColumn('sales', "invoice"),
-      queryInterface.removeColumn('sales', "demand"),      
+      queryInterface.removeColumn('sales', "demand"),
+      queryInterface.removeColumn('users', "nature"),
     ]);
   },
 };

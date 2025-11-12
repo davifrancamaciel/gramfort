@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { startOfMonth, endOfMonth } from 'date-fns';
 import { Col } from 'antd';
+import moment from 'moment';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
@@ -28,17 +30,26 @@ const List: React.FC = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   useEffect(() => {
-    actionFilter();
+    const date = new Date();
+    const dateStart = startOfMonth(date).toISOString();
+    const dateEnd = endOfMonth(date).toISOString();
+    actionFilter(1, dateStart, dateEnd);
   }, []);
 
-  const actionFilter = async (pageNumber: number = 1) => {
+  const actionFilter = async (
+    pageNumber: number = 1,
+    dateStart = state.dateStart,
+    dateEnd = state.dateEnd
+  ) => {
     try {
-      dispatch({ pageNumber });
+      dispatch({ ...state, pageNumber, dateStart, dateEnd });
 
       setLoading(true);
       const resp = await api.get(apiRoutes.visits, {
         ...state,
-        pageNumber
+        pageNumber,
+        dateStart,
+        dateEnd
       });
       setLoading(false);
 
@@ -141,6 +152,10 @@ const List: React.FC = () => {
         <Col lg={8} md={24} sm={24} xs={24}>
           <RangePicker
             label="Data"
+            value={[
+              state.dateStart ? moment(state.dateStart) : null,
+              state.dateEnd ? moment(state.dateEnd) : null
+            ]}
             onChange={(value: any, dateString: any) => {
               dispatch({
                 dateStart: dateString[0]?.split('/').reverse().join('-')

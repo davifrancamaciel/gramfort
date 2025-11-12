@@ -10,6 +10,7 @@ import {
   apiRoutes,
   appRoutes,
   booleanFilter,
+  expensesTypesEnum,
   roules,
   systemColors
 } from 'utils/defaultValues';
@@ -59,7 +60,7 @@ const List: React.FC = () => {
       const type = getType();
       let expenseTypeId: string = '';
       if (type == appRoutes.shopping) {
-        expenseTypeId = '1';
+        expenseTypeId = expensesTypesEnum.COMPRAS.toString();
       }
       setLoading(true);
       const resp = await api.get(apiRoutes.expenses, {

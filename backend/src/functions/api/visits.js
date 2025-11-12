@@ -166,7 +166,7 @@ module.exports.create = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.Visits))
+        if (!checkRouleProfileAccess(user.groups, roules.visits))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
         let objOnSave = body

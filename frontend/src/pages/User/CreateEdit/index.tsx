@@ -24,7 +24,7 @@ import {
   userType
 } from 'utils/defaultValues';
 import BooleanTag from 'components/BooleanTag';
-import { getTitle, getType, arrayCapture } from '../utils';
+import { getTitle, getType, arrayCapture, arrayNature } from '../utils';
 
 import { formatDifferenceInYears, getPeriod } from 'utils/formatDate';
 import { useAppContext } from 'hooks/contextLib';
@@ -236,7 +236,7 @@ const CreateEdit: React.FC = (props: any) => {
             />
           </Col>
 
-          {path === userType.SUPPLIER && (
+          {path !== userType.USER && (
             <>
               <Col lg={8} md={8} sm={12} xs={24}>
                 <Input
@@ -251,14 +251,24 @@ const CreateEdit: React.FC = (props: any) => {
           )}
 
           {path === userType.CLIENT && (
-            <Col lg={8} md={8} sm={12} xs={24}>
-              <Select
-                label={'Captação'}
-                options={arrayCapture}
-                value={state?.capture}
-                onChange={(capture) => dispatch({ capture })}
-              />
-            </Col>
+            <>
+              <Col lg={8} md={8} sm={12} xs={24}>
+                <Select
+                  label={'Captação'}
+                  options={arrayCapture}
+                  value={state?.capture}
+                  onChange={(capture) => dispatch({ capture })}
+                />
+              </Col>
+              <Col lg={8} md={8} sm={12} xs={24}>
+                <Select
+                  label={'Natureza'}
+                  options={arrayNature}
+                  value={state?.nature}
+                  onChange={(nature) => dispatch({ nature })}
+                />
+              </Col>
+            </>
           )}
           {/* <ShowByRoule roule={roules.sales}>
             {path === userType.USER && (
@@ -280,15 +290,17 @@ const CreateEdit: React.FC = (props: any) => {
               </Col>
             )}            
           </ShowByRoule> */}
+          {path !== userType.SUPPLIER && (
+            <Col lg={8} md={8} sm={12} xs={24}>
+              <DatePicker
+                label={'Data de nascimento'}
+                value={state.dateOfBirth}
+                onChange={(dateOfBirth) => dispatch({ dateOfBirth })}
+              />
+            </Col>
+          )}
           {path === userType.USER && (
             <>
-              <Col lg={8} md={8} sm={12} xs={24}>
-                <DatePicker
-                  label={'Data de nascimento'}
-                  value={state.dateOfBirth}
-                  onChange={(dateOfBirth) => dispatch({ dateOfBirth })}
-                />
-              </Col>
               <Col lg={8} md={8} sm={12} xs={24}>
                 <Input
                   label={'Idade'}

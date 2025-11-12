@@ -35,7 +35,7 @@ module.exports = function (sequelize, DataTypes) {
         distance: { type: DataTypes.INTEGER },
         germinationLevel: { type: DataTypes.INTEGER },
         satisfaction: { type: DataTypes.INTEGER },
-        invoice: { type: DataTypes.BOOLEAN },
+        invoice: { type: DataTypes.BOOLEAN },// tem nota NF?
         demand: { type: DataTypes.STRING(30) },
     });
 

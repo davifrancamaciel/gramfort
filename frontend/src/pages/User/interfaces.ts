@@ -28,6 +28,7 @@ export interface Users {
   hiringDate?: string;
   salesRepresentative?: string;
   capture?: string;
+  nature?: string;
   
   type: 'USER' | 'CLIENT'| 'SUPPLIER';
 }

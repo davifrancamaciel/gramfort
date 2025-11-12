@@ -10,7 +10,13 @@ import {
 } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import ShowByRoule from 'components/ShowByRoule';
-import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  expensesTypesEnum,
+  roules,
+  userType
+} from 'utils/defaultValues';
 import useFormState from 'hooks/useFormState';
 import { initialStateForm } from '../interfaces';
 import api from 'services/api-aws-amplify';
@@ -32,13 +38,17 @@ const CreateEdit: React.FC = (props: any) => {
   const [users, setUsers] = useState<any[]>([]);
   const [expenseTypes, setExpenseTypes] = useState<IOptions[]>([]);
   const [vehicles, setVehicles] = useState<IOptions[]>([]);
-  const arrayTypeExpensesRequiredUser = [5, 11, 13];
-  const arrayTypeExpensesRequiredVehicle = [12];
+  const arrayTypeExpensesRequiredUser = [
+    expensesTypesEnum.PAGAMENTO,
+    expensesTypesEnum.COMB,
+    expensesTypesEnum.ALIMENTACAO
+  ];
+  const arrayTypeExpensesRequiredVehicle = [expensesTypesEnum.PEDAGIO];
 
   useEffect(() => {
     const typePath = getType();
     setPath(typePath);
-    if (typePath == appRoutes.shopping) dispatch({ expenseTypeId: 1 });
+    if (typePath == appRoutes.shopping) dispatch({ expenseTypeId: expensesTypesEnum.COMPRAS });
     onLoad(typePath);
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
