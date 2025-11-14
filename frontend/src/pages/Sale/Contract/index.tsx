@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { notification } from 'antd';
+import { notification, Card } from 'antd';
 
 import useFormState from 'hooks/useFormState';
 import { useQuery } from 'hooks/queryString';
@@ -27,8 +27,10 @@ const Contract: React.FC = (props: any) => {
         return;
       }
       setLoading(true);
-      
-      const resp = await api.getPublic(`${apiRoutes.sales}/contract/${id}`, { hash });
+
+      const resp = await api.getPublic(`${apiRoutes.sales}/contract/${id}`, {
+        hash
+      });
       const productsList = resp.data?.productsSales as SaleProduct[];
       const products = productsList.filter(
         (p: SaleProduct) => !p.product.isInput
@@ -43,8 +45,16 @@ const Contract: React.FC = (props: any) => {
   };
 
   const action = () => {};
-
-  return <Table sale={state} />;
+  return (
+    <Card
+      title={`Contrato ${state.id}`}
+      extra={<a href="#">More</a>}
+      loading={loading}
+    >
+      <Table sale={state} />
+    </Card>
+  );
+  return;
 };
 
 export default Contract;

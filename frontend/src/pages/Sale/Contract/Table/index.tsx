@@ -5,18 +5,22 @@ import TableReport from 'components/Report/TableReport';
 import Td from './Td';
 import { Sale, SaleProduct } from '../../interfaces';
 import { formatPrice } from 'utils/formatPrice';
-import { systemColors } from 'utils/defaultValues';
+import { systemColors, productCategoriesEnum } from 'utils/defaultValues';
+import { formatDate, formatDateText } from 'utils/formatDate';
 import image from 'assets/contract.jpg';
+import assinatura from 'assets/assinatura.png';
+
 interface PropTypes {
   sale: Sale;
 }
-const categorIdsArray = [1, 4];
+const categorIdsArray = [
+  productCategoriesEnum.SERVICO,
+  productCategoriesEnum.SERVICO_M2
+];
+
 const Table: React.FC<PropTypes> = ({ sale }) => {
   return (
-    <TableReport
-      title={`Contrato ${sale.id}`}
-      image={sale?.company?.image || ''}
-    >
+    <TableReport title={``} image={sale?.company?.image || ''}>
       <tr style={{ border: '0' }}>
         <td style={{ border: '0' }}>
           <table style={{ textAlign: 'center', marginBottom: '15px' }}>
@@ -152,64 +156,182 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
             </table>
           </div>
 
+          <div>
+            <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
+            <p>
+              R$ 6.675,00 Sinal de 50% para reservar a data R$ 6.675,00 50%
+              restante no final da aplicação
+            </p>
+            <p>
+              Santander Ag 4421 CC 13002793-2 Gramfort Hidrossemeadura Pix CNPJ
+              50641930000100
+            </p>
+          </div>
+          <div>
+            <h3>CLÁUSULA SEGUNDA - DAS OBRIGAÇÕES GERAIS</h3>
+            <p>
+              Equipe, equipamento e insumos serão de responsabilidade da
+              contratada assim como entrega da aplicação.
+            </p>
+            <p>
+              O Contratante autoriza a contratada registra e postar nas redes
+              sociais, fotos e vídeos antes e depois.
+            </p>
+            <p>
+              Prazo de execução <strong>{sale.daysExecution} dias.</strong>
+              Proposta válida por 15 dias. Efetivação mediante pagamento do
+              Sinal.
+            </p>
+          </div>
+          <div>
+            <h3>
+              CLÁUSULA TERCEIRA - DAS OBRIGAÇÕES DO CONTRATANTE PARA MANUTENÇÃO
+              DA GARANTIA
+            </h3>
+            <p>
+              1. <strong>Isolar a área</strong> aplicada para evitar
+              pisoteamento de pessoas e animais, pois compromete a germinação
+              uniforme das sementes.
+            </p>
+            <p>
+              2. Observar <strong>acumulo de passáros,</strong> pois podem comer
+              as sementes. Sugerimos alimentá-los na parte baixa com coxos
+            </p>
+            <p>
+              3. Efetuar a{' '}
+              <strong>drenagem eficiente na parte superior dos taludes.</strong>{' '}
+              Não reaplicamos caso a água lave devido a falta de drenagem.
+            </p>
+            <p>
+              4. Observar a existência de{' '}
+              <strong>formigueiro próximos e eliminá-los,</strong> pois podem
+              comprometer o resultado.
+            </p>
+          </div>
+          <div>
+            <h3>CLÁUSULA QUARTA - INFORMAÇÕES/TERMOS ADCIONAIS</h3>
+            <p>
+              A técnica garante a cobertura vegetal do solo, e apesar de
+              contribuir para sua estabilidade, não elimina os riscos
+            </p>
+            <p>
+              de ocorrer deslizamentos, barreiras ou movimento de solo que afete
+              os resultados. Nesses casos não fazemos reaplicações.
+            </p>
+            <p>
+              Áreas rochosas ou compactadas podem apresentar falhas assim como
+              taludes acima de 80º de inclinação.
+            </p>
+            <p>
+              <strong>IMPORTANTE:</strong> Após aplicação, caso ocorra chuvas
+              extremas/temporais/tromba d'agua - isto é, que foge a normalidade
+              - pode ocasionar
+            </p>
+            <p>
+              a lavagem do material aplicado, neste caso nos comprometemos a
+              realizar a reaplicação pelo valor de 30% do valor cobrado.
+            </p>
+            <p>
+              Caso o cliente respeite e siga as orientação e ainda sim no
+              período de 90 (noventa) dias não ocorrer a
+            </p>
+            <p>
+              germinação de 90% da área, a GRAMFORT se compromete a refazer o
+              plantio.
+            </p>
+            <p>
+              Visita técnica realizada{' '}
+              <strong>{formatDate(sale.visit.date)}</strong> água disponivel
+              porem distante do talude / fácil acesso
+            </p>
+            <p>
+              <strong>
+                {sale.expectedDateForApplication
+                  ? formatDate(sale.expectedDateForApplication)
+                  : 'A definir'}
+              </strong>{' '}
+              Data prevista para aplicação.
+            </p>
+          </div>
+
+          <div>
+            <div
+              style={{
+                marginTop: '100px',
+                display: 'grid',
+                justifyContent: 'center'
+              }}
+            >
+              <img alt={''} src={assinatura} style={{ width: '200px' }} />
+
+              <p style={{ fontSize: '15px' }}>
+                <strong>Valter Rodrigo S Silva</strong>
+              </p>
+              <p
+                style={{
+                  fontSize: '11px',
+                  marginTop: '2px',
+                  marginBottom: '2px'
+                }}
+              >
+                Gramfort Hidrossemeadura
+              </p>
+              <p
+                style={{
+                  fontSize: '11px',
+                  marginTop: '2px',
+                  marginBottom: '2px'
+                }}
+              >
+                Soluções Ambientais LTDA
+              </p>
+              <p
+                style={{
+                  fontSize: '11px',
+                  marginTop: '2px',
+                  marginBottom: '2px'
+                }}
+              >
+                - Diretor Geral -
+              </p>
+              <p>Proposta Comercial nº {sale.id}</p>
+            </div>
+            <div
+              style={{
+                marginTop: '100px',
+                display: 'grid',
+                justifyContent: 'center'
+              }}
+            >
+              <img alt={''} src={assinatura} style={{ width: '200px' }} />
+
+              <p style={{ fontSize: '15px' }}>
+                <strong>{sale.client?.name}</strong>
+              </p>
+              <p
+                style={{
+                  fontSize: '11px',
+                  marginTop: '2px',
+                  marginBottom: '2px'
+                }}
+              >
+                Cliente/Contratante
+              </p>
+              <p
+                style={{
+                  fontSize: '11px',
+                  marginTop: '2px',
+                  marginBottom: '2px'
+                }}
+              >
+                Petrópolis, {formatDateText(sale.createdAt!)}
+              </p>
+            </div>
+          </div>
+
           <img src={image} alt="" style={{ maxWidth: '100%' }} />
         </td>
       </tr>
-      {/* <table>
-        <thead>
-          <tr>
-            <th style={{ borderRight: '0' }}>Codigo</th>
-            <th style={{ borderRight: '0', borderLeft: '0' }}>Produto</th>
-            <th style={{ borderRight: '0', borderLeft: '0' }}>Preço</th>
-            <th style={{ borderRight: '0', borderLeft: '0' }}>Valor vendido</th>
-            <th style={{ borderRight: '0', borderLeft: '0' }}>Quantidade</th>
-            <th style={{ borderLeft: '0' }}>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <Td title="Proposta Comercial nº" value={sale.id} />
-            <Td colSpan={2} title="Consultor Técnico" value={sale.userName} />
-          </tr>
-          <tr>
-            <Td colSpan={2} title="Cliente" value={sale.clientName} />
-            <Td colSpan={2} title="CNPJ/CPF" value={sale.userName} />
-          </tr>
-          <tr>
-            <Td colSpan={2} title="E-mail" value={sale.clientName} />
-            <Td colSpan={2} title="Fone" value={sale.userName} />
-          </tr>
-          <tr>
-            <Td colSpan={2} title="Local Aplicação" value={sale.clientName} />
-            <Td colSpan={2} title="KM da Base" value={sale.userName} />
-          </tr>
-          <tr>
-            <Td colSpan={2} title="Cliente" value={sale.clientName} />
-            <Td title="Valor total" value={formatPrice(Number(sale.value!))} />
-          </tr>
-          {sale.productsSales.map((sp: SaleProduct, index: number) => (
-            <tr key={index}>
-              <td>{sp.productId}</td>
-              <td>
-                {sp.product.name} {sp.product.size}
-              </td>
-              <td>{formatPrice(Number(sp.product.price!))}</td>
-              <td>{formatPrice(Number(sp.value!))}</td>
-              <td>{sp.amount}</td>
-              <td>{formatPrice(Number(sp.valueAmount!))}</td>
-            </tr>
-          ))}
-          <tr>
-            <Td title="Data" value={sale.createdAt} />
-            <Td colSpan={2} title="Vendedor" value={sale.userName} />
-            <Td colSpan={2} title="Cliente" value={sale.clientName} />
-            <Td title="Valor total" value={formatPrice(Number(sale.value!))} />
-          </tr>
-          <tr>
-            <Td colSpan={6} title="Obs." value={sale.note} />
-          </tr>
-        </tbody>
-      </table> */}
     </TableReport>
   );
 };

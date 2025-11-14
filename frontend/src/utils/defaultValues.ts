@@ -119,3 +119,10 @@ export const expensesTypesEnum = {
   IPVA: 18,
   REAP: 19
 };
+
+export const productCategoriesEnum = {
+  SERVICO: 1,
+  INSUMO: 2,
+  CUSTO: 3,
+  SERVICO_M2: 4,
+};

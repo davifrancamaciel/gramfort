@@ -51,6 +51,19 @@ export interface Sale {
   distance?: number;
   demand?: string;
   invoice: boolean;
+  // contract
+  visitId?: number;
+  hash?: string;
+  approved?: boolean;
+  internalNote?: string;
+  access?: number;
+  complexityLevel?: number;
+  daysExecution?: number;
+  expectedDateForApplication?: string;
+  discountDescription?: string;
+  discountValue?: number;
+  phSoil?: string;
+  sunOrientation?: string;
 }
 
 export const initialStateForm: Sale = {
