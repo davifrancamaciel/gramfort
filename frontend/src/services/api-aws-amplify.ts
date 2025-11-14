@@ -36,6 +36,13 @@ const api = {
     showNotification: boolean = true
   ): Promise<Response> => {
     return request('patch', url, data, showNotification);
+  },
+  getPublic: (
+    url: string,
+    data?: any,
+    showNotification: boolean = false
+  ): Promise<Response> => {
+    return request('get', url, data, showNotification, true);
   }
 };
 
@@ -43,20 +50,13 @@ const request = async (
   method: 'post' | 'get' | 'put' | 'del' | 'patch',
   url: string,
   data: any = null,
-  showNotification: boolean = true
+  showNotification: boolean = true,
+  isPublic: boolean = false
 ): Promise<Response> => {
   /**
    * Definição da chamada das requests axios
    */
-  const userAuth = await Auth.currentAuthenticatedUser();
-  const { signInUserSession } = userAuth;
-
-  let init: any = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `${signInUserSession.idToken.jwtToken}`,     
-    }
-  };
+  let init: any = await getInt(isPublic);
 
   switch (method) {
     case 'get':
@@ -111,6 +111,25 @@ const request = async (
 
     return { success: false, message: e.message, data: null };
   }
+};
+
+const getInt = async (isPublic: boolean) => {
+  if (isPublic)
+    return {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+  const userAuth = await Auth.currentAuthenticatedUser();
+  const { signInUserSession } = userAuth;
+
+  let init: any = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `${signInUserSession.idToken.jwtToken}`
+    }
+  };
+  return init;
 };
 
 export default api;

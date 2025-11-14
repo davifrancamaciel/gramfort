@@ -9,6 +9,7 @@ const User = require('../../models/User')(db.sequelize, db.Sequelize);
 const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const Product = require('../../models/Product')(db.sequelize, db.Sequelize);
 const SaleProduct = require('../../models/SaleProduct')(db.sequelize, db.Sequelize);
+const Visit = require('../../models/Visit')(db.sequelize, db.Sequelize);
 
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { executeSelect, executeDelete, executeUpdate } = require("../../services/ExecuteQueryService");
@@ -102,7 +103,7 @@ module.exports.list = async (event, context) => {
             }]
         })
         const salesIds = rows.map(x => x.id)
-        const salesProductsList = await SaleProduct.findAll({
+        const salesProductsList = await Visit.findAll({
             where: { saleId: { [Op.in]: salesIds } },
             attributes: ['amount', 'valueAmount', 'value', 'productId', 'saleId'],
             include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'size', 'isInput'] }],
@@ -128,30 +129,7 @@ module.exports.listById = async (event) => {
         if (!checkRouleProfileAccess(user.groups, roules.sales))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
-        const result = await Sale.findByPk(pathParameters.id, {
-            include: [
-                {
-                    model: User,
-                    as: 'user',
-                    attributes: ['name'],
-                },
-                {
-                    model: User,
-                    as: 'client',
-                    attributes: ['name'],
-                },
-                {
-                    model: Company,
-                    as: 'company',
-                    attributes: ['name'],
-                },
-                {
-                    model: SaleProduct,
-                    as: 'productsSales',
-                    attributes: ['id', 'amount', 'valueAmount', 'value', 'productId', 'description'],
-                    include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'isInput'] }]
-                },]
-        })
+        const result = await listByIdResult(pathParameters.id);
         if (!result)
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
 
@@ -162,6 +140,52 @@ module.exports.listById = async (event) => {
     } catch (err) {
         return await handlerErrResponse(err, pathParameters)
     }
+}
+
+module.exports.listByIdPublic = async (event) => {
+    const { pathParameters, queryStringParameters } = event;
+    const result = await listByIdResult(pathParameters.id);
+    if (!result)
+        return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
+
+    const { hash } = queryStringParameters;
+    if (hash !== result.hash)
+        return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada hash ${hash} informado não confere`)
+    return handlerResponse(200, result)
+}
+
+const listByIdResult = async (id) => {
+    const result = await Sale.findByPk(id, {
+        include: [
+            {
+                model: User,
+                as: 'user',
+                attributes: ['name'],
+            },
+            {
+                model: User,
+                as: 'client',
+                attributes: ['name', 'cpfCnpj', 'email', 'phone'],
+            },
+            {
+                model: Visit,
+                as: 'visit',
+                attributes: ['km', 'state', 'city', 'address', 'date', 'value'],
+            },
+            {
+                model: Company,
+                as: 'company',
+                attributes: ['name', 'image'],
+            },
+            {
+                model: SaleProduct,
+                as: 'productsSales',
+                attributes: ['id', 'amount', 'valueAmount', 'value', 'productId', 'description'],
+                include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'isInput', 'description', 'categoryId'] }]
+            },]
+    })
+
+    return result;
 }
 
 module.exports.create = async (event) => {

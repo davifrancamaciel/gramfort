@@ -1,13 +1,15 @@
+import { Users } from '../User/interfaces';
 import { Company } from './../Company/interfaces';
-export interface User {
-  name: string;
-}
+import { Visit } from './../Visit/interfaces';
+
 export interface Product {
   id?: number;
+  categoryId?: number;
   name: string;
   size: string;
   price: number;
   isInput: boolean;
+  description?: string;
 }
 export interface SaleProduct {
   id?: string;
@@ -23,8 +25,9 @@ export interface SaleProduct {
 export interface Sale {
   company?: Company;
   id?: string;
-  user?: User;
-  client?: User;
+  user?: Users;
+  client?: Users;
+  visit?: Visit;
   products: Product[];
   productsSales: SaleProduct[];
   inputs: Product[];

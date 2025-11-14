@@ -269,7 +269,7 @@ const Cards: React.FC = () => {
               loading={loading}
               value={formatPrice(expensePaidOutYes.totalValueMonth)}
               color={systemColors.GREEN}
-              text={`Despesas PAGAS (${expensePaidOutYes.count})`}
+              text={`PAGO (${expensePaidOutYes.count})`}
               icon={<CheckOutlined />}
               url={`${appRoutes.expenses}?dateReference=${dateEn}`}
             />
@@ -277,7 +277,7 @@ const Cards: React.FC = () => {
               loading={loading}
               value={formatPrice(expensePaidOutNo.totalValueMonth)}
               color={systemColors.RED}
-              text={`Despesas A PAGAR (${expensePaidOutNo.count})`}
+              text={`A PAGAR (${expensePaidOutNo.count})`}
               icon={<WarningOutlined />}
               url={`${appRoutes.expenses}?dateReference=${dateEn}`}
             />
@@ -288,7 +288,7 @@ const Cards: React.FC = () => {
                   expensePaidOutNo.totalValueMonth
               )}
               color={systemColors.LIGHT_BLUE}
-              text={`Todas despesas (${
+              text={`TOTAL DE PGTOS (${
                 expensePaidOutYes.count + expensePaidOutNo.count
               })`}
               icon={<ArrowUpOutlined />}

@@ -19,12 +19,12 @@ const App: React.FC = () => {
   const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    onLoad()
+    onLoad();
   }, []);
 
   const onLoad = async () => {
-      const resp = await api.get(`${apiRoutes.companies}/all`);
-      setCompanies(resp.data);
+    const resp = await api.get(`${apiRoutes.companies}/all`);
+    setCompanies(resp.data);
   };
 
   const value = {

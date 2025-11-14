@@ -22,6 +22,7 @@ const UserList = lazy(() => import('pages/User/List'));
 const UserCreateEdit = lazy(() => import('pages/User/CreateEdit'));
 const SaleList = lazy(() => import('pages/Sale/List'));
 const SaleCreateEdit = lazy(() => import('pages/Sale/CreateEdit'));
+const SaleContract = lazy(() => import('pages/Sale/Contract'));
 const ProductList = lazy(() => import('pages/Product/List'));
 const ProductCreateEdit = lazy(() => import('pages/Product/CreateEdit'));
 const ProductDetails = lazy(() => import('pages/Product/Details'));
@@ -63,7 +64,11 @@ const routesArray: IRouteProps[] = [
     component: UserCreateEdit,
     roule: roules.clients
   },
-  { path: `/${appRoutes.suppliers}`, component: UserList, roule: roules.suppliers },
+  {
+    path: `/${appRoutes.suppliers}`,
+    component: UserList,
+    roule: roules.suppliers
+  },
   {
     path: `/${appRoutes.suppliers}/create`,
     component: UserCreateEdit,
@@ -94,6 +99,11 @@ const routesArray: IRouteProps[] = [
     path: `/${appRoutes.sales}/my-commisions`,
     component: ExpenseCommisionList,
     roule: roules.sales
+  },
+  {
+    path: `/${appRoutes.sales}/contract/:id`,
+    component: SaleContract,
+    isPrivate: false
   },
   {
     path: `/${appRoutes.products}`,
@@ -129,7 +139,7 @@ const routesArray: IRouteProps[] = [
     path: `/${appRoutes.expenses}/edit/:id`,
     component: ExpenseCreateEdit,
     roule: roules.expenses
-  }, 
+  },
   {
     path: `/${appRoutes.shopping}`,
     component: ExpenseList,
@@ -144,7 +154,7 @@ const routesArray: IRouteProps[] = [
     path: `/${appRoutes.shopping}/edit/:id`,
     component: ExpenseCreateEdit,
     roule: roules.shopping
-  },  
+  },
   {
     path: `/${appRoutes.companies}`,
     component: CompanyList,

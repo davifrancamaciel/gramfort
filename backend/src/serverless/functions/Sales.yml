@@ -38,3 +38,11 @@ salesDelete:
         method: delete
         authorizer: verifyToken
         cors: true
+
+salesByIdPublic:
+  handler: src/functions/api/sales.listByIdPublic
+  events:
+    - http:
+        path: sales/contract/{id}
+        method: get
+        cors: true 

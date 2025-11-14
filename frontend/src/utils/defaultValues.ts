@@ -9,6 +9,7 @@ export const systemColors = {
   GREY: '#8c8c8c',
   ORANGE: '#FF4500',
   LIGHT_BLUE: '#2db7f5',
+  DARK_BLUE: '#333B7C',
   LIGHT_PINK: '#FF9A9A',
   LIGHT_GREY: '#999999'
 };
