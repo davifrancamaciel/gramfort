@@ -6,6 +6,7 @@ import {
   Input,
   Select,
   Switch,
+  Textarea,
   TimePicker
 } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
@@ -111,7 +112,7 @@ const CreateEdit: React.FC = (props: any) => {
         <Col lg={8} md={8} sm={12} xs={24}>
           <Select
             label={'Empresa'}
-           options={companies}
+            options={companies}
             value={state.companyId}
             onChange={(companyId) => dispatch({ companyId })}
           />
@@ -212,6 +213,14 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(e) => dispatch({ address: e.target.value })}
         />
       </Col>
+      <Col lg={24} md={24} sm={24} xs={24}>
+        <Textarea
+          label={'Observações'}
+          placeholder=""
+          value={state.note}
+          onChange={(e) => dispatch({ note: e.target.value })}
+        />
+      </Col>
       <Col lg={3} md={4} sm={6} xs={24}>
         <Switch
           label={'Paga'}
@@ -222,7 +231,7 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={() => dispatch({ paidOut: !state.paidOut })}
         />
       </Col>
-      
+
       <Col lg={3} md={4} sm={6} xs={24}>
         <Switch
           label={'Proposta'}
@@ -243,6 +252,7 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={() => dispatch({ sale: !state.sale })}
         />
       </Col>
+      
       <Col
         lg={6}
         md={12}

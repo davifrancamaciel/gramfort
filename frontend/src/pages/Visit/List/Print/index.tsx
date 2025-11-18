@@ -15,21 +15,16 @@ interface PropTypes {
 const Print: React.FC<PropTypes> = ({ item }) => {
   return (
     <PrintContainer show={true}>
-      <TableReport
-        title={``}
-        image={item?.company?.image || ''}
-      >
+      <TableReport title={``} image={item?.company?.image || ''}>
         <div style={{ padding: '35px', fontSize: '15px' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <strong>
-              RECIBO DE PAGAMENTO DE VISITA TÉCNICA
-            </strong>
+            <strong>RECIBO DE PAGAMENTO DE VISITA TÉCNICA</strong>
           </h2>
           <div
             style={{
               display: 'grid',
-              justifyContent: 'center'
-              ,textAlign:'center'
+              justifyContent: 'center',
+              textAlign: 'center'
             }}
           >
             <p>

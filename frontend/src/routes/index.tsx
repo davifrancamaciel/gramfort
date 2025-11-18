@@ -101,7 +101,28 @@ const routesArray: IRouteProps[] = [
     roule: roules.sales
   },
   {
-    path: `/${appRoutes.sales}/contract/:id`,
+    path: `/${appRoutes.contracts}`,
+    component: SaleList,
+    roule: roules.contracts
+  },
+  {
+    path: `/${appRoutes.contracts}/create`,
+    component: SaleCreateEdit,
+    roule: roules.contracts
+  },
+  {
+    path: `/${appRoutes.contracts}/edit/:id`,
+    component: SaleCreateEdit,
+    roule: roules.contracts
+  },
+
+  {
+    path: `/${appRoutes.contracts}/details/:id`,
+    component: SaleContract,
+    roule: roules.contracts
+  },
+  {
+    path: `/${appRoutes.contracts}/approve/:id`,
     component: SaleContract,
     isPrivate: false
   },

@@ -20,6 +20,7 @@ module.exports = function (sequelize, DataTypes) {
         paidOut: { type: DataTypes.BOOLEAN },
         proposal: { type: DataTypes.BOOLEAN },
         sale: { type: DataTypes.BOOLEAN },
+        note: { type: DataTypes.STRING(500) },
     });
     
     Visit.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });   

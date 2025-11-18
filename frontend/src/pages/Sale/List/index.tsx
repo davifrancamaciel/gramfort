@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { FileDoneOutlined } from '@ant-design/icons';
 import { Col } from 'antd';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
 
@@ -12,11 +13,13 @@ import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import PrintAll from './PrintAll';
-import Print from './Print';
+
 import moment from 'moment';
 import ShowByRoule from 'components/ShowByRoule';
 import BooleanTag from 'components/BooleanTag';
 import { useAppContext } from 'hooks/contextLib';
+import { Link } from 'react-router-dom';
+import WhatsApp from 'components/WhatsApp';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -54,7 +57,15 @@ const List: React.FC = () => {
         const sale = {
           ...p,
           userName: p.user!.name,
-          clientName: p.client?.name,
+          clientName: p.client?.phone ? (
+            <WhatsApp
+              phone={p.client?.phone}
+              text={p.client?.name}
+              message={`Olá, ${p.client?.name} segue o link da proposta para aprovação ${window.location.origin}/${appRoutes.contracts}/approve/${p.id}?hash=${p.hash}`}
+            />
+          ) : (
+            p.client?.name
+          ),
           companyName: p.company?.name,
           valueFormatted: formatPrice(Number(p.value!)),
           valueInputFormatted: formatPrice(Number(p.valueInput!)),
@@ -65,17 +76,16 @@ const List: React.FC = () => {
           createdAt: formatDateHour(p.createdAt),
           updatedAt: formatDateHour(p.updatedAt),
           saleDate: formatDate(p.saleDate),
-          invoiceAction: (
-            // <Action
-            //   item={p}
-            //   setUpdate={() => {}}
-            //   apiRoutes={apiRoutes.sales}
-            //   propName="invoice"
-            // />
-            <BooleanTag value={p.invoice} />
+          invoiceAction: <BooleanTag value={p.invoice} />
+        };
+        return {
+          ...sale,
+          contract: (
+            <Link to={`${appRoutes.contracts}/details/${sale.id}`}>
+              <FileDoneOutlined />
+            </Link>
           )
         };
-        return { ...sale, print: <Print sale={sale} /> };
       });
       setItems(itemsFormatted);
       console.log(itemsFormatted);
@@ -183,7 +193,7 @@ const List: React.FC = () => {
         <ShowByRoule roule={roules.administrator}>
           <Col lg={5} md={6} sm={12} xs={24}>
             <Select
-              label={'Empresa'}              
+              label={'Empresa'}
               options={companies}
               value={state.companyId}
               onChange={(companyId) => dispatch({ companyId })}
@@ -219,7 +229,7 @@ const List: React.FC = () => {
           { title: 'NF', dataIndex: 'invoiceAction' },
           // { title: 'Criada em', dataIndex: 'createdAt' },
           // { title: 'Alterada em', dataIndex: 'updatedAt' },
-          { title: '', dataIndex: 'print' }
+          { title: 'Contrato', dataIndex: 'contract' }
         ]}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}

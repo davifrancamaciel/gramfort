@@ -25,6 +25,13 @@ module.exports = {
       queryInterface.addColumn(TABLE_NAME, "discountValue", { type: Sequelize.DECIMAL(10, 2), defaultValue: 0 });
       queryInterface.addColumn(TABLE_NAME, "phSoil", { type: Sequelize.STRING(100) });
       queryInterface.addColumn(TABLE_NAME, "sunOrientation", { type: Sequelize.STRING(100) });
+      queryInterface.addColumn(TABLE_NAME, "image1", { type: Sequelize.STRING(500) });
+      queryInterface.addColumn(TABLE_NAME, "image2", { type: Sequelize.STRING(500) });
+      queryInterface.addColumn(TABLE_NAME, "image3", { type: Sequelize.STRING(500) });
+      queryInterface.addColumn(TABLE_NAME, "image4", { type: Sequelize.STRING(500) });
+      queryInterface.addColumn(TABLE_NAME, "image5", { type: Sequelize.STRING(500) });
+      queryInterface.addColumn(TABLE_NAME, "image6", { type: Sequelize.STRING(500) });
+      queryInterface.addColumn('visits', "note", { type: Sequelize.STRING(500), });
 
       await transaction.commit();
     } catch (err) {
@@ -46,7 +53,13 @@ module.exports = {
       queryInterface.removeColumn(TABLE_NAME, "discountDescription"),
       queryInterface.removeColumn(TABLE_NAME, "discountValue"),
       queryInterface.removeColumn(TABLE_NAME, "phSoil"),
-      queryInterface.removeColumn(TABLE_NAME, "sunOrientation"),
+      queryInterface.removeColumn(TABLE_NAME, "image1"),
+      queryInterface.removeColumn(TABLE_NAME, "image2"),
+      queryInterface.removeColumn(TABLE_NAME, "image3"),
+      queryInterface.removeColumn(TABLE_NAME, "image4"),
+      queryInterface.removeColumn(TABLE_NAME, "image5"),
+      queryInterface.removeColumn(TABLE_NAME, "image6"),
+      queryInterface.removeColumn('visits', "note"),
     ]);
   },
 };

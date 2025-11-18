@@ -5,10 +5,10 @@ import { systemColors } from 'utils/defaultValues';
 interface PropTypes {
   phone?: string;
   text?: string;
-  mesage?: string;
+  message?: string;
 }
 
-const WhatsApp: React.FC<PropTypes> = ({ phone, text, mesage }) => {
+const WhatsApp: React.FC<PropTypes> = ({ phone, text, message }) => {
   if (phone) {
     const sendPhone = phone
       .replace('+55', '')
@@ -23,7 +23,7 @@ const WhatsApp: React.FC<PropTypes> = ({ phone, text, mesage }) => {
       .replace(' ', '')
       .replace(' ', '')
       .trim();
-    const propMessage = mesage ? `&text=${mesage}` : '';
+    const propMessage = message ? `&text=${message}` : '';
     return (
       <div>
         <WhatsAppOutlined color={systemColors.GREEN} />

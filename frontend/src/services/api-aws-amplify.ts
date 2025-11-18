@@ -43,6 +43,13 @@ const api = {
     showNotification: boolean = false
   ): Promise<Response> => {
     return request('get', url, data, showNotification, true);
+  },
+  putPublic: (
+    url: string,
+    data: any,
+    showNotification: boolean = true
+  ): Promise<Response> => {
+    return request('put', url, data, showNotification, true);
   }
 };
 

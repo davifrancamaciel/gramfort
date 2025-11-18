@@ -46,3 +46,10 @@ salesByIdPublic:
         path: sales/contract/{id}
         method: get
         cors: true 
+salesUpdatePublic:
+  handler: src/functions/api/sales.updatePublic
+  events:
+    - http:
+        path: sales/contract
+        method: put
+        cors: true 

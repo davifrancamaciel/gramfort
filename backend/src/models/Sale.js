@@ -53,12 +53,18 @@ module.exports = function (sequelize, DataTypes) {
         phSoil: { type: DataTypes.STRING(100) },
         sunOrientation: { type: DataTypes.STRING(100) },
         hash: { type: DataTypes.UUID },
+        image1: { type: DataTypes.STRING(500) },
+        image2: { type: DataTypes.STRING(500) },
+        image3: { type: DataTypes.STRING(500) },
+        image4: { type: DataTypes.STRING(500) },
+        image5: { type: DataTypes.STRING(500) },
+        image6: { type: DataTypes.STRING(500) },
     });
 
     Sale.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
     Sale.belongsTo(User, { foreignKey: 'userId', as: 'user' });
     Sale.belongsTo(User, { foreignKey: 'clientId', as: 'client' });
-    Sale.hasMany(SaleProduct, { foreignKey: 'saleId', as: 'productsSales' })
     Sale.belongsTo(Visit, { foreignKey: 'visitId', as: 'visit' })
+    Sale.hasMany(SaleProduct, { foreignKey: 'saleId', as: 'productsSales' })
     return Sale;
 };

@@ -1,14 +1,15 @@
 import React from 'react';
-import PrintContainer from 'components/Report/PrintContainer';
-
+import { Col, Image, Row } from 'antd';
 import TableReport from 'components/Report/TableReport';
 import Td from './Td';
 import { Sale, SaleProduct } from '../../interfaces';
 import { formatPrice } from 'utils/formatPrice';
 import { systemColors, productCategoriesEnum } from 'utils/defaultValues';
 import { formatDate, formatDateText } from 'utils/formatDate';
-import image from 'assets/contract.jpg';
+
 import assinatura from 'assets/assinatura.png';
+import logo from 'assets/logo-vertical.jpeg';
+import { Clause, Footer, Header } from './styles';
 
 interface PropTypes {
   sale: Sale;
@@ -20,40 +21,50 @@ const categorIdsArray = [
 
 const Table: React.FC<PropTypes> = ({ sale }) => {
   return (
-    <TableReport title={``} image={sale?.company?.image || ''}>
-      <tr style={{ border: '0' }}>
+    <TableReport
+      title={``}
+      image={sale?.company?.image || ''}
+      showImageLastPage={true}
+    >
+      <tr style={{ border: '0', fontSize: '10px' }}>
         <td style={{ border: '0' }}>
-          <table style={{ textAlign: 'center', marginBottom: '15px' }}>
-            <thead>
-              <tr>
-                <th
-                  style={{
-                    borderRight: '0',
-                    color: '#fff',
-                    backgroundColor: systemColors.DARK_BLUE,
-                    textAlign: 'center'
-                  }}
-                >
-                  GRAMFORT HIDROSSEMEADURA E SOLUÇÕES AMBIENTAIS LTDA
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>CNPJ 50.641.930/0001-00 Fone +55 24 98100.8000</td>
-              </tr>
-              <tr>
-                <td>
-                  Estrada União e Industria, 20647. Petrópolis/RJ. CEP
-                  25.750-222
-                </td>
-              </tr>
-              <tr>
-                <td>www.gramfort.com.br | gramfort@hotmail.com | @gramfort_</td>
-              </tr>
-            </tbody>
-          </table>
-          <p>
+          <Header>
+            <table style={{ textAlign: 'center', marginBottom: '15px' }}>
+              <thead>
+                <tr>
+                  <th
+                    style={{
+                      borderRight: '0',
+                      color: '#fff',
+                      backgroundColor: systemColors.DARK_BLUE,
+                      textAlign: 'center'
+                    }}
+                  >
+                    GRAMFORT HIDROSSEMEADURA E SOLUÇÕES AMBIENTAIS LTDA
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CNPJ 50.641.930/0001-00 Fone +55 24 98100.8000</td>
+                </tr>
+                <tr>
+                  <td>
+                    Estrada União e Industria, 20647. Petrópolis/RJ. CEP
+                    25.750-222
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    www.gramfort.com.br | gramfort@hotmail.com | @gramfort_
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <img src={logo} alt="" />
+          </Header>
+
+          <p style={{ textAlign: 'center' }}>
             Prezado(a) Sr(a), <strong>{sale.client?.name}</strong> atendendo ao
             seu pedido estamos enviando nossa proposta comercial de
             Hidrossemeadura.
@@ -80,7 +91,9 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 <Td
                   colSpan={2}
                   title="Local Aplicação"
-                  value={`${sale.visit?.address} ${sale.visit?.city} ${sale.visit?.state}`}
+                  value={`${sale.visit?.address || ''} ${
+                    sale.visit?.city || ''
+                  } ${sale.visit?.state || ''}`}
                 />
                 <Td colSpan={2} title="KM da Base" value={sale.visit?.km} />
               </tr>
@@ -95,7 +108,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               <tr
                 style={{
                   color: '#fff',
-                  backgroundColor: systemColors.GREY,
+                  backgroundColor: systemColors.DARK_BLUE,
                   textAlign: 'center'
                 }}
               >
@@ -133,22 +146,72 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 ))}
             </tbody>
           </table>
-          <div>
-            <table>
+          <div
+            style={{
+              marginTop: '30px',
+              justifyContent: 'end',
+              display: 'flex'
+            }}
+          >
+            <table style={{ width: '300px', borderTop: '#eee solid 1px' }}>
               <tbody>
                 <tr>
                   <td>Total da Proposta</td>
                   <td>{formatPrice(Number(sale.value))}</td>
                 </tr>
-                <tr>
-                  <td>Desconto Visita</td>
-                  <td>{formatPrice(Number(sale.visit?.value))}</td>
-                </tr>
+                {sale.discountDescription && sale.discountValue && (
+                  <tr>
+                    <td
+                      style={{
+                        color: '#fff',
+                        backgroundColor: systemColors.DARK_BLUE
+                      }}
+                    >
+                      {sale.discountDescription}
+                    </td>
+                    <td
+                      style={{
+                        color: '#fff',
+                        backgroundColor: systemColors.LIGHT_BLUE
+                      }}
+                    >
+                      {formatPrice(Number(sale.discountValue))}
+                    </td>
+                  </tr>
+                )}
+                {sale.visit?.value && (
+                  <tr>
+                    <td
+                      style={{
+                        color: '#fff',
+                        backgroundColor: systemColors.DARK_BLUE
+                      }}
+                    >
+                      Desconto Visita
+                    </td>
+                    <td
+                      style={{
+                        color: '#fff',
+                        backgroundColor: systemColors.LIGHT_BLUE
+                      }}
+                    >
+                      {formatPrice(Number(sale.visit?.value))}
+                    </td>
+                  </tr>
+                )}
+
                 <tr>
                   <td>Valor Total</td>
-                  <td>
+                  <td
+                    style={{
+                      color: '#fff',
+                      backgroundColor: systemColors.GREEN
+                    }}
+                  >
                     {formatPrice(
-                      Number(sale.value) - Number(sale.visit?.value)
+                      Number(sale.value || 0) -
+                        Number(sale.visit?.value || 0) -
+                        Number(sale.discountValue || 0)
                     )}
                   </td>
                 </tr>
@@ -156,7 +219,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
             </table>
           </div>
 
-          <div>
+          <Clause>
             <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
             <p>
               R$ 6.675,00 Sinal de 50% para reservar a data R$ 6.675,00 50%
@@ -166,8 +229,16 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               Santander Ag 4421 CC 13002793-2 Gramfort Hidrossemeadura Pix CNPJ
               50641930000100
             </p>
-          </div>
-          <div>
+            <p>
+              Data prevista para execução{' '}
+              <strong>
+                {sale.expectedDateForApplication
+                  ? formatDate(sale.expectedDateForApplication)
+                  : 'a definir'}
+              </strong>
+            </p>
+          </Clause>
+          <Clause>
             <h3>CLÁUSULA SEGUNDA - DAS OBRIGAÇÕES GERAIS</h3>
             <p>
               Equipe, equipamento e insumos serão de responsabilidade da
@@ -182,33 +253,39 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               Proposta válida por 15 dias. Efetivação mediante pagamento do
               Sinal.
             </p>
-          </div>
-          <div>
+          </Clause>
+          <Clause>
             <h3>
               CLÁUSULA TERCEIRA - DAS OBRIGAÇÕES DO CONTRATANTE PARA MANUTENÇÃO
               DA GARANTIA
             </h3>
             <p>
-              1. <strong>Isolar a área</strong> aplicada para evitar
+              <strong>1. Isolar a área</strong> aplicada para evitar
               pisoteamento de pessoas e animais, pois compromete a germinação
               uniforme das sementes.
             </p>
             <p>
-              2. Observar <strong>acumulo de passáros,</strong> pois podem comer
-              as sementes. Sugerimos alimentá-los na parte baixa com coxos
+              <strong>2. Fazer irrigação</strong> 2x ao dia nos 30 primeiros
+              dias (principalmente as 7h da manhã e final da tarde após o por do
+              sol).
             </p>
             <p>
-              3. Efetuar a{' '}
+              <strong>3.</strong> Observar <strong>acumulo de passáros,</strong>{' '}
+              pois podem comer as sementes. Sugerimos alimentá-los na parte
+              baixa com coxos
+            </p>
+            <p>
+              <strong>4.</strong> Efetuar a{' '}
               <strong>drenagem eficiente na parte superior dos taludes.</strong>{' '}
               Não reaplicamos caso a água lave devido a falta de drenagem.
             </p>
             <p>
-              4. Observar a existência de{' '}
+              <strong>5.</strong> Observar a existência de{' '}
               <strong>formigueiro próximos e eliminá-los,</strong> pois podem
               comprometer o resultado.
             </p>
-          </div>
-          <div>
+          </Clause>
+          <Clause>
             <h3>CLÁUSULA QUARTA - INFORMAÇÕES/TERMOS ADCIONAIS</h3>
             <p>
               A técnica garante a cobertura vegetal do solo, e apesar de
@@ -239,97 +316,130 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               germinação de 90% da área, a GRAMFORT se compromete a refazer o
               plantio.
             </p>
-            <p>
-              Visita técnica realizada{' '}
-              <strong>{formatDate(sale.visit.date)}</strong> água disponivel
-              porem distante do talude / fácil acesso
-            </p>
-            <p>
-              <strong>
-                {sale.expectedDateForApplication
-                  ? formatDate(sale.expectedDateForApplication)
-                  : 'A definir'}
-              </strong>{' '}
-              Data prevista para aplicação.
-            </p>
-          </div>
+          </Clause>
 
-          <div>
+          <Footer>
             <div
               style={{
-                marginTop: '100px',
+                marginTop: '10px',
                 display: 'grid',
                 justifyContent: 'center'
               }}
             >
               <img alt={''} src={assinatura} style={{ width: '200px' }} />
 
-              <p style={{ fontSize: '15px' }}>
+              <p style={{ fontSize: '15px', borderTop: 'solid 1px' }}>
                 <strong>Valter Rodrigo S Silva</strong>
               </p>
-              <p
-                style={{
-                  fontSize: '11px',
-                  marginTop: '2px',
-                  marginBottom: '2px'
-                }}
-              >
-                Gramfort Hidrossemeadura
-              </p>
-              <p
-                style={{
-                  fontSize: '11px',
-                  marginTop: '2px',
-                  marginBottom: '2px'
-                }}
-              >
-                Soluções Ambientais LTDA
-              </p>
-              <p
-                style={{
-                  fontSize: '11px',
-                  marginTop: '2px',
-                  marginBottom: '2px'
-                }}
-              >
-                - Diretor Geral -
-              </p>
+              <p>Diretor Comercial GramFort</p>
               <p>Proposta Comercial nº {sale.id}</p>
             </div>
             <div
               style={{
-                marginTop: '100px',
+                marginTop: '10px',
                 display: 'grid',
                 justifyContent: 'center'
               }}
             >
-              <img alt={''} src={assinatura} style={{ width: '200px' }} />
-
-              <p style={{ fontSize: '15px' }}>
+              <p
+                style={{
+                  fontSize: '15px',
+                  borderTop: 'solid 1px',
+                  marginTop: '81px'
+                }}
+              >
                 <strong>{sale.client?.name}</strong>
               </p>
-              <p
-                style={{
-                  fontSize: '11px',
-                  marginTop: '2px',
-                  marginBottom: '2px'
-                }}
-              >
-                Cliente/Contratante
-              </p>
-              <p
-                style={{
-                  fontSize: '11px',
-                  marginTop: '2px',
-                  marginBottom: '2px'
-                }}
-              >
-                Petrópolis, {formatDateText(sale.createdAt!)}
-              </p>
+              <p>Cliente/Contratante</p>
+              <p>Petrópolis, {formatDateText(sale.createdAt!)}</p>
             </div>
-          </div>
+          </Footer>
 
-          <img src={image} alt="" style={{ maxWidth: '100%' }} />
+          {sale.visit && (
+            <Header>
+              <table style={{ textAlign: 'center', marginBottom: '15px' }}>
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        borderRight: '0',
+                        color: '#fff',
+                        backgroundColor: systemColors.DARK_BLUE,
+                        textAlign: 'center'
+                      }}
+                    >
+                      RELATÓRIO DE VISITA TÉCNICA
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      Realizada por {sale.visit?.user?.name} em{' '}
+                      {formatDate(sale.visit?.date)}
+                    </td>
+                  </tr>
+                  {sale.visit?.note && (
+                    <tr>
+                      <td
+                        style={{
+                          color: '#fff',
+                          backgroundColor: systemColors.GREEN
+                        }}
+                      >
+                        INFORMAÇÕES IMPORTANTES
+                      </td>
+                    </tr>
+                  )}
+                  {sale.visit?.note
+                    ?.split('\n')
+                    .map((item: string, index: number) => (
+                      <tr key={index + 100}>
+                        <td>{item}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              <img src={logo} alt="" />
+            </Header>
+          )}
+          <Row gutter={[16, 24]}>
+            <Col
+              lg={24}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                width: '100%'
+              }}
+            >
+              <Image style={{ height: '200px' }} src={sale.image1} />
+              <Image style={{ height: '200px' }} src={sale.image2} />
+            </Col>
+          </Row>
+          <Row gutter={[16, 24]}>
+            <Col
+              lg={12}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%'
+              }}
+            >
+              <Image style={{ height: '600px' }} src={sale.image3} />
+            </Col>
+            <Col
+              lg={12}
+              style={{
+                display: 'grid',
+                justifyContent: 'space-around',
+                width: '100%'
+              }}
+            >
+              <Image style={{ height: '200px' }} src={sale.image4} />
+              <Image style={{ height: '200px' }} src={sale.image5} />
+              <Image style={{ height: '200px' }} src={sale.image6} />
+            </Col>
+          </Row>
         </td>
       </tr>
     </TableReport>

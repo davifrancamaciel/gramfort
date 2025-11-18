@@ -95,15 +95,17 @@ module.exports.list = async (event, context) => {
                 model: User, as: 'user', attributes: ['name'], where: whereStatementUser
             }, {
                 model: User, as: 'client',
-                attributes: ['name'],
+                attributes: ['name', 'phone'],
                 where: whereStatementClient,
                 required: whereStatementClient.name ? true : false
             }, {
                 model: Company, as: 'company', attributes: ['name', 'image', 'individualCommission'],
+            }, {
+                model: Visit, as: 'visit', attributes: ['date', 'value'],
             }]
         })
         const salesIds = rows.map(x => x.id)
-        const salesProductsList = await Visit.findAll({
+        const salesProductsList = await SaleProduct.findAll({
             where: { saleId: { [Op.in]: salesIds } },
             attributes: ['amount', 'valueAmount', 'value', 'productId', 'saleId'],
             include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'size', 'isInput'] }],
@@ -170,7 +172,12 @@ const listByIdResult = async (id) => {
             {
                 model: Visit,
                 as: 'visit',
-                attributes: ['km', 'state', 'city', 'address', 'date', 'value'],
+                attributes: ['km', 'state', 'city', 'address', 'date', 'value', 'note'],
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['name'],
+                }]
             },
             {
                 model: Company,
@@ -272,6 +279,29 @@ module.exports.update = async (event) => {
         console.log('PARA ', result.dataValues)
 
         return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso`)
+    } catch (err) {
+        return await handlerErrResponse(err, body)
+    }
+}
+
+module.exports.updatePublic = async (event) => {
+    const body = JSON.parse(event.body)
+    try {
+        const { id, hash } = body
+        const item = await Sale.findByPk(Number(id));
+
+        if (!item)
+            return handlerResponse(400, {}, `Proposta não encontrada`)
+        if (item.hash !== hash)
+            return handlerResponse(400, {}, `Proposta não encontrada`)
+        
+            const objOnSave = {
+            approved: true
+        }
+
+        // const result = await item.update(objOnSave);
+
+        return handlerResponse(200, {}, `Proposta aprovada com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, body)
     }
