@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Col, Divider, notification } from 'antd';
+import { Col, Divider, notification, UploadFile } from 'antd';
 import {
   DatePicker,
   Input,
@@ -20,6 +20,7 @@ import { useAppContext } from 'hooks/contextLib';
 import ShowByRoule from 'components/ShowByRoule';
 import { arrayCapture, arrayLevel, arrayNature } from 'pages/User/utils';
 import { arrayDemand } from '../../User/utils';
+import UploadImages from 'components/UploadImages';
 
 const CreateEdit: React.FC = (props: any) => {
   const { companies } = useAppContext();
@@ -32,6 +33,7 @@ const CreateEdit: React.FC = (props: any) => {
   const [total, setTotal] = useState<number>(0);
   const [totalBalance, setTotalBalance] = useState<number>(0);
   const [totalInput, setTotalInput] = useState<number>(0);
+  const [fileList, setFileList] = useState<Array<UploadFile>>([]);
 
   useEffect(() => {
     onLoadUsersSales();
@@ -296,6 +298,9 @@ const CreateEdit: React.FC = (props: any) => {
           value={state.note}
           onChange={(e) => dispatch({ note: e.target.value })}
         />
+      </Col>
+      <Col lg={24} md={24} sm={24} xs={24}>
+        <UploadImages setFileList={setFileList} fileList={fileList} maxCount={6} />
       </Col>
     </PanelCrud>
   );

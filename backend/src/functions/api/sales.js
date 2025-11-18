@@ -15,6 +15,7 @@ const { getUser, checkRouleProfileAccess } = require("../../services/UserService
 const { executeSelect, executeDelete, executeUpdate } = require("../../services/ExecuteQueryService");
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
+const imageService = require("../../services/ImageService");
 
 const RESOURCE_NAME = 'Venda'
 
@@ -294,8 +295,8 @@ module.exports.updatePublic = async (event) => {
             return handlerResponse(400, {}, `Proposta não encontrada`)
         if (item.hash !== hash)
             return handlerResponse(400, {}, `Proposta não encontrada`)
-        
-            const objOnSave = {
+
+        const objOnSave = {
             approved: true
         }
 
@@ -352,6 +353,13 @@ const createProductsSales = async (body, result, isDelete) => {
             await executeUpdate(query);
         }
     }
+    
+    await imageService.add('sales', result.dataValues, body.fileList1, 'image1');
+    await imageService.add('sales', result.dataValues, body.fileList2, 'image2');
+    await imageService.add('sales', result.dataValues, body.fileList3, 'image3');
+    await imageService.add('sales', result.dataValues, body.fileList4, 'image4');
+    await imageService.add('sales', result.dataValues, body.fileList5, 'image5');
+    await imageService.add('sales', result.dataValues, body.fileList6, 'image6');
 }
 
 const createSalesProduct = async (companyId, saleId, productsSales) => {

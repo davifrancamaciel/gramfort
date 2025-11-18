@@ -403,7 +403,10 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               <img src={logo} alt="" />
             </Header>
           )}
-          <Row gutter={[16, 24]}>
+          <Row
+            gutter={[16, 24]}
+            style={{ marginBottom: '15px', marginTop: '15px' }}
+          >
             <Col
               lg={24}
               style={{
@@ -422,22 +425,22 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               style={{
                 display: 'flex',
                 justifyContent: 'center',
-                width: '100%'
+                width: '50%'
               }}
             >
-              <Image style={{ height: '600px' }} src={sale.image3} />
+              <Image style={{ height: '500px' }} src={sale.image3} />
             </Col>
             <Col
               lg={12}
               style={{
                 display: 'grid',
                 justifyContent: 'space-around',
-                width: '100%'
+                width: '50%'
               }}
             >
-              <Image style={{ height: '200px' }} src={sale.image4} />
-              <Image style={{ height: '200px' }} src={sale.image5} />
-              <Image style={{ height: '200px' }} src={sale.image6} />
+              <Image style={{ height: '150px' }} src={sale.image4} />
+              <Image style={{ height: '150px' }} src={sale.image5} />
+              <Image style={{ height: '150px' }} src={sale.image6} />
             </Col>
           </Row>
         </td>

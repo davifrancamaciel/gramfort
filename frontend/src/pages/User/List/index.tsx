@@ -11,7 +11,6 @@ import { formatDateHour } from 'utils/formatDate';
 import ShowByRoule from 'components/ShowByRoule';
 import BooleanTag from 'components/BooleanTag';
 import { useAppContext } from 'hooks/contextLib';
-import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import ExportCSV from './Export';
 import { useQuery } from 'hooks/queryString';
 import WhatsApp from 'components/WhatsApp';
