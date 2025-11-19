@@ -63,30 +63,27 @@ const Contract: React.FC = (props: any) => {
   };
 
   const btnWhatapp = () => {
-    if (sale?.client?.phone)
-      return (
-        <WhatsApp
-          phone={sale?.client?.phone}
-          text={`Enviar contrato para ${sale?.client?.name}`}
-          message={`Olá, ${sale?.client?.name} segue o link da proposta para aprovação ${window.location.origin}/${appRoutes.contracts}/approve/${sale?.id}?hash=${sale?.hash}`}
-        />
-      );
+    return (
+      <WhatsApp
+        phone={sale?.client?.phone}
+        text={`Enviar contrato para ${sale?.client?.name}`}
+        message={`Olá, ${sale?.client?.name} segue o link da proposta para aprovação ${window.location.origin}/${appRoutes.contracts}/approve/${sale?.id}?hash=${sale?.hash}`}
+      />
+    );
   };
 
   const btnApprove = () => {
-    if (query.get('hash')) {
-      return (
-        <Button
-          key={'approve'}
-          style={{ backgroundColor: systemColors.GREEN, color: '#fff' }}
-          icon={<CheckOutlined />}
-          onClick={action}
-          block
-        >
-          Aprovar
-        </Button>
-      );
-    }
+    return (
+      <Button
+        key={'approve'}
+        style={{ backgroundColor: systemColors.GREEN, color: '#fff' }}
+        icon={<CheckOutlined />}
+        onClick={action}
+        block
+      >
+        Aprovar
+      </Button>
+    );
   };
 
   const actions = () => {
@@ -96,7 +93,7 @@ const Contract: React.FC = (props: any) => {
       </PrintContainer>
     ];
     if (sale?.client?.phone && !query.get('hash')) array.push(btnWhatapp());
-    if (query.get('hash')) array.push(btnApprove());
+    if (query.get('hash') && !sale?.approved) array.push(btnApprove());
 
     return array;
   };

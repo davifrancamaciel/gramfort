@@ -3,6 +3,7 @@
 const { Op } = require('sequelize');
 const db = require('../../database');
 const { startOfDay, endOfDay, parseISO } = require('date-fns');
+const uuid = require('uuid');
 
 const Sale = require('../../models/Sale')(db.sequelize, db.Sequelize);
 const User = require('../../models/User')(db.sequelize, db.Sequelize);
@@ -13,7 +14,7 @@ const Visit = require('../../models/Visit')(db.sequelize, db.Sequelize);
 
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { executeSelect, executeDelete, executeUpdate } = require("../../services/ExecuteQueryService");
-const { roules } = require("../../utils/defaultValues");
+const { roules, path } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const imageService = require("../../services/ImageService");
 
@@ -35,7 +36,7 @@ module.exports.list = async (event, context) => {
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
         const isAdm = checkRouleProfileAccess(user.groups, roules.administrator)
         if (event.queryStringParameters) {
-            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId } = event.queryStringParameters
+            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId, path } = event.queryStringParameters
 
             if (companyId) whereStatement.companyId = companyId;
 
@@ -43,6 +44,12 @@ module.exports.list = async (event, context) => {
                 whereStatement.companyId = user.companyId
 
             if (id) whereStatement.id = id;
+
+            if (path && path == 'sales')
+                whereStatement.approved = true;
+
+            if (path && path == 'contracts')
+                whereStatement.hash = { [Op.ne]: null, }; // diferente
 
             if (product)
                 whereStatement.products = { [Op.like]: `%${product}%` }
@@ -292,17 +299,17 @@ module.exports.updatePublic = async (event) => {
         const item = await Sale.findByPk(Number(id));
 
         if (!item)
-            return handlerResponse(400, {}, `Proposta não encontrada`)
+            return handlerResponse(400, {}, `Contrato não encontrado`)
         if (item.hash !== hash)
-            return handlerResponse(400, {}, `Proposta não encontrada`)
+            return handlerResponse(400, {}, `Contrato não encontrado`)
 
         const objOnSave = {
             approved: true
         }
 
-        // const result = await item.update(objOnSave);
+        const result = await item.update(objOnSave);
 
-        return handlerResponse(200, {}, `Proposta aprovada com sucesso`)
+        return handlerResponse(200, result, `Contrato aprovado com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, body)
     }
@@ -353,13 +360,13 @@ const createProductsSales = async (body, result, isDelete) => {
             await executeUpdate(query);
         }
     }
-    
-    await imageService.add('sales', result.dataValues, body.fileList1, 'image1');
-    await imageService.add('sales', result.dataValues, body.fileList2, 'image2');
-    await imageService.add('sales', result.dataValues, body.fileList3, 'image3');
-    await imageService.add('sales', result.dataValues, body.fileList4, 'image4');
-    await imageService.add('sales', result.dataValues, body.fileList5, 'image5');
-    await imageService.add('sales', result.dataValues, body.fileList6, 'image6');
+
+    // await imageService.add('sales', result.dataValues, body.fileList1, 'image1');
+    // await imageService.add('sales', result.dataValues, body.fileList2, 'image2');
+    // await imageService.add('sales', result.dataValues, body.fileList3, 'image3');
+    // await imageService.add('sales', result.dataValues, body.fileList4, 'image4');
+    // await imageService.add('sales', result.dataValues, body.fileList5, 'image5');
+    // await imageService.add('sales', result.dataValues, body.fileList6, 'image6');
 }
 
 const createSalesProduct = async (companyId, saleId, productsSales) => {
@@ -388,6 +395,8 @@ const createSale = async (objOnSave, body) => {
     objOnSave.commission = await getCommission(objOnSave.userId);
     objOnSave.value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
     objOnSave.valueInput = body.inputsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+    if (body.path === path.contracts)
+        objOnSave.hash = uuid.v4();
 
     const result = await Sale.create(objOnSave);
 
@@ -395,3 +404,13 @@ const createSale = async (objOnSave, body) => {
 
     return result;
 }
+
+const getTitle = (type, isPlural = false) => {
+    switch (type) {
+        case path.sales:
+            return `Venda${isPlural ? 's' : ''}`;
+
+        default:
+            return `Contrato${isPlural ? 's' : ''}`;
+    }
+};

@@ -64,12 +64,14 @@ export interface Sale {
   discountValue?: number;
   phSoil?: string;
   sunOrientation?: string;
+  paymentMethod?: string;
   image1?: string;
   image2?: string;
   image3?: string;
   image4?: string;
   image5?: string;
   image6?: string;
+  path?: string;
 }
 
 export const initialStateForm: Sale = {
@@ -77,7 +79,8 @@ export const initialStateForm: Sale = {
   products: [],
   inputs: [],
   productsSales: [],
-  invoice: false
+  invoice: false,
+  approved: false
 };
 
 export interface Filter {
@@ -91,6 +94,7 @@ export interface Filter {
   pageNumber: number;
   pageSize: number;
   showCommission: boolean;
+  path?: string;
 }
 
 export const initialStateFilter: Filter = {
@@ -99,4 +103,39 @@ export const initialStateFilter: Filter = {
   pageNumber: 1,
   pageSize: 100,
   showCommission: false
+};
+
+export const defaultValuesForm = {
+  note: '',
+  products: [],
+  inputs: [],
+  invoiceNumber: '',
+  germinationLevel: '',
+  satisfaction: '',
+  contact: '',
+  capture: '',
+  nature: '',
+  saleDate: '',
+  distance: null,
+  clientId: '',
+
+  //contract
+  visitId: null,
+  approved: false,
+  internalNote: '',
+  access: null,
+  complexityLevel: null,
+  daysExecution: null,
+  expectedDateForApplication: '',
+  discountDescription: '',
+  discountValue: null,
+  phSoil: '',
+  sunOrientation: '',
+  paymentMethod: ''
+  // image1: string,
+  // image2: string,
+  // image3: string,
+  // image4: string,
+  // image5: string,
+  // image6: string,
 };

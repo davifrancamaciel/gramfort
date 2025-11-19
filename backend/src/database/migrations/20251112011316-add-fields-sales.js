@@ -8,30 +8,31 @@ module.exports = {
 
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      queryInterface.addColumn(TABLE_NAME, "visitId", {
+      await queryInterface.addColumn(TABLE_NAME, "visitId", {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: { model: 'visits', key: 'id' },
         onUpdate: 'CASCADE',
       });
-      queryInterface.addColumn(TABLE_NAME, "hash", { type: Sequelize.UUID });
-      queryInterface.addColumn(TABLE_NAME, "approved", { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false });
-      queryInterface.addColumn(TABLE_NAME, "internalNote", { type: Sequelize.STRING(500), });
-      queryInterface.addColumn(TABLE_NAME, "access", { type: Sequelize.INTEGER, });
-      queryInterface.addColumn(TABLE_NAME, "complexityLevel", { type: Sequelize.INTEGER, });
-      queryInterface.addColumn(TABLE_NAME, "daysExecution", { type: Sequelize.INTEGER, });
-      queryInterface.addColumn(TABLE_NAME, "expectedDateForApplication", { type: Sequelize.DATE, });
-      queryInterface.addColumn(TABLE_NAME, "discountDescription", { type: Sequelize.STRING(50) });
-      queryInterface.addColumn(TABLE_NAME, "discountValue", { type: Sequelize.DECIMAL(10, 2), defaultValue: 0 });
-      queryInterface.addColumn(TABLE_NAME, "phSoil", { type: Sequelize.STRING(100) });
-      queryInterface.addColumn(TABLE_NAME, "sunOrientation", { type: Sequelize.STRING(100) });
-      queryInterface.addColumn(TABLE_NAME, "image1", { type: Sequelize.STRING(500) });
-      queryInterface.addColumn(TABLE_NAME, "image2", { type: Sequelize.STRING(500) });
-      queryInterface.addColumn(TABLE_NAME, "image3", { type: Sequelize.STRING(500) });
-      queryInterface.addColumn(TABLE_NAME, "image4", { type: Sequelize.STRING(500) });
-      queryInterface.addColumn(TABLE_NAME, "image5", { type: Sequelize.STRING(500) });
-      queryInterface.addColumn(TABLE_NAME, "image6", { type: Sequelize.STRING(500) });
-      queryInterface.addColumn('visits', "note", { type: Sequelize.STRING(500), });
+      await queryInterface.addColumn(TABLE_NAME, "hash", { type: Sequelize.UUID }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "approved", { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "internalNote", { type: Sequelize.STRING(500), }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "access", { type: Sequelize.INTEGER, }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "complexityLevel", { type: Sequelize.INTEGER, }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "daysExecution", { type: Sequelize.INTEGER, }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "expectedDateForApplication", { type: Sequelize.DATE, }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "discountDescription", { type: Sequelize.STRING(50) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "discountValue", { type: Sequelize.DECIMAL(10, 2), defaultValue: 0 }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "phSoil", { type: Sequelize.STRING(100) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "sunOrientation", { type: Sequelize.STRING(100) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "paymentMethod", { type: Sequelize.STRING(200) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "image1", { type: Sequelize.STRING(500) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "image2", { type: Sequelize.STRING(500) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "image3", { type: Sequelize.STRING(500) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "image4", { type: Sequelize.STRING(500) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "image5", { type: Sequelize.STRING(500) }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "image6", { type: Sequelize.STRING(500) }, { transaction });
+      await queryInterface.addColumn('visits', "note", { type: Sequelize.STRING(500), }, { transaction });
 
       await transaction.commit();
     } catch (err) {
@@ -42,24 +43,26 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     return Promise.all([
-      queryInterface.removeColumn(TABLE_NAME, "visitId"),
-      queryInterface.removeColumn(TABLE_NAME, "hash"),
-      queryInterface.removeColumn(TABLE_NAME, "approved"),
-      queryInterface.removeColumn(TABLE_NAME, "internalNote"),
-      queryInterface.removeColumn(TABLE_NAME, "access"),
-      queryInterface.removeColumn(TABLE_NAME, "complexityLevel"),
-      queryInterface.removeColumn(TABLE_NAME, "daysExecution"),
-      queryInterface.removeColumn(TABLE_NAME, "expectedDateForApplication"),
-      queryInterface.removeColumn(TABLE_NAME, "discountDescription"),
-      queryInterface.removeColumn(TABLE_NAME, "discountValue"),
-      queryInterface.removeColumn(TABLE_NAME, "phSoil"),
-      queryInterface.removeColumn(TABLE_NAME, "image1"),
-      queryInterface.removeColumn(TABLE_NAME, "image2"),
-      queryInterface.removeColumn(TABLE_NAME, "image3"),
-      queryInterface.removeColumn(TABLE_NAME, "image4"),
-      queryInterface.removeColumn(TABLE_NAME, "image5"),
-      queryInterface.removeColumn(TABLE_NAME, "image6"),
-      queryInterface.removeColumn('visits', "note"),
+      await queryInterface.removeColumn(TABLE_NAME, "visitId"),
+      await queryInterface.removeColumn(TABLE_NAME, "hash"),
+      await queryInterface.removeColumn(TABLE_NAME, "approved"),
+      await queryInterface.removeColumn(TABLE_NAME, "internalNote"),
+      await queryInterface.removeColumn(TABLE_NAME, "access"),
+      await queryInterface.removeColumn(TABLE_NAME, "complexityLevel"),
+      await queryInterface.removeColumn(TABLE_NAME, "daysExecution"),
+      await queryInterface.removeColumn(TABLE_NAME, "expectedDateForApplication"),
+      await queryInterface.removeColumn(TABLE_NAME, "discountDescription"),
+      await queryInterface.removeColumn(TABLE_NAME, "discountValue"),
+      await queryInterface.removeColumn(TABLE_NAME, "phSoil"),
+      await queryInterface.removeColumn(TABLE_NAME, "sunOrientation"),
+      await queryInterface.removeColumn(TABLE_NAME, "paymentMethod"),
+      await queryInterface.removeColumn(TABLE_NAME, "image1"),
+      await queryInterface.removeColumn(TABLE_NAME, "image2"),
+      await queryInterface.removeColumn(TABLE_NAME, "image3"),
+      await queryInterface.removeColumn(TABLE_NAME, "image4"),
+      await queryInterface.removeColumn(TABLE_NAME, "image5"),
+      await queryInterface.removeColumn(TABLE_NAME, "image6"),
+      await queryInterface.removeColumn('visits', "note"),
     ]);
   },
 };

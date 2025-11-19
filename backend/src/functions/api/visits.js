@@ -251,3 +251,31 @@ module.exports.delete = async (event) => {
         return await handlerErrResponse(err, pathParameters)
     }
 }
+
+module.exports.listAll = async (event) => {
+    let clientId
+    if (event && event.queryStringParameters) {
+        const { queryStringParameters } = event
+        clientId = queryStringParameters.clientId
+    }
+    try {
+        const whereStatement = { sale: true };
+        const user = await getUser(event)
+
+        if (!user)
+            return handlerResponse(400, {}, `Usuário não encontrado`)
+        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+            whereStatement.companyId = user.companyId
+        if (clientId)
+            whereStatement.clientId = clientId;
+
+        const resp = await Visit.findAll({
+            where: whereStatement,
+            order: [['date', 'DESC']],
+        })
+
+        return handlerResponse(200, resp)
+    } catch (err) {
+        return await handlerErrResponse(err, queryStringParameters)
+    }
+}

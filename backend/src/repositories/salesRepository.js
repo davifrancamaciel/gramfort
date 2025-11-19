@@ -11,7 +11,7 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
                         SUM(s.valueInput) totalValueInputMonth, 
                         SUM(s.value * (s.commission / 100)) totalValueCommissionMonth
                     FROM sales s 
-                    WHERE s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                    WHERE s.approved = true AND s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
                     ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}
                     ${individualCommission ? ` AND s.userId = ${user.userId}` : ''}`
     const [result] = await executeSelect(query);
@@ -23,7 +23,7 @@ const productsM2 = async (date, isAdm, user, companyId) => {
     const query = ` SELECT SUM(sp.amount) m2 FROM saleProducts sp 
                     INNER JOIN sales s ON s.id = sp.saleId 
                     INNER JOIN products p ON p.id = sp.productId 
-                    WHERE s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' AND 
+                    WHERE s.approved = true AND s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' AND 
                           p.categoryId = 4 ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
 
     const result = await executeSelect(query);
@@ -50,7 +50,7 @@ const salesMonthExpenseCommission = async (date) => {
                     FROM sales s 
                     INNER JOIN users u ON u.id = s.userId 
                     INNER JOIN companies c ON c.id = s.companyId
-                    WHERE s.createdAt BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' AND c.active = true 
+                    WHERE s.approved = true AND s.createdAt BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' AND c.active = true 
                     GROUP BY s.userId, s.companyId;`
     const result = await executeSelect(query);
     return result

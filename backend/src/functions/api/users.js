@@ -341,14 +341,15 @@ module.exports.listAll = async (event) => {
 
         const resp = await User.findAll({
             where: whereStatement,
-            attributes: ['id', 'name', 'type'],
+            attributes: ['id', 'name', 'type', 'companyId'],
             order: [['name', 'ASC']],
         })
 
         const respFormated = resp.map(item => ({
             value: item.id,
             label: item.name,
-            type: item.type
+            type: item.type,
+            companyId: item.companyId,
         }));
         return handlerResponse(200, respFormated)
     } catch (err) {

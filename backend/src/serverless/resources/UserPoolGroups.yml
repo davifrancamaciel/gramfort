@@ -77,3 +77,10 @@ Resources:
         GroupName: "Veiculos"
         UserPoolId:
           Ref: UserPool  
+    CognitoUserPoolGroupsContracts:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Contratos"
+        GroupName: "Contratos"
+        UserPoolId:
+          Ref: UserPool  

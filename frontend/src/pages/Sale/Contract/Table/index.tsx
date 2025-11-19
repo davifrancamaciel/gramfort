@@ -221,10 +221,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
 
           <Clause>
             <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
-            <p>
-              R$ 6.675,00 Sinal de 50% para reservar a data R$ 6.675,00 50%
-              restante no final da aplicação
-            </p>
+            {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
             <p>
               Santander Ag 4421 CC 13002793-2 Gramfort Hidrossemeadura Pix CNPJ
               50641930000100
@@ -415,8 +412,12 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 width: '100%'
               }}
             >
-              <Image style={{ height: '200px' }} src={sale.image1} />
-              <Image style={{ height: '200px' }} src={sale.image2} />
+              {sale.image1 && (
+                <Image style={{ height: '200px' }} src={sale.image1} />
+              )}
+              {sale.image2 && (
+                <Image style={{ height: '200px' }} src={sale.image2} />
+              )}
             </Col>
           </Row>
           <Row gutter={[16, 24]}>
@@ -428,7 +429,9 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 width: '50%'
               }}
             >
-              <Image style={{ height: '500px' }} src={sale.image3} />
+              {sale.image3 && (
+                <Image style={{ height: '500px' }} src={sale.image3} />
+              )}
             </Col>
             <Col
               lg={12}
@@ -438,9 +441,15 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 width: '50%'
               }}
             >
-              <Image style={{ height: '150px' }} src={sale.image4} />
-              <Image style={{ height: '150px' }} src={sale.image5} />
-              <Image style={{ height: '150px' }} src={sale.image6} />
+              {sale.image4 && (
+                <Image style={{ height: '150px' }} src={sale.image4} />
+              )}
+              {sale.image5 && (
+                <Image style={{ height: '150px' }} src={sale.image5} />
+              )}
+              {sale.image6 && (
+                <Image style={{ height: '150px' }} src={sale.image6} />
+              )}
             </Col>
           </Row>
         </td>

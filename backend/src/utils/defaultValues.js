@@ -2,14 +2,18 @@
 
 const roules = {
     administrator: 'administrador',
-    users: 'usuarios',    
-    products: 'produtos',   
+    users: 'usuarios',
+    products: 'produtos',
     sales: 'vendas',
     saleUserIdChange: 'vendedor_vendas',
     expenses: 'despesas',
     clients: 'clientes',
     supplier: 'fornecedores',
     visits: 'visitas',
+};
+const path = {
+    sales: 'sales',
+    contracts: 'contracts',
 };
 
 const cognito = {
@@ -37,4 +41,4 @@ const userType = {
     SUPPLIER: 'SUPPLIER'
 }
 
-module.exports = { roules, cognito, companyIdDefault, userType, linkServices }
+module.exports = { roules, cognito, companyIdDefault, userType, linkServices, path }

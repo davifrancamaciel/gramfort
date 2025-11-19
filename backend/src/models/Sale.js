@@ -52,6 +52,7 @@ module.exports = function (sequelize, DataTypes) {
         discountValue: { type: DataTypes.DECIMAL },
         phSoil: { type: DataTypes.STRING(100) },
         sunOrientation: { type: DataTypes.STRING(100) },
+        paymentMethod: { type: DataTypes.STRING(200) },
         hash: { type: DataTypes.UUID },
         image1: { type: DataTypes.STRING(500) },
         image2: { type: DataTypes.STRING(500) },

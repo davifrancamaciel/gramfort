@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { FileDoneOutlined } from '@ant-design/icons';
+
 import { Col } from 'antd';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from 'date-fns';
+import { startOfMonth, endOfMonth } from 'date-fns';
 
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Switch, Select } from 'components/_inputs';
-import { apiRoutes, appRoutes, roules } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  roules,
+  systemColors
+} from 'utils/defaultValues';
 import { initialStateFilter, Sale, SaleProduct } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
@@ -20,6 +25,7 @@ import BooleanTag from 'components/BooleanTag';
 import { useAppContext } from 'hooks/contextLib';
 import { Link } from 'react-router-dom';
 import WhatsApp from 'components/WhatsApp';
+import { getType } from '../utils';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -27,28 +33,33 @@ const List: React.FC = () => {
   const [items, setItems] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [path, setPath] = useState<string>('');
 
   useEffect(() => {
+    const typePath = getType();
+    setPath(typePath);
     const date = new Date();
     const createdAtStart = startOfMonth(date).toISOString();
     const createdAtEnd = endOfMonth(date).toISOString();
-    actionFilter(1, createdAtStart, createdAtEnd);
+    actionFilter(1, createdAtStart, createdAtEnd, typePath);
   }, []);
 
   const actionFilter = async (
     pageNumber: number = 1,
     createdAtStart = state.createdAtStart,
-    createdAtEnd = state.createdAtEnd
+    createdAtEnd = state.createdAtEnd,
+    path: string = state.path
   ) => {
     try {
-      dispatch({ ...state, pageNumber, createdAtStart, createdAtEnd });
+      dispatch({ ...state, pageNumber, createdAtStart, createdAtEnd, path });
 
       setLoading(true);
       const resp = await api.get(apiRoutes.sales, {
         ...state,
         pageNumber,
         createdAtStart,
-        createdAtEnd
+        createdAtEnd,
+        path
       });
       setLoading(false);
 
@@ -80,10 +91,15 @@ const List: React.FC = () => {
         };
         return {
           ...sale,
-          contract: (
+          contract: sale.hash ? (
             <Link to={`${appRoutes.contracts}/details/${sale.id}`}>
-              <FileDoneOutlined />
+              <BooleanTag
+                value={true}
+                yes={path === appRoutes.contracts ? 'VER' : 'SIM/VER'}
+              />
             </Link>
+          ) : (
+            <BooleanTag value={false} />
           )
         };
       });
@@ -241,9 +257,9 @@ const List: React.FC = () => {
         pageSize={state.pageSize}
         loading={loading}
         routes={{
-          routeCreate: `/${appRoutes.sales}/create`,
-          routeUpdate: `/${appRoutes.sales}/edit`,
-          // routeView: `/${appRoutes.sales}/details`,
+          routeCreate: `/${path}/create`,
+          routeUpdate: `/${path}/edit`,
+          // routeView: `/${path}/details`,
           routeDelete: `/${appRoutes.sales}`
         }}
       />

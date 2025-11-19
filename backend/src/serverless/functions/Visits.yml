@@ -38,3 +38,11 @@ visitsDelete:
         method: delete
         authorizer: verifyToken
         cors: true
+visitsAll:
+    handler: src/functions/api/visits.listAll
+    events:
+      - http:
+          path: visits/all
+          method: get
+          authorizer: verifyToken
+          cors: true
