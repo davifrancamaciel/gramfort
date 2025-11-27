@@ -116,7 +116,7 @@ module.exports.list = async (event, context) => {
         const salesProductsList = await SaleProduct.findAll({
             where: { saleId: { [Op.in]: salesIds } },
             attributes: ['amount', 'valueAmount', 'value', 'productId', 'saleId'],
-            include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'size', 'isInput'] }],
+            include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'size', 'categoryId'] }],
         })
         const newRows = rows.map(s => {
             const productsSales = salesProductsList.filter(sp => sp.saleId === s.id)
@@ -196,7 +196,7 @@ const listByIdResult = async (id) => {
                 model: SaleProduct,
                 as: 'productsSales',
                 attributes: ['id', 'amount', 'valueAmount', 'value', 'productId', 'description'],
-                include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'isInput', 'description', 'categoryId'] }]
+                include: [{ model: Product, as: 'product', attributes: ['name', 'price', 'description', 'categoryId'] }]
             },]
     })
 
@@ -260,7 +260,7 @@ module.exports.update = async (event) => {
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
 
         const value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
-        const valueInput = body.inputsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+        const valueInput = body.costsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
         const objOnSave = {
             ...body,
             value,
@@ -281,10 +281,11 @@ module.exports.update = async (event) => {
 
         objOnSave.commission = await getCommission(objOnSave.userId);
         const result = await item.update(objOnSave);
-
         await createProductsSales(body, result, true);
-
+        await addImage(result, body)
         console.log('PARA ', result.dataValues)
+
+        await setSaleVisit(result);
 
         return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso`)
     } catch (err) {
@@ -303,11 +304,10 @@ module.exports.updatePublic = async (event) => {
         if (item.hash !== hash)
             return handlerResponse(400, {}, `Contrato não encontrado`)
 
-        const objOnSave = {
-            approved: true
-        }
-
+        const objOnSave = { approved: true }
         const result = await item.update(objOnSave);
+
+        await setSaleVisit(result);
 
         return handlerResponse(200, result, `Contrato aprovado com sucesso`)
     } catch (err) {
@@ -347,7 +347,7 @@ const createProductsSales = async (body, result, isDelete) => {
     if (isDelete)
         await executeDelete(`DELETE FROM saleProducts WHERE saleId = ${id} AND companyId = '${companyId}'`);
 
-    await createSalesProduct(companyId, id, body.inputsSales);
+    await createSalesProduct(companyId, id, body.costsSales);
 
     const list = await createSalesProduct(companyId, id, body.productsSales);
 
@@ -361,12 +361,13 @@ const createProductsSales = async (body, result, isDelete) => {
         }
     }
 
-    // await imageService.add('sales', result.dataValues, body.fileList1, 'image1');
-    // await imageService.add('sales', result.dataValues, body.fileList2, 'image2');
-    // await imageService.add('sales', result.dataValues, body.fileList3, 'image3');
-    // await imageService.add('sales', result.dataValues, body.fileList4, 'image4');
-    // await imageService.add('sales', result.dataValues, body.fileList5, 'image5');
-    // await imageService.add('sales', result.dataValues, body.fileList6, 'image6');
+    await addImage(result, body)
+}
+const addImage = async (result, body) => {
+    for (let i = 0; i < body.fileList.length; i++) {
+        const element = body.fileList[i];
+        await imageService.add('sales', result.dataValues, [element], `image${i + 1}`);
+    }
 }
 
 const createSalesProduct = async (companyId, saleId, productsSales) => {
@@ -394,15 +395,30 @@ const createSale = async (objOnSave, body) => {
 
     objOnSave.commission = await getCommission(objOnSave.userId);
     objOnSave.value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
-    objOnSave.valueInput = body.inputsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+    objOnSave.valueInput = body.costsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
     if (body.path === path.contracts)
         objOnSave.hash = uuid.v4();
+    if (body.path === path.sales)
+        objOnSave.approved = true;
 
     const result = await Sale.create(objOnSave);
+
+    await setSaleVisit(result);
 
     await createProductsSales(body, result);
 
     return result;
+}
+
+const setSaleVisit = async (result) => {
+    if (result.visitId && result.approved) {
+        const visit = await Visit.findByPk(result.visitId)
+        await visit.update({ sale: true });
+    }
+    if (result.visitId && !result.approved) {
+        const visit = await Visit.findByPk(result.visitId)
+        await visit.update({ proposal: true, sale: false });
+    }
 }
 
 const getTitle = (type, isPlural = false) => {

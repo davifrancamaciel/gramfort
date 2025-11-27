@@ -234,7 +234,7 @@ const CreateEdit: React.FC = (props: any) => {
 
       <Col lg={3} md={4} sm={6} xs={24}>
         <Switch
-          label={'Proposta'}
+          label={'Contrato'}
           title="Não / Sim"
           checked={state.proposal}
           checkedChildren="Sim"

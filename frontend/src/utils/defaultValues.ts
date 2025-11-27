@@ -11,7 +11,8 @@ export const systemColors = {
   LIGHT_BLUE: '#2db7f5',
   DARK_BLUE: '#333B7C',
   LIGHT_PINK: '#FF9A9A',
-  LIGHT_GREY: '#999999'
+  LIGHT_GREY: '#999999',
+  GREY_MEDIUM: '#ccc'
 };
 
 export const appRoutes = {
@@ -126,5 +127,13 @@ export const productCategoriesEnum = {
   SERVICO: 1,
   INSUMO: 2,
   CUSTO: 3,
-  SERVICO_M2: 4,
+  SERVICO_M2: 4
 };
+
+export const categorIdsArrayProduct = [
+  productCategoriesEnum.SERVICO,
+  productCategoriesEnum.SERVICO_M2
+];
+
+export const categorIdsArrayCost = [productCategoriesEnum.CUSTO];
+

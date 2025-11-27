@@ -8,7 +8,6 @@ export interface Product {
   name: string;
   size: string;
   price: number;
-  isInput: boolean;
   description?: string;
 }
 export interface SaleProduct {
@@ -30,7 +29,7 @@ export interface Sale {
   visit?: Visit;
   products: Product[];
   productsSales: SaleProduct[];
-  inputs: Product[];
+  costsSales: SaleProduct[];
   value?: number;
   valueInput?: number;
   commission?: number;
@@ -77,8 +76,8 @@ export interface Sale {
 export const initialStateForm: Sale = {
   id: undefined,
   products: [],
-  inputs: [],
   productsSales: [],
+  costsSales: [],
   invoice: false,
   approved: false
 };
@@ -103,39 +102,4 @@ export const initialStateFilter: Filter = {
   pageNumber: 1,
   pageSize: 100,
   showCommission: false
-};
-
-export const defaultValuesForm = {
-  note: '',
-  products: [],
-  inputs: [],
-  invoiceNumber: '',
-  germinationLevel: '',
-  satisfaction: '',
-  contact: '',
-  capture: '',
-  nature: '',
-  saleDate: '',
-  distance: null,
-  clientId: '',
-
-  //contract
-  visitId: null,
-  approved: false,
-  internalNote: '',
-  access: null,
-  complexityLevel: null,
-  daysExecution: null,
-  expectedDateForApplication: '',
-  discountDescription: '',
-  discountValue: null,
-  phSoil: '',
-  sunOrientation: '',
-  paymentMethod: ''
-  // image1: string,
-  // image2: string,
-  // image3: string,
-  // image4: string,
-  // image5: string,
-  // image6: string,
 };

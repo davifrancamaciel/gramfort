@@ -5,10 +5,11 @@ import { startOfMonth, endOfMonth } from 'date-fns';
 
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
-import { Input, RangePicker, Switch, Select } from 'components/_inputs';
+import { Input, RangePicker, Select } from 'components/_inputs';
 import {
   apiRoutes,
   appRoutes,
+  categorIdsArrayProduct,
   roules,
   systemColors
 } from 'utils/defaultValues';
@@ -25,7 +26,7 @@ import BooleanTag from 'components/BooleanTag';
 import { useAppContext } from 'hooks/contextLib';
 import { Link } from 'react-router-dom';
 import WhatsApp from 'components/WhatsApp';
-import { getType } from '../utils';
+import { createMessageShare, getBalance, getTitle, getType } from '../utils';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -68,21 +69,24 @@ const List: React.FC = () => {
         const sale = {
           ...p,
           userName: p.user!.name,
-          clientName: p.client?.phone ? (
-            <WhatsApp
-              phone={p.client?.phone}
-              text={p.client?.name}
-              message={`Olá, ${p.client?.name} segue o link da proposta para aprovação ${window.location.origin}/${appRoutes.contracts}/approve/${p.id}?hash=${p.hash}`}
-            />
-          ) : (
-            p.client?.name
-          ),
+          clientName:
+            p.client?.phone && p.hash ? (
+              <WhatsApp
+                phone={p.client?.phone}
+                text={p.client?.name}
+                message={createMessageShare(p)}
+              />
+            ) : (
+              p.client?.name
+            ),
           companyName: p.company?.name,
           valueFormatted: formatPrice(Number(p.value!)),
-          valueInputFormatted: formatPrice(Number(p.valueInput!)),
-          balanceFormatted: formatPrice(
-            Number(p.value!) - Number(p.valueInput!)
+          valueCostFormatted: formatPrice(
+            Number(path === appRoutes.sales ? p.valueInput : 0) +
+              Number(p.discountValue || 0) +
+              Number(p.visit?.value || 0)
           ),
+          balanceFormatted: getBalance(p, path === appRoutes.sales),
           productsFormatted: formatProductName(p.productsSales),
           createdAt: formatDateHour(p.createdAt),
           updatedAt: formatDateHour(p.updatedAt),
@@ -114,7 +118,9 @@ const List: React.FC = () => {
   const formatProductName = (productsArray: SaleProduct[]) => {
     const limit = 50;
     let products = productsArray
-      .filter((p: SaleProduct) => !p.product.isInput)
+      .filter((p: SaleProduct) =>
+        categorIdsArrayProduct.includes(p.product.categoryId || 0)
+      )
       .map((p: SaleProduct) => p.product.name)
       .join(', ');
     return products.length > limit
@@ -125,7 +131,7 @@ const List: React.FC = () => {
   return (
     <div>
       <PanelFilter
-        title="Vendas cadastradas"
+        title={`${getTitle(path, true)}`}
         actionButton={() => actionFilter()}
         loading={loading}
       >
@@ -236,7 +242,7 @@ const List: React.FC = () => {
           { title: 'Empresa', dataIndex: 'companyName' },
           // { title: 'Produtos', dataIndex: 'productsFormatted' },
           { title: 'Valor', dataIndex: 'valueFormatted' },
-          { title: 'Custo', dataIndex: 'valueInputFormatted' },
+          { title: 'Custos/descontos', dataIndex: 'valueCostFormatted' },
           { title: 'Saldo', dataIndex: 'balanceFormatted' },
           { title: 'Cliente', dataIndex: 'clientName' },
           { title: 'Contato', dataIndex: 'contact' },

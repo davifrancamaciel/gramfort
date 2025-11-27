@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { CheckOutlined } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
+import { CheckOutlined, EditOutlined } from '@ant-design/icons';
 import useFormState from 'hooks/useFormState';
 import { useQuery } from 'hooks/queryString';
 import PrintContainer from 'components/Report/PrintContainer';
 
 import { initialStateForm, Sale, SaleProduct } from 'pages/Sale/interfaces';
 import api from 'services/api-aws-amplify';
-import { apiRoutes, appRoutes, systemColors } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  categorIdsArrayProduct,
+  systemColors
+} from 'utils/defaultValues';
 
 import Table from './Table';
 import { Button, Card } from 'antd';
 import GoBack from 'components/GoBack';
 import WhatsApp from 'components/WhatsApp';
+import { createMessageShare } from '../utils';
+import Copy from 'components/Copy';
+import { createLinkShare } from '../utils';
+import { formatPrice } from 'utils/formatPrice';
 
 const Contract: React.FC = (props: any) => {
   const query = useQuery();
+  const history = useHistory();
   const { state, dispatch } = useFormState(initialStateForm);
   const [loading, setLoading] = useState(false);
   const [sale, setSale] = useState<Sale>();
@@ -38,11 +49,11 @@ const Contract: React.FC = (props: any) => {
         hash
       });
       const productsList = resp.data?.productsSales as SaleProduct[];
-      const products = productsList.filter(
-        (p: SaleProduct) => !p.product.isInput
+      const products = productsList.filter((p: SaleProduct) =>
+        categorIdsArrayProduct.includes(p.product.categoryId || 0)
       );
-      const inputs = productsList.filter((p: SaleProduct) => p.product.isInput);
-      dispatch({ ...resp.data, products, inputs });
+
+      dispatch({ ...resp.data, products });
 
       setLoading(false);
     } catch (error) {
@@ -58,8 +69,26 @@ const Contract: React.FC = (props: any) => {
       hash: query.get('hash')
     };
     await api.putPublic(`${apiRoutes.sales}/contract`, objOnSave);
-
     setLoading(false);
+    const value =
+      Number(sale?.value || 0) -
+      Number(sale?.visit?.value || 0) -
+      Number(sale?.discountValue || 0);
+
+    const sendPhone = '24992516721';
+    const name = 'Maria Fernanda';
+    const message = `
+Olá ${name},%0A%0A
+venho por meio deste contato, confirmar a contratação do *serviço de Hidrossemeadura da empresa Gramfort*.%0A%0A
+✅ *Informações*:%0A%0A
+- Contrato número: *${sale?.id}*%0A
+- Cliente: *${sale?.client?.name}*%0A
+- ⁠Consultor técnico: *${sale?.user?.name}*%0A
+- ⁠Valor da proposta: *${formatPrice(value)}*%0A
+- ⁠Forma de Pagamento: *${sale?.paymentMethod}*%0A%0A
+Aguado instruções para avançarmos…`;
+
+    window.location.href = `https://api.whatsapp.com/send?phone=55${sendPhone}&text=${message}`;
   };
 
   const btnWhatapp = () => {
@@ -67,7 +96,7 @@ const Contract: React.FC = (props: any) => {
       <WhatsApp
         phone={sale?.client?.phone}
         text={`Enviar contrato para ${sale?.client?.name}`}
-        message={`Olá, ${sale?.client?.name} segue o link da proposta para aprovação ${window.location.origin}/${appRoutes.contracts}/approve/${sale?.id}?hash=${sale?.hash}`}
+        message={createMessageShare(sale)}
       />
     );
   };
@@ -86,12 +115,27 @@ const Contract: React.FC = (props: any) => {
     );
   };
 
+  const btnEdit = () => {
+    return (
+      <Button
+        key={'edit'}
+        style={{ backgroundColor: systemColors.YELLOW, color: '#fff' }}
+        icon={<EditOutlined />}
+        onClick={() => history.push(`/${appRoutes.contracts}/edit/${sale?.id}`)}
+        block
+      >
+        Editar
+      </Button>
+    );
+  };
+
   const actions = () => {
     let array: React.ReactNode[] = [
       <PrintContainer show={true} key={'print'} title="Imprimir">
         <Table sale={state} />
       </PrintContainer>
     ];
+    if (!query.get('hash')) array.push(btnEdit());
     if (sale?.client?.phone && !query.get('hash')) array.push(btnWhatapp());
     if (query.get('hash') && !sale?.approved) array.push(btnApprove());
 
@@ -111,7 +155,11 @@ const Contract: React.FC = (props: any) => {
           overflow: 'auto'
         }}
       >
-        <Table sale={state} />
+        {!query.get('hash') && <Copy text={createLinkShare(sale)} />}
+        <div style={{ marginBottom: '15px', marginTop: '15px' }}>
+          <Table sale={state} />
+        </div>
+        {!query.get('hash') && <Copy text={createLinkShare(sale)} />}
       </div>
     </Card>
   );

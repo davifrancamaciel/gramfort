@@ -1,4 +1,6 @@
+import { formatPrice } from 'utils/formatPrice';
 import { appRoutes } from 'utils/defaultValues';
+import { Sale } from './interfaces';
 
 export const getType = () => {
   if (window.location.pathname.includes(appRoutes.contracts))
@@ -13,4 +15,23 @@ export const getTitle = (path: string, isPlural: boolean = false) => {
     default:
       return `Venda${isPlural ? 's' : ''}`;
   }
+};
+
+export const createLinkShare = (sale?: Sale) => {
+  return `${window.location.origin}/${appRoutes.contracts}/approve/${sale?.id}?hash=${sale?.hash}`;
+};
+
+export const createMessageShare = (sale?: Sale) => {
+  return `Olá, ${
+    sale?.client?.name
+  } segue o link da proposta para aprovação ${createLinkShare(sale)}`;
+};
+
+export const getBalance = (sale: Sale, isSubCost: boolean = false) => {
+  const value =
+    Number(sale.value || 0) -
+    Number(sale.visit?.value || 0) -
+    Number(sale.discountValue || 0) -
+    Number(isSubCost ? sale.valueInput : 0 || 0);
+  return formatPrice(value);
 };

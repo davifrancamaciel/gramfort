@@ -21,6 +21,7 @@ export const Footer = styled.div`
   div {
     p {
       width: 320px;
+      margin-bottom: 2px;
     }
   }
 `;
@@ -31,8 +32,13 @@ export const Header = styled.div`
   > table {
     width: 540px !important;
   }
-  img {
-    width: 120px;
-    max-height: min-content;
+  > div {
+    display: flex;
+    justify-content: center;
+    width: 220px;
+    > img {
+      width: 120px;
+      max-height: min-content;
+    }
   }
 `;

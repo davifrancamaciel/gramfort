@@ -204,7 +204,7 @@ const List: React.FC = () => {
           { title: 'KM', dataIndex: 'km' },
           { title: 'Cidade', dataIndex: 'city' },
           { title: 'Paga', dataIndex: 'paidOut' },
-          { title: 'Proposta', dataIndex: 'proposal' },
+          { title: 'Contrato', dataIndex: 'proposal' },
           { title: 'Venda', dataIndex: 'sale' },
           // { title: 'Criada em', dataIndex: 'createdAt' },
           // { title: 'Alterada em', dataIndex: 'updatedAt' },

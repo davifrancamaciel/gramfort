@@ -259,7 +259,7 @@ module.exports.listAll = async (event) => {
         clientId = queryStringParameters.clientId
     }
     try {
-        const whereStatement = { sale: true };
+        const whereStatement = {};
         const user = await getUser(event)
 
         if (!user)

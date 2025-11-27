@@ -1,4 +1,4 @@
-const Td = ({ title, value, children, styleTd, colSpan }: any) => (
+const Td = ({ title, value, children, styleTd, colSpan, prefixValue }: any) => (
   <td
     colSpan={colSpan ? colSpan : '1'}
     style={{
@@ -9,14 +9,21 @@ const Td = ({ title, value, children, styleTd, colSpan }: any) => (
       ...styleTd
     }}
   >
-    {children ? children : <TdItem title={title} value={value} />}
+    {children ? (
+      children
+    ) : (
+      <TdItem title={title} value={value} prefixValue={prefixValue} />
+    )}
   </td>
 );
 
-const TdItem = ({ title, value }: any) => (
+const TdItem = ({ title, value, prefixValue }: any) => (
   <div>
     <strong>{title}</strong>
-    <span style={{ marginLeft: '5px' }}>{value}</span>
+    <span style={{ marginLeft: '5px' }}>
+      <strong>{prefixValue}</strong>
+      {value}
+    </span>
   </div>
 );
 

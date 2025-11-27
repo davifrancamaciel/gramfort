@@ -5,16 +5,21 @@ import { PlusSquareOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
 import { Input, Select } from 'components/_inputs';
 import { PropTypes } from './interfaces';
-import { apiRoutes, systemColors } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  categorIdsArrayProduct,
+  categorIdsArrayCost,
+  systemColors
+} from 'utils/defaultValues';
 import {
   formatPrice,
   formatNumberWhithDecimalCaseOnChange
 } from 'utils/formatPrice';
 import api from 'services/api-aws-amplify';
 import { SaleProduct, Product } from '../../interfaces';
-import { IOptions } from '../../../../utils/commonInterfaces';
+import { IOptions } from 'utils/commonInterfaces';
 
-const Products: React.FC<PropTypes> = ({ products, setProducts, isInput }) => {
+const Products: React.FC<PropTypes> = ({ products, setProducts, isCost }) => {
   const [loading, setLoading] = useState(false);
   const [productsOptions, setProductsOptions] = useState<Product[]>([]);
   const [options, setOptions] = useState<IOptions[]>([]);
@@ -105,7 +110,13 @@ const Products: React.FC<PropTypes> = ({ products, setProducts, isInput }) => {
     try {
       setLoading(true);
       const resp = await api.get(`${apiRoutes.products}/all`);
-      const data = resp.data.filter((p: Product) => p.isInput === isInput);
+      const data = isCost
+        ? resp.data.filter((p: Product) =>
+            categorIdsArrayCost.includes(p.categoryId || 0)
+          )
+        : resp.data.filter((p: Product) =>
+            categorIdsArrayProduct.includes(p.categoryId || 0)
+          );
       setOptions(data.map((x: IOptions) => x));
       setProductsOptions(resp.data);
       setLoading(false);
@@ -120,7 +131,7 @@ const Products: React.FC<PropTypes> = ({ products, setProducts, isInput }) => {
         <Row gutter={[16, 24]} key={index} style={{ marginBottom: '15px' }}>
           <Col lg={12} md={24} sm={24} xs={24}>
             <Select
-              label={isInput ? 'Custo' : 'Produto'}
+              label={isCost ? 'Custo' : 'Produto'}
               options={options}
               loading={loading}
               value={p.productId}
@@ -185,7 +196,7 @@ const Products: React.FC<PropTypes> = ({ products, setProducts, isInput }) => {
             </Col>
           )}
 
-          {isInput && (
+          {isCost && (
             <Col lg={24} md={24} sm={24} xs={24}>
               <Input
                 label={'Descrição'}

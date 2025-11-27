@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Col, Divider, notification, Row, UploadFile } from 'antd';
+import { Col, Divider, notification, UploadFile } from 'antd';
 import {
   DatePicker,
   Input,
@@ -10,7 +10,14 @@ import {
   Textarea
 } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
-import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  categorIdsArrayCost,
+  categorIdsArrayProduct,
+  roules,
+  userType
+} from 'utils/defaultValues';
 import useFormState from 'hooks/useFormState';
 import { initialStateForm, SaleProduct } from '../interfaces';
 import api from 'services/api-aws-amplify';
@@ -30,6 +37,8 @@ import { IOptions } from 'utils/commonInterfaces';
 import { Visit } from 'pages/Visit/interfaces';
 import { formatDateHour } from 'utils/formatDate';
 import { Users } from '@/pages/User/interfaces';
+import Cards from './Cards';
+import { initialState, TotalSale } from './Cards/Card/interfaces';
 
 const CreateEdit: React.FC = (props: any) => {
   const { companies } = useAppContext();
@@ -42,12 +51,10 @@ const CreateEdit: React.FC = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [loadingVisit, setLoadingVisit] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
-  const [total, setTotal] = useState<number>(0);
-  const [totalBalance, setTotalBalance] = useState<number>(0);
-  const [totalInput, setTotalInput] = useState<number>(0);
-  const [visitValue, setVisitValue] = useState<number>(0);
+  const [totals, setTotals] = useState<TotalSale>(initialState);
+
   const [fileList, setFileList] = useState<Array<UploadFile>>([]);
-  const [visits, setVisits] = useState<Visit[]>();
+  const [visits, setVisits] = useState<Visit[]>([]);
   const [visitsOptions, setVisitsOptions] = useState<IOptions[]>();
 
   useEffect(() => {
@@ -62,34 +69,17 @@ const CreateEdit: React.FC = (props: any) => {
   }, [props.match.params.id]); // eslint-disable-line
 
   useEffect(() => {
-    const totalSale = state.products
-      .filter((p: SaleProduct) => p.value)
-      .reduce((acc: number, p: SaleProduct) => acc + Number(p.valueAmount), 0);
-    setTotal(totalSale);
-  }, [state.products]);
+    if (path === appRoutes.contracts && !state.approved) {
+      const balance = totals.balance ? totals.balance : 0;
+      const balanceValue = formatPrice(balance / 2);
+      const paymentMethod = `${balanceValue} Sinal de 50% para reservar a data ${balanceValue} 50% restante no final da aplicação`;
+      const distance = state.distance ? state.distance : totals?.km;
+      dispatch({ paymentMethod, distance });
+    }
+  }, [totals.balance]);
 
   useEffect(() => {
-    const totalInput = state.inputs
-      .filter((p: SaleProduct) => p.value)
-      .reduce((acc: number, p: SaleProduct) => acc + Number(p.valueAmount), 0);
-    setTotalInput(totalInput);
-  }, [state.inputs]);
-
-  useEffect(() => {
-    const value =
-      visits?.find((v: Visit) => v.id === state.visitId)?.value ?? 0;
-    setVisitValue(value);
-
-    const discountValue = priceToNumber(state.discountValue) ?? 0;
-    const result = total - totalInput - discountValue - value;
-    setTotalBalance(result);
-
-    const balanceValue = formatPrice(result / 2);
-    const paymentMethod = `${balanceValue} Sinal de 50% para reservar a data ${balanceValue} 50% restante no final da aplicação`;
-    dispatch({ paymentMethod });
-  }, [total, totalInput, state.discountValue, state.visitId]);
-
-  useEffect(() => {
+    // dispatch({ visitId: null });
     getVisitsByClient(state.clientId);
   }, [state.clientId]);
 
@@ -123,18 +113,31 @@ const CreateEdit: React.FC = (props: any) => {
       setLoadingEdit(true);
       const resp = await api.get(`${apiRoutes.sales}/${id}`);
       const productsList = resp.data?.productsSales as SaleProduct[];
-      const products = productsList.filter(
-        (p: SaleProduct) => !p.product.isInput
+      const productsSales = productsList.filter((p: SaleProduct) =>
+        categorIdsArrayProduct.includes(p.product.categoryId || 0)
       );
-      const inputs = productsList.filter((p: SaleProduct) => p.product.isInput);
+      const costsSales = productsList.filter((p: SaleProduct) =>
+        categorIdsArrayCost.includes(p.product.categoryId || 0)
+      );
       dispatch({
         ...resp.data,
-        products,
-        inputs,
+        productsSales,
+        costsSales,
         discountValue: formatValueWhithDecimalCaseOnChange(
           resp.data?.discountValue
         )
       });
+      if (resp.data && resp.data.image1) {
+        const imageArr = resp.data.image1.split('/');
+        setFileList([
+          {
+            uid: '-1',
+            name: imageArr[imageArr.length - 1],
+            status: 'done',
+            url: resp.data.image1
+          }
+        ]);
+      }
       setLoading(false);
       setLoadingEdit(false);
     } catch (error) {
@@ -146,11 +149,7 @@ const CreateEdit: React.FC = (props: any) => {
 
   const action = async () => {
     try {
-      const productsSales = state.products?.filter(
-        (p: SaleProduct) => p.product?.name && p.value
-      );
-
-      const inputsSales = state.inputs?.filter(
+      const productsSales = state.productsSales?.filter(
         (p: SaleProduct) => p.product?.name && p.value
       );
 
@@ -160,19 +159,16 @@ const CreateEdit: React.FC = (props: any) => {
           productsSales.map((p: SaleProduct) => p.product?.name)
         ),
         productsSales,
-        inputs: JSON.stringify(
-          inputsSales.map((p: SaleProduct) => p.product?.name)
-        ),
-        inputsSales,
         discountValue: state.discountDescription
           ? priceToNumber(state.discountValue)
           : null,
-        path
+        path,
+        fileList
       };
 
       if (!productsSales || !productsSales.length || !state.clientId) {
         notification.warning({
-          message: 'Não existe produtos validos'
+          message: 'Verifique campos obrigatórios e produtos validos'
         });
         return;
       }
@@ -182,10 +178,6 @@ const CreateEdit: React.FC = (props: any) => {
 
       setLoading(false);
 
-      if (result.success && type === 'create') {
-        dispatch(defaultValuesForm);
-        setVisits([]);
-      }
       if (result.success) history.push(`/${path}`);
     } catch (error) {
       console.error(error);
@@ -193,12 +185,12 @@ const CreateEdit: React.FC = (props: any) => {
     }
   };
 
-  const setProducts = (products: SaleProduct[]) => {
-    dispatch({ products });
+  const setProducts = (productsSales: SaleProduct[]) => {
+    dispatch({ productsSales });
   };
 
-  const setInputs = (inputs: SaleProduct[]) => {
-    dispatch({ inputs });
+  const setCosts = (costsSales: SaleProduct[]) => {
+    dispatch({ costsSales });
   };
 
   const onLoadUsersSales = async () => {
@@ -226,54 +218,29 @@ const CreateEdit: React.FC = (props: any) => {
       loadingBtnAction={loading}
       loadingPanel={loadingEdit}
     >
+      <Cards
+        sale={state}
+        visits={visits}
+        totals={totals}
+        setTotals={setTotals}
+      />
       <Divider>
         Produtos d{path === appRoutes.sales ? 'a' : 'o'}{' '}
         {getTitle(path).toLocaleLowerCase()}
       </Divider>
       <Products
-        products={state.products}
+        products={state.productsSales}
         setProducts={setProducts}
-        isInput={false}
+        isCost={false}
       />
 
-      <Col lg={24} md={24} sm={12} xs={24}>
-        <Row
-          gutter={[16, 24]}
-          style={{ display: 'flex', justifyContent: 'space-between' }}
-        >
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Divider>Total {formatPrice(total!)}</Divider>
-          </Col>
-          {!!visitValue && (
-            <Col lg={6} md={8} sm={12} xs={24}>
-              <Divider>Desconto visita {formatPrice(visitValue!)}</Divider>
-            </Col>
-          )}
-          {state.discountDescription && (
-            <Col lg={6} md={8} sm={12} xs={24}>
-              <Divider>
-                {state.discountDescription}{' '}
-                {formatPrice(priceToNumber(state.discountValue) || 0)}
-              </Divider>
-            </Col>
-          )}
-          {!!totalInput && (
-            <Col lg={6} md={8} sm={12} xs={24}>
-              <Divider>Total de custos {formatPrice(totalInput!)}</Divider>
-            </Col>
-          )}
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Divider>Saldo {formatPrice(totalBalance!)}</Divider>
-          </Col>
-        </Row>
-      </Col>
       {path == appRoutes.sales && (
         <>
           <Divider>Relação de custos</Divider>
           <Products
-            products={state.inputs}
-            setProducts={setInputs}
-            isInput={true}
+            products={state.costsSales}
+            setProducts={setCosts}
+            isCost={true}
           />
 
           <Col lg={6} md={8} sm={12} xs={24}>
@@ -309,6 +276,7 @@ const CreateEdit: React.FC = (props: any) => {
           </Col>
         </>
       )}
+
       <ShowByRoule roule={roules.administrator}>
         <Col lg={6} md={8} sm={12} xs={24}>
           <Select
@@ -350,6 +318,53 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(capture) => dispatch({ capture })}
         />
       </Col>
+      <Col lg={12} md={16} sm={12} xs={24}>
+        <Select
+          loading={loadingVisit}
+          label={'Visita'}
+          options={visitsOptions}
+          value={state?.visitId}
+          onChange={(visitId) => dispatch({ visitId })}
+        />
+      </Col>
+      {path == appRoutes.contracts && (
+        <>
+          <Col lg={6} md={8} sm={12} xs={24}>
+            <Input
+              label={'Descrição desconto'}
+              placeholder=""
+              value={state.discountDescription}
+              onChange={(e) =>
+                dispatch({ discountDescription: e.target.value })
+              }
+            />
+          </Col>
+          <Col lg={6} md={8} sm={12} xs={24}>
+            <Input
+              label={'Valor de desconto'}
+              type={'tel'}
+              disabled={!state.discountDescription}
+              placeholder="15,00"
+              value={state.discountValue}
+              onChange={(e) =>
+                dispatch({
+                  discountValue: formatValueWhithDecimalCaseOnChange(
+                    e.target.value
+                  )
+                })
+              }
+            />
+          </Col>
+          <Col lg={24} md={24} sm={24} xs={24}>
+            <Input
+              label={'Forma de pagamento'}
+              placeholder=""
+              value={state.paymentMethod}
+              onChange={(e) => dispatch({ paymentMethod: e.target.value })}
+            />
+          </Col>
+        </>
+      )}
 
       <Col lg={6} md={8} sm={12} xs={24}>
         <Input
@@ -391,14 +406,7 @@ const CreateEdit: React.FC = (props: any) => {
           </Col>
         </>
       )}
-      <Col lg={24} md={24} sm={24} xs={24}>
-        <Textarea
-          label={'Observações'}
-          placeholder=""
-          value={state.note}
-          onChange={(e) => dispatch({ note: e.target.value })}
-        />
-      </Col>
+
       {path == appRoutes.contracts && (
         <>
           <Col lg={6} md={8} sm={12} xs={24}>
@@ -439,32 +447,7 @@ const CreateEdit: React.FC = (props: any) => {
               }
             />
           </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Descrição desconto'}
-              placeholder=""
-              value={state.discountDescription}
-              onChange={(e) =>
-                dispatch({ discountDescription: e.target.value })
-              }
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Valor de desconto'}
-              type={'tel'}
-              disabled={!state.discountDescription}
-              placeholder="15,00"
-              value={state.discountValue}
-              onChange={(e) =>
-                dispatch({
-                  discountValue: formatValueWhithDecimalCaseOnChange(
-                    e.target.value
-                  )
-                })
-              }
-            />
-          </Col>
+
           <Col lg={6} md={8} sm={12} xs={24}>
             <Input
               label={'PH do solo'}
@@ -473,6 +456,7 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={(e) => dispatch({ phSoil: e.target.value })}
             />
           </Col>
+
           <Col lg={6} md={8} sm={12} xs={24}>
             <Input
               label={'Orientação do sol'}
@@ -482,15 +466,6 @@ const CreateEdit: React.FC = (props: any) => {
             />
           </Col>
 
-          <Col lg={12} md={12} sm={12} xs={24}>
-            <Select
-              loading={loadingVisit}
-              label={'Visita'}
-              options={visitsOptions}
-              value={state?.visitId}
-              onChange={(visitId) => dispatch({ visitId })}
-            />
-          </Col>
           <Col lg={6} md={8} sm={12} xs={24}>
             <Switch
               label={'Proposta aprovada'}
@@ -501,37 +476,35 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={() => dispatch({ approved: !state.approved })}
             />
           </Col>
-          <Col lg={24} md={24} sm={24} xs={24}>
-            <Textarea
-              label={'Observações internas'}
-              placeholder=""
-              value={state.internalNote}
-              onChange={(e) => dispatch({ internalNote: e.target.value })}
-            />
-          </Col>
-          <Col lg={24} md={24} sm={24} xs={24}>
-            <Input
-              label={'Forma de pagamento'}
-              placeholder=""
-              value={state.paymentMethod}
-              onChange={(e) => dispatch({ paymentMethod: e.target.value })}
-            />
-          </Col>
-
-          <Col lg={24} md={24} sm={24} xs={24}>
-            <UploadImages
-              setFileList={setFileList}
-              fileList={fileList}
-              maxCount={6}
-            />
-          </Col>
         </>
+      )}
+      <Col lg={24} md={24} sm={24} xs={24}>
+        <Textarea
+          label={'Observações'}
+          placeholder=""
+          value={state.note}
+          onChange={(e) => dispatch({ note: e.target.value })}
+        />
+      </Col>
+      <Col lg={24} md={24} sm={24} xs={24}>
+        <Textarea
+          label={'Observações internas'}
+          placeholder=""
+          value={state.internalNote}
+          onChange={(e) => dispatch({ internalNote: e.target.value })}
+        />
+      </Col>
+      {path == appRoutes.contracts && (
+        <Col lg={24} md={24} sm={24} xs={24}>
+          <UploadImages
+            setFileList={setFileList}
+            fileList={fileList}
+            maxCount={6}
+          />
+        </Col>
       )}
     </PanelCrud>
   );
 };
 
 export default CreateEdit;
-function defaultValuesForm(defaultValuesForm: any) {
-  throw new Error('Function not implemented.');
-}

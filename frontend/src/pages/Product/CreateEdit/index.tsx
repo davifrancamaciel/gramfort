@@ -77,7 +77,7 @@ const CreateEdit: React.FC = (props: any) => {
 
   return (
     <PanelCrud
-      title={`${type === 'update' ? 'Editar' : 'Novo'} produto/insumo`}
+      title={`${type === 'update' ? 'Editar' : 'Novo'} produto`}
       type={type}
       onClickActionButton={action}
       loadingBtnAction={false}
@@ -112,15 +112,8 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={(categoryId) => dispatch({ categoryId })}
             />
           </Col>
-          <Col lg={6} md={12} sm={24} xs={24}>
-            <Select
-              label={'Fornecedor'}
-              url={`${apiRoutes.users}/all?type=${userType.SUPPLIER}`}
-              value={state.supplierId}
-              onChange={(supplierId) => dispatch({ supplierId })}
-            />
-          </Col>
-          <Col lg={6} md={12} sm={24} xs={24}>
+
+          <Col lg={12} md={12} sm={24} xs={24}>
             <Input
               label={'Nome do produto'}
               required={true}
@@ -129,6 +122,7 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={(e) => dispatch({ name: e.target.value })}
             />
           </Col>
+
           <Col lg={6} md={12} sm={24} xs={24}>
             <Input
               label={'Preço'}
@@ -152,7 +146,14 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={(e) => dispatch({ inventoryCount: e.target.value })}
             />
           </Col>
-
+          <Col lg={6} md={12} sm={24} xs={24}>
+            <Select
+              label={'Fornecedor'}
+              url={`${apiRoutes.users}/all?type=${userType.SUPPLIER}`}
+              value={state.supplierId}
+              onChange={(supplierId) => dispatch({ supplierId })}
+            />
+          </Col>
           <Col lg={6} md={12} sm={24} xs={24}>
             <Switch
               label={'Ativo'}
@@ -161,16 +162,6 @@ const CreateEdit: React.FC = (props: any) => {
               checkedChildren="Ativo"
               unCheckedChildren="Inativo"
               onChange={() => dispatch({ active: !state.active })}
-            />
-          </Col>
-          <Col lg={6} md={12} sm={24} xs={24}>
-            <Switch
-              label={'É um custo'}
-              title="Não / Sim"
-              checked={state.isInput}
-              checkedChildren="Sim"
-              unCheckedChildren="Não"
-              onChange={() => dispatch({ isInput: !state.isInput })}
             />
           </Col>
         </Row>

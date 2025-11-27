@@ -67,14 +67,6 @@ const List: React.FC = () => {
             setUpdate={() => {}}
             apiRoutes={apiRoutes.products}
           />
-        ),
-        isInput: (
-          <Action
-            item={p}
-            setUpdate={() => {}}
-            apiRoutes={apiRoutes.products}
-            propName="isInput"
-          />
         )
       }));
       setItems(itemsFormatted);
@@ -89,7 +81,7 @@ const List: React.FC = () => {
   return (
     <div>
       <PanelFilter
-        title="Produtos/Insumos cadastrados"
+        title="Produtos cadastrados"
         actionButton={() => actionFilter()}
         loading={loading}
       >
@@ -212,8 +204,7 @@ const List: React.FC = () => {
           },
           { title: 'Criado em', dataIndex: 'createdAt' },
           { title: 'Alterado em', dataIndex: 'updatedAt' },
-          { title: 'Ativo', dataIndex: 'active' },
-          { title: 'É custo', dataIndex: 'isInput' },
+          { title: 'Ativo', dataIndex: 'active' }
         ]}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}

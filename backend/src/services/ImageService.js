@@ -18,13 +18,15 @@ const add = async (table, obj, fileList, coll = 'image') => {
             const filename = `${id}_${uuid.v4()}.${fileArr[fileArr.length - 1]}`;
 
             const { bucketPublicName } = process.env
+            const bucket = bucketPublicName.replace('dev', 'prd')
+
             let key = `${companyId}/${table}/${id}/${filename}`;
 
             if (table === 'companies')
                 key = `${companyId}/${coll}-${filename}`;
 
             var buf = Buffer.from(file.preview.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-            const result = await s3.put(buf, key, bucketPublicName, file.type, 'base64');
+            const result = await s3.put(buf, key, bucket, file.type, 'base64');
 
             let query = `UPDATE ${table} SET ${coll} = '${result.Location}', updatedAt = NOW() WHERE`;
             if (table === 'companies')
@@ -41,9 +43,10 @@ const add = async (table, obj, fileList, coll = 'image') => {
 
 const remove = async (image) => {
     const { bucketPublicName } = process.env
-    if (image && image.includes(bucketPublicName)) {
-        const key = image.replace(`https://${bucketPublicName}.s3.amazonaws.com/`, '')
-        await s3.remove(key, bucketPublicName);
+    const bucket = bucketPublicName.replace('dev', 'prd')
+    if (image && image.includes(bucket)) {
+        const key = image.replace(`https://${bucket}.s3.amazonaws.com/`, '')
+        await s3.remove(key, bucket);
     }
 }
 

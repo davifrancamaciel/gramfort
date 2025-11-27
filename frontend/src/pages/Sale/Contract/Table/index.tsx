@@ -4,22 +4,30 @@ import TableReport from 'components/Report/TableReport';
 import Td from './Td';
 import { Sale, SaleProduct } from '../../interfaces';
 import { formatPrice } from 'utils/formatPrice';
-import { systemColors, productCategoriesEnum } from 'utils/defaultValues';
+import {
+  systemColors,
+  categorIdsArrayProduct,
+  productCategoriesEnum
+} from 'utils/defaultValues';
 import { formatDate, formatDateText } from 'utils/formatDate';
 
 import assinatura from 'assets/assinatura.png';
 import logo from 'assets/logo-vertical.jpeg';
+import logoGota from 'assets/logo-gota.png';
 import { Clause, Footer, Header } from './styles';
+import { getBalance } from '../../utils';
 
 interface PropTypes {
   sale: Sale;
 }
-const categorIdsArray = [
-  productCategoriesEnum.SERVICO,
-  productCategoriesEnum.SERVICO_M2
-];
 
 const Table: React.FC<PropTypes> = ({ sale }) => {
+  const getPrefixProductDescription = (sp: SaleProduct) => {
+    return sp.product.categoryId === productCategoriesEnum.SERVICO_M2
+      ? `${(sp.amount / 250) * 2000} litros de insumos `
+      : '';
+  };
+
   return (
     <TableReport
       title={``}
@@ -29,7 +37,13 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
       <tr style={{ border: '0', fontSize: '10px' }}>
         <td style={{ border: '0' }}>
           <Header>
-            <table style={{ textAlign: 'center', marginBottom: '15px' }}>
+            <table
+              style={{
+                textAlign: 'center',
+                marginBottom: '15px',
+                backgroundColor: systemColors.GREY_MEDIUM
+              }}
+            >
               <thead>
                 <tr>
                   <th
@@ -61,7 +75,9 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 </tr>
               </tbody>
             </table>
-            <img src={logo} alt="" />
+            <div>
+              <img src={logo} alt="" />
+            </div>
           </Header>
 
           <p style={{ textAlign: 'center' }}>
@@ -69,7 +85,12 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
             seu pedido estamos enviando nossa proposta comercial de
             Hidrossemeadura.
           </p>
-          <table style={{ marginTop: '15px' }}>
+          <table
+            style={{
+              marginTop: '15px',
+              backgroundColor: systemColors.GREY_MEDIUM
+            }}
+          >
             <tbody>
               <tr>
                 <Td colSpan={2} title="Proposta Comercial nº" value={sale.id} />
@@ -95,7 +116,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     sale.visit?.city || ''
                   } ${sale.visit?.state || ''}`}
                 />
-                <Td colSpan={2} title="KM da Base" value={sale.visit?.km} />
+                <Td colSpan={2} title="KM da Base" value={sale.distance} />
               </tr>
             </tbody>
           </table>
@@ -122,11 +143,14 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
             <tbody>
               {sale.productsSales
                 .filter((sp: SaleProduct) =>
-                  categorIdsArray.includes(sp.product?.categoryId || 0)
+                  categorIdsArrayProduct.includes(sp.product?.categoryId || 0)
                 )
                 .map((sp: SaleProduct, index: number) => (
                   <>
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      style={{ backgroundColor: systemColors.GREY_MEDIUM }}
+                    >
                       <td>{index + 1}</td>
                       <td>{sp.product.name}</td>
                       <td>{sp.amount}</td>
@@ -139,12 +163,13 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                           colSpan={5}
                           title=""
                           value={sp.product.description}
+                          prefixValue={getPrefixProductDescription(sp)}
                         />
                       </tr>
                     )}
                   </>
                 ))}
-            </tbody>
+              {/* </tbody>
           </table>
           <div
             style={{
@@ -153,71 +178,95 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               display: 'flex'
             }}
           >
-            <table style={{ width: '300px', borderTop: '#eee solid 1px' }}>
-              <tbody>
+            <table style={{ borderTop: '#eee solid 1px' }}>
+              <tbody> */}
+              <tr>
+                <td
+                  colSpan={3}
+                  style={{
+                    border: 'none',
+                    borderRight: '#eee solid 1px'
+                  }}
+                ></td>
+                <td>Total de serviços</td>
+                <td>{formatPrice(Number(sale.value))}</td>
+              </tr>
+              {sale.discountDescription && sale.discountValue && (
                 <tr>
-                  <td>Total da Proposta</td>
-                  <td>{formatPrice(Number(sale.value))}</td>
-                </tr>
-                {sale.discountDescription && sale.discountValue && (
-                  <tr>
-                    <td
-                      style={{
-                        color: '#fff',
-                        backgroundColor: systemColors.DARK_BLUE
-                      }}
-                    >
-                      {sale.discountDescription}
-                    </td>
-                    <td
-                      style={{
-                        color: '#fff',
-                        backgroundColor: systemColors.LIGHT_BLUE
-                      }}
-                    >
-                      {formatPrice(Number(sale.discountValue))}
-                    </td>
-                  </tr>
-                )}
-                {sale.visit?.value && (
-                  <tr>
-                    <td
-                      style={{
-                        color: '#fff',
-                        backgroundColor: systemColors.DARK_BLUE
-                      }}
-                    >
-                      Desconto Visita
-                    </td>
-                    <td
-                      style={{
-                        color: '#fff',
-                        backgroundColor: systemColors.LIGHT_BLUE
-                      }}
-                    >
-                      {formatPrice(Number(sale.visit?.value))}
-                    </td>
-                  </tr>
-                )}
-
-                <tr>
-                  <td>Valor Total</td>
+                  <td
+                    colSpan={3}
+                    style={{
+                      border: 'none',
+                      borderRight: '#eee solid 1px'
+                    }}
+                  ></td>
                   <td
                     style={{
                       color: '#fff',
-                      backgroundColor: systemColors.GREEN
+                      backgroundColor: systemColors.DARK_BLUE
                     }}
                   >
-                    {formatPrice(
-                      Number(sale.value || 0) -
-                        Number(sale.visit?.value || 0) -
-                        Number(sale.discountValue || 0)
-                    )}
+                    {sale.discountDescription}
+                  </td>
+                  <td
+                    style={{
+                      color: '#fff',
+                      backgroundColor: systemColors.BLUE
+                    }}
+                  >
+                    -{formatPrice(Number(sale.discountValue))}
                   </td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
+              )}
+              {sale.visit?.value && (
+                <tr>
+                  <td
+                    colSpan={3}
+                    style={{
+                      border: 'none',
+                      borderRight: '#eee solid 1px'
+                    }}
+                  ></td>
+                  <td
+                    style={{
+                      color: '#fff',
+                      backgroundColor: systemColors.DARK_BLUE
+                    }}
+                  >
+                    Desconto visita técnica
+                  </td>
+                  <td
+                    style={{
+                      color: '#fff',
+                      backgroundColor: systemColors.BLUE
+                    }}
+                  >
+                    -{formatPrice(Number(sale.visit?.value))}
+                  </td>
+                </tr>
+              )}
+
+              <tr>
+                <td
+                  colSpan={3}
+                  style={{
+                    border: 'none',
+                    borderRight: '#eee solid 1px'
+                  }}
+                ></td>
+                <td>Valor total da proposta</td>
+                <td
+                  style={{
+                    color: '#fff',
+                    backgroundColor: systemColors.GREEN
+                  }}
+                >
+                  {getBalance(sale)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          {/* </div> */}
 
           <Clause>
             <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
@@ -323,14 +372,47 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 justifyContent: 'center'
               }}
             >
-              <img alt={''} src={assinatura} style={{ width: '200px' }} />
+              <span
+                style={{
+                  display: 'flex',
+                  justifyContent: 'end'
+                }}
+              >
+                <img alt={''} src={assinatura} style={{ width: '200px' }} />
+              </span>
 
-              <p style={{ fontSize: '15px', borderTop: 'solid 1px' }}>
+              <p
+                style={{
+                  fontSize: '15px',
+                  borderTop: 'solid 1px',
+                  display: 'flex',
+                  justifyContent: 'end'
+                }}
+              >
                 <strong>Valter Rodrigo S Silva</strong>
               </p>
-              <p>Diretor Comercial GramFort</p>
-              <p>Proposta Comercial nº {sale.id}</p>
+              <p
+                style={{
+                  display: 'flex',
+                  justifyContent: 'end'
+                }}
+              >
+                Diretor Comercial GramFort
+              </p>
+              <p
+                style={{
+                  display: 'flex',
+                  justifyContent: 'end'
+                }}
+              >
+                Proposta Comercial nº {sale.id}
+              </p>
             </div>
+            <img
+              alt={''}
+              src={logoGota}
+              style={{ width: '90px', height: '100%', marginTop: '30px' }}
+            />
             <div
               style={{
                 marginTop: '10px',
@@ -358,6 +440,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 <thead>
                   <tr>
                     <th
+                      colSpan={4}
                       style={{
                         borderRight: '0',
                         color: '#fff',
@@ -371,33 +454,68 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>
-                      Realizada por {sale.visit?.user?.name} em{' '}
+                    <td
+                      style={{
+                        width: '30%'
+                      }}
+                    >
+                      Realizada por
+                    </td>
+                    <td
+                      style={{
+                        backgroundColor: systemColors.LIGHT_BLUE,
+                        width: '40%'
+                      }}
+                    >
+                      {sale.visit?.user?.name}
+                    </td>
+                    <td
+                      style={{
+                        width: '10%'
+                      }}
+                    >
+                      em
+                    </td>
+                    <td
+                      style={{
+                        backgroundColor: systemColors.LIGHT_BLUE,
+                        width: '20%'
+                      }}
+                    >
                       {formatDate(sale.visit?.date)}
                     </td>
                   </tr>
-                  {sale.visit?.note && (
-                    <tr>
-                      <td
-                        style={{
-                          color: '#fff',
-                          backgroundColor: systemColors.GREEN
-                        }}
-                      >
-                        INFORMAÇÕES IMPORTANTES
-                      </td>
-                    </tr>
+
+                  {sale?.note && (
+                    <>
+                      <tr>
+                        <td colSpan={4}> </td>
+                      </tr>
+                      <tr>
+                        <td
+                          colSpan={4}
+                          style={{
+                            color: '#fff',
+                            backgroundColor: systemColors.GREEN
+                          }}
+                        >
+                          INFORMAÇÕES IMPORTANTES
+                        </td>
+                      </tr>
+                    </>
                   )}
-                  {sale.visit?.note
+                  {sale?.note
                     ?.split('\n')
                     .map((item: string, index: number) => (
                       <tr key={index + 100}>
-                        <td>{item}</td>
+                        <td colSpan={4}>{item}</td>
                       </tr>
                     ))}
                 </tbody>
               </table>
-              <img src={logo} alt="" />
+              <div>
+                <img src={logo} alt="" />
+              </div>
             </Header>
           )}
           <Row

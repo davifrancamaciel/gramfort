@@ -18,14 +18,7 @@ module.exports = function (sequelize, DataTypes) {
             get() {
                 return JSON.parse(this.products);
             },
-        },
-        inputs: { type: DataTypes.TEXT },
-        inputsFormatted: {
-            type: DataTypes.VIRTUAL,
-            get() {
-                return JSON.parse(this.inputs);
-            },
-        },
+        },        
         note: { type: DataTypes.STRING(500) },
         value: { type: DataTypes.DECIMAL },
         valueInput: { type: DataTypes.DECIMAL },
