@@ -181,10 +181,7 @@ module.exports.listAll = async (event, context) => {
         const user = await getUser(event)
 
         if (!user)
-            return handlerResponse(400, {}, 'Usuário não encontrado')
-
-        if (!checkRouleProfileAccess(user.groups, roules.users))
-            return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
+            return handlerResponse(400, {}, 'Usuário não encontrado')      
 
         context.callbackWaitsForEmptyEventLoop = false;
 

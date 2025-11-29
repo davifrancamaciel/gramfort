@@ -14,7 +14,7 @@ module.exports = {
       await queryInterface.addColumn('sales', "distance", { type: Sequelize.INTEGER, }, { transaction });
       await queryInterface.addColumn('sales', "satisfaction", { type: Sequelize.INTEGER, }, { transaction });
       await queryInterface.addColumn('sales', "germinationLevel", { type: Sequelize.INTEGER, }, { transaction });
-      await queryInterface.addColumn('sales', "saleDate", {  type: Sequelize.DATE, allowNull: false, defaultValue: new Date()  }, { transaction });
+      await queryInterface.addColumn('sales', "saleDate", {  type: Sequelize.DATE, allowNull: false  }, { transaction });
       await queryInterface.addColumn('saleProducts', "description", { type: Sequelize.STRING(100), }, { transaction });
 
       await transaction.commit();

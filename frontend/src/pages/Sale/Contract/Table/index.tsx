@@ -81,7 +81,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
           </Header>
 
           <p style={{ textAlign: 'center' }}>
-            Prezado(a) Sr(a), <strong>{sale.client?.name}</strong> atendendo ao
+            Prezado(a) Sr(a), <strong>{sale.contact}</strong> atendendo ao
             seu pedido estamos enviando nossa proposta comercial de
             Hidrossemeadura.
           </p>

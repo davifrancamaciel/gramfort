@@ -15,6 +15,8 @@ export interface CardsResult {
     totalValueInputMonth: number;
     users: number;
     m2: number;
+    totalValueVisitsMonth: number;
+    countVisis: number;
   };
   user: {
     count: number;
@@ -44,7 +46,9 @@ export const initialStateCards: CardsResult = {
     totalValueMonth: 0,
     totalValueInputMonth: 0,
     users: 0,
-    m2: 0
+    m2: 0,
+    totalValueVisitsMonth: 0,
+    countVisis: 0
   },
   user: {
     count: 0,

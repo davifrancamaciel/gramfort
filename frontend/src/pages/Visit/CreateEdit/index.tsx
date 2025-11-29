@@ -6,8 +6,7 @@ import {
   Input,
   Select,
   Switch,
-  Textarea,
-  TimePicker
+  Textarea
 } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import ShowByRoule from 'components/ShowByRoule';
@@ -20,7 +19,6 @@ import {
   priceToNumber
 } from 'utils/formatPrice';
 import UploadImages from 'components/UploadImages';
-import { extractHour, setHour } from 'utils/formatDate';
 import { useAppContext } from 'hooks/contextLib';
 
 const CreateEdit: React.FC = (props: any) => {
@@ -44,8 +42,7 @@ const CreateEdit: React.FC = (props: any) => {
       const resp = await api.get(`${apiRoutes.visits}/${id}`);
       dispatch({
         ...resp.data,
-        value: formatValueWhithDecimalCaseOnChange(resp.data?.value),
-        dateHour: extractHour(resp.data?.date)
+        value: formatValueWhithDecimalCaseOnChange(resp.data?.value)
       });
       if (resp.data && resp.data.image) {
         const imageArr = resp.data.image.split('/');
@@ -66,7 +63,7 @@ const CreateEdit: React.FC = (props: any) => {
 
   const action = async () => {
     try {
-      if (!state.value || !state.clientId || !state.date || !state.dateHour) {
+      if (!state.value || !state.clientId || !state.date) {
         notification.warning({
           message: 'Existem campos obrigatórios não preenchidos'
         });
@@ -77,7 +74,6 @@ const CreateEdit: React.FC = (props: any) => {
       const result = await api[method](apiRoutes.visits, {
         ...state,
         value: priceToNumber(state.value),
-        date: setHour(state.date, state.dateHour),
         fileList
       });
 
@@ -109,7 +105,7 @@ const CreateEdit: React.FC = (props: any) => {
       loadingPanel={loading}
     >
       <ShowByRoule roule={roules.administrator}>
-        <Col lg={8} md={8} sm={12} xs={24}>
+        <Col lg={8} md={8} sm={24} xs={24}>
           <Select
             label={'Empresa'}
             options={companies}
@@ -166,30 +162,19 @@ const CreateEdit: React.FC = (props: any) => {
         />
       </Col>
 
-      <Col lg={8} md={8} sm={12} xs={24}>
+      <Col lg={4} md={8} sm={12} xs={24}>
         <DatePicker
           label={'Data de pagamento'}
           value={state.paymentDate}
           onChange={(paymentDate) => dispatch({ paymentDate })}
         />
       </Col>
-      <Col lg={5} md={8} sm={16} xs={16}>
+      <Col lg={4} md={8} sm={12} xs={24}>
         <DatePicker
           label={'Data da visita'}
           value={state.date}
           required={true}
           onChange={(date) => dispatch({ date })}
-        />
-      </Col>
-      <Col lg={3} md={8} sm={8} xs={8}>
-        <TimePicker
-          label={'Hora'}
-          placeholder="HH:MM"
-          required={true}
-          value={state.dateHour}
-          onChange={(dateHour) => {
-            dispatch({ dateHour });
-          }}
         />
       </Col>
       <Col lg={8} md={8} sm={12} xs={24}>
@@ -252,7 +237,7 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={() => dispatch({ sale: !state.sale })}
         />
       </Col>
-      
+
       <Col
         lg={6}
         md={12}

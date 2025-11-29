@@ -35,13 +35,14 @@ import UploadImages from 'components/UploadImages';
 import { getTitle, getType } from '../utils';
 import { IOptions } from 'utils/commonInterfaces';
 import { Visit } from 'pages/Visit/interfaces';
-import { formatDateHour } from 'utils/formatDate';
-import { Users } from '@/pages/User/interfaces';
+import { formatDate } from 'utils/formatDate';
+import { Users } from 'pages/User/interfaces';
 import Cards from './Cards';
 import { initialState, TotalSale } from './Cards/Card/interfaces';
+import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 
 const CreateEdit: React.FC = (props: any) => {
-  const { companies } = useAppContext();
+  const { companies, userAuthenticated } = useAppContext();
   const history = useHistory();
   const [path, setPath] = useState('');
   const { users, setUsers } = useAppContext();
@@ -97,9 +98,9 @@ const CreateEdit: React.FC = (props: any) => {
       setVisits(resp.data);
       const respFormated = resp.data.map((item: Visit) => ({
         value: item.id,
-        label: `Dia ${formatDateHour(item.date)} ${formatPrice(
-          item.value || 0
-        )} ${item.address} ${item.city} ${item.state}`
+        label: `Dia ${formatDate(item.date)} ${formatPrice(item.value || 0)} ${
+          item.address
+        } ${item.city} ${item.state}`
       }));
 
       setVisitsOptions(respFormated);
@@ -199,6 +200,12 @@ const CreateEdit: React.FC = (props: any) => {
       const resp = await api.get(`${apiRoutes.users}/all`);
       setUsers(resp.data);
       setLoading(false);
+      // debugger
+      const { signInUserSession } = userAuthenticated;
+      const groups = signInUserSession.accessToken.payload['cognito:groups'];
+      if (!checkRouleProfileAccess(groups, roules.administrator)) {
+        setUsersOptions(resp.data);
+      }
     } catch (error) {
       setLoading(false);
     }

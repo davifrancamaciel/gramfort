@@ -51,10 +51,7 @@ const Print: React.FC<PropTypes> = ({ item }) => {
               contrato de prestação de serviços – por qualquer motivo - entre as
               partes, o valor pago não será reembolsado.
             </p>
-            <p>
-              Data para visita {formatDate(item.date)} Horário:{' '}
-              {extractHour(item.date!)}
-            </p>
+            <p>Data para visita {formatDate(item.date)}</p>
           </div>
           <p
             style={{

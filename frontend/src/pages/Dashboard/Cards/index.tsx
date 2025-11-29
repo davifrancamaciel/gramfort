@@ -112,14 +112,15 @@ const Cards: React.FC = () => {
     );
     setExpenses(_expenses);
 
-    const _bruto =
-      cards?.sales.totalValueMonth! - cards?.sales.totalValueInputMonth!;
+    const _faturamento = Number(cards?.sales.totalValueMonth!) + Number(cards?.sales.totalValueVisitsMonth!);
+    setFaturamento(_faturamento);
+
+    const _bruto = _faturamento - cards?.sales.totalValueInputMonth!;
     setBruto(_bruto);
 
     const _liquido = _bruto - _expenses.totalValueMonth;
     setLiquido(_liquido);
 
-    setFaturamento(cards?.sales.totalValueMonth!);
     setBox(
       _bruto -
         _expenses.totalValueMonth -
@@ -151,6 +152,7 @@ const Cards: React.FC = () => {
       value: formatPrice(faturamento),
       color: systemColors.GREEN,
       text: `Faturamento das ${cards?.sales.count!} vendas`,
+      subText: `Visitas ${formatPrice(cards.sales.totalValueVisitsMonth)} (${cards.sales.countVisis})`,
       icon: <ArrowDownOutlined />,
       url: `${appRoutes.sales}?dateReference=${dateEn}`
     } as CardPropTypes;

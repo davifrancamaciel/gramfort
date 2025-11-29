@@ -16,7 +16,8 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
                     ${individualCommission ? ` AND s.userId = ${user.userId}` : ''}`
     const [result] = await executeSelect(query);
     const [m2] = await productsM2(date, isAdm, user, companyId);
-    return { ...result, ...m2 }
+    const [visits] = await visitsPaidOut(date, isAdm, user, companyId);
+    return { ...result, ...m2, ...visits }
 }
 
 const productsM2 = async (date, isAdm, user, companyId) => {
@@ -25,6 +26,15 @@ const productsM2 = async (date, isAdm, user, companyId) => {
                     INNER JOIN products p ON p.id = sp.productId 
                     WHERE s.approved = true AND s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' AND 
                           p.categoryId = 4 ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
+
+    const result = await executeSelect(query);
+    return result
+}
+
+const visitsPaidOut = async (date, isAdm, user, companyId) => {
+    const query = ` SELECT COUNT(s.id) countVisis, SUM(s.value) totalValueVisitsMonth FROM visits s 
+                    WHERE s.paidOut = true AND s.date BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                    ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
 
     const result = await executeSelect(query);
     return result

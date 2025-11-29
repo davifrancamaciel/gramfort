@@ -18,7 +18,6 @@ export interface Visit {
   sale: boolean;
   paymentDate?: string;
   date?: string;
-  dateHour?: string;
   createdAt?: string;
   updatedAt?: string;
   companyId?: string;

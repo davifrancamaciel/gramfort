@@ -264,7 +264,7 @@ module.exports.update = async (event) => {
         const objOnSave = {
             ...body,
             value,
-            valueInput,
+            valueInput: valueInput ? valueInput : 0,
             userId: user.userId,
         }
         if (checkRouleProfileAccess(user.groups, roules.saleUserIdChange) && body.userId)
@@ -354,10 +354,12 @@ const createProductsSales = async (body, result, isDelete) => {
     if (!isDelete) {
         for (let i = 0; i < list.length; i++) {
             const element = list[i];
-            const query = ` UPDATE products 
-                                SET inventoryCount = inventoryCount - ${element.amount}, updatedAt = NOW() 
-                            WHERE companyId = '${companyId}' AND id =  ${element.productId}`;
-            await executeUpdate(query);
+            if (element && element.productId && element.amount) {
+                const query = ` UPDATE products 
+                    SET inventoryCount = inventoryCount - ${element.amount}, updatedAt = NOW() 
+                    WHERE companyId = '${companyId}' AND id =  ${element.productId}`;
+                await executeUpdate(query);
+            }
         }
     }
 
@@ -371,7 +373,11 @@ const addImage = async (result, body) => {
 }
 
 const createSalesProduct = async (companyId, saleId, productsSales) => {
-    const list = productsSales.map(ps => ({
+    const validProducts = productsSales.filter(p => p.productId)
+    if (validProducts === null || !validProducts.length)
+        return [];
+        
+    const list = validProducts.map(ps => ({
         companyId,
         saleId,
         productId: ps.productId,
@@ -395,7 +401,8 @@ const createSale = async (objOnSave, body) => {
 
     objOnSave.commission = await getCommission(objOnSave.userId);
     objOnSave.value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
-    objOnSave.valueInput = body.costsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+    const valueInput = body.costsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+    objOnSave.valueInput = valueInput ? valueInput : 0
     if (body.path === path.contracts)
         objOnSave.hash = uuid.v4();
     if (body.path === path.sales)
