@@ -1,17 +1,24 @@
 import React from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
-import { CardPropTypes } from './interfaces';
-import { Container } from './styles';
+import { ContainerCard } from './styles';
+
+interface CardPropTypes {
+  text: string;
+  loading: boolean;
+  value: string;
+  color?: string;
+  icon?: any;
+}
 
 const Card: React.FC<CardPropTypes> = (props) => {
   return (
-    <Container color={props.color}>
+    <ContainerCard color={props.color}>
       <span>
         {props.loading ? <LoadingOutlined /> : props.value ? props.value : 0}
       </span>
       <strong>{props.text}</strong>
       <div>{props.icon}</div>
-    </Container>
+    </ContainerCard>
   );
 };
 

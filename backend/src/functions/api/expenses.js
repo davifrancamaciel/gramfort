@@ -11,7 +11,7 @@ const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
-const { executeSelect } = require("../../services/ExecuteQueryService");
+const expensesRepository = require('../../repositories/expensesRepository')
 
 const RESOURCE_NAME = 'Despesa'
 
@@ -149,7 +149,9 @@ module.exports.list = async (event, context) => {
         let data;
         if (Number(pageNumber) == 1) {
             const isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
-            data = await expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId);
+            const pay = await expensesRepository.expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId);
+            const type = await expensesRepository.expensesMonthByType(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId);
+            data = { pay, type }
         }
         return handlerResponse(200, { count, rows, data })
 
@@ -157,22 +159,6 @@ module.exports.list = async (event, context) => {
         return await handlerErrResponse(err)
     }
 };
-
-const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId) => {
-    if (expenseTypeId == 1)
-        expenseTypeName = 'COMPRAS'
-
-    const queryDate = paymentDateStart && paymentDateEnd ? `AND e.paymentDate BETWEEN '${paymentDateStart}' AND '${paymentDateEnd}'` : '';
-    const queryType = expenseTypeName ? `AND t.name LIKE '%${expenseTypeName}%'` : '';
-    const queryCompany = companyId ? `AND e.companyId = '${isAdm ? companyId : user.companyId}'` : '';
-
-    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
-                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    WHERE e.id > 0 ${queryDate} ${queryType} ${queryCompany} 
-                    AND e.title LIKE '%${title}%'   
-                    GROUP BY e.paidOut`
-    return await executeSelect(query);
-}
 
 module.exports.listById = async (event) => {
     const { pathParameters } = event

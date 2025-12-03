@@ -3,11 +3,11 @@ import { DollarOutlined } from '@ant-design/icons';
 
 import { formatPrice, priceToNumber } from 'utils/formatPrice';
 import { Sale, SaleProduct } from '../../interfaces';
-import Card from './Card';
+import Card from 'components/Card';
 import { appRoutes, systemColors } from 'utils/defaultValues';
 import { Visit } from 'pages/Visit/interfaces';
-import { TotalSale } from './Card/interfaces';
-import { Header, Container } from './styles';
+import { TotalSale } from './interfaces';
+import { Header, Container } from 'components/Card/styles';
 import { getType } from '../../utils';
 
 export interface PropTypes {

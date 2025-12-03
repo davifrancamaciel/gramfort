@@ -1,11 +1,3 @@
-export interface CardPropTypes {
-  text: string;
-  loading: boolean;
-  value: string;
-  color?: string;
-  icon?: any;
-}
-
 export interface TotalSale {
   total: number;
   visit: number;

@@ -22,11 +22,6 @@ export interface Expense {
   updatedAt?: string;
   companyId?: string;
 }
-export interface ExpenseTotal {
-  count: number;
-  totalValueMonth: number;
-  paidOut: boolean;
-}
 
 export const initialStateForm: Expense = {
   id: undefined,
@@ -60,4 +55,21 @@ export const initialStateFilter: Filter = {
   description: '',
   pageNumber: 1,
   pageSize: 100
+};
+
+export interface ExpenseResult {
+  count: number;
+  totalValueMonth: number;
+  paidOut: boolean;
+  id: number;
+  name: string;
+}
+export interface CardsResult {
+  pay: ExpenseResult[];
+  type: ExpenseResult[];
+}
+
+export const initialStateCards: CardsResult = {
+  pay: [],
+  type: []
 };

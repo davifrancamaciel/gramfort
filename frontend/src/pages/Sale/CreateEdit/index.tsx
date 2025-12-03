@@ -38,7 +38,7 @@ import { Visit } from 'pages/Visit/interfaces';
 import { formatDate } from 'utils/formatDate';
 import { Users } from 'pages/User/interfaces';
 import Cards from './Cards';
-import { initialState, TotalSale } from './Cards/Card/interfaces';
+import { initialState, TotalSale } from './Cards/interfaces';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 
 const CreateEdit: React.FC = (props: any) => {

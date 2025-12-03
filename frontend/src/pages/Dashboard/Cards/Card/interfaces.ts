@@ -1,3 +1,5 @@
+import { ExpenseResult } from 'pages/Expense/interfaces';
+
 export interface CardPropTypes {
   text: string;
   loading: boolean;
@@ -17,6 +19,7 @@ export interface CardsResult {
     m2: number;
     totalValueVisitsMonth: number;
     countVisis: number;
+    totalValueVisitsInSalesMonth: number;
   };
   user: {
     count: number;
@@ -32,13 +35,7 @@ export interface CardValues {
   totalValueMonth: number;
 }
 
-export interface ExpenseResult {
-  count: number;
-  totalValueMonth: number;
-  paidOut: number;
-  name: string;
-  id: number;
-}
+
 export const initialStateCards: CardsResult = {
   sales: {
     count: 0,
@@ -48,7 +45,8 @@ export const initialStateCards: CardsResult = {
     users: 0,
     m2: 0,
     totalValueVisitsMonth: 0,
-    countVisis: 0
+    countVisis: 0,
+    totalValueVisitsInSalesMonth: 0
   },
   user: {
     count: 0,

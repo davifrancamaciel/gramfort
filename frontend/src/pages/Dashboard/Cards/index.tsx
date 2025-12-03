@@ -16,7 +16,6 @@ import {
   CardPropTypes,
   CardsResult,
   CardValues,
-  ExpenseResult,
   initialStateCards
 } from './Card/interfaces';
 import { roules, systemColors } from 'utils/defaultValues';
@@ -32,6 +31,8 @@ import { formatDateEn } from 'utils/formatDate';
 import ShowByRoule from 'components/ShowByRoule';
 import { Col } from 'antd';
 import { Select } from 'components/_inputs';
+import { getValueExpensesByTypes } from 'pages/Expense/utils';
+import { ExpenseResult } from '@/pages/Expense/interfaces';
 
 const Cards: React.FC = () => {
   const { companies } = useAppContext();
@@ -81,28 +82,28 @@ const Cards: React.FC = () => {
     setExpensePaidOutNo(getValueExpenses(cards, 0));
 
     const _investment = getValueExpensesByTypes(
-      cards,
+      cards?.expensesByType,
       [expensesTypesEnum.INVESTIMENTOS],
       true
     );
     setInvestiment(_investment);
 
     const _input = getValueExpensesByTypes(
-      cards,
+      cards?.expensesByType,
       [expensesTypesEnum.INSUMOS],
       true
     );
     setInput(_input);
 
     const _others = getValueExpensesByTypes(
-      cards,
+      cards?.expensesByType,
       [expensesTypesEnum.OUTROS],
       true
     );
     setOthers(_others);
 
     const _expenses = getValueExpensesByTypes(
-      cards,
+      cards?.expensesByType,
       [
         expensesTypesEnum.INSUMOS,
         expensesTypesEnum.INVESTIMENTOS,
@@ -111,8 +112,11 @@ const Cards: React.FC = () => {
       false
     );
     setExpenses(_expenses);
+    const valueVisits =
+      Number(cards?.sales.totalValueVisitsMonth!) -
+      Number(cards?.sales.totalValueVisitsInSalesMonth!);
 
-    const _faturamento = Number(cards?.sales.totalValueMonth!) + Number(cards?.sales.totalValueVisitsMonth!);
+    const _faturamento = Number(cards?.sales.totalValueMonth!) + valueVisits;
     setFaturamento(_faturamento);
 
     const _bruto = _faturamento - cards?.sales.totalValueInputMonth!;
@@ -152,7 +156,9 @@ const Cards: React.FC = () => {
       value: formatPrice(faturamento),
       color: systemColors.GREEN,
       text: `Faturamento das ${cards?.sales.count!} vendas`,
-      subText: `Visitas ${formatPrice(cards.sales.totalValueVisitsMonth)} (${cards.sales.countVisis})`,
+      subText: `Visitas ${formatPrice(cards.sales.totalValueVisitsMonth)} (${
+        cards.sales.countVisis
+      })`,
       icon: <ArrowDownOutlined />,
       url: `${appRoutes.sales}?dateReference=${dateEn}`
     } as CardPropTypes;
@@ -183,39 +189,9 @@ const Cards: React.FC = () => {
   const getValueExpenses = (cards: CardsResult, filter: number) => {
     try {
       const { totalValueMonth, count } = cards?.expenses.find(
-        (x: ExpenseResult) => x.paidOut === filter
+        (x: ExpenseResult) => Number(x.paidOut) === filter
       )!;
       return { totalValueMonth: Number(totalValueMonth), count };
-    } catch (error) {
-      return { totalValueMonth: 0, count: 0 };
-    }
-  };
-
-  const getValueExpensesByTypes = (
-    cards: CardsResult,
-    filter: Array<number>,
-    include: boolean
-  ) => {
-    try {
-      let result = cards?.expensesByType.filter((x: ExpenseResult) =>
-        filter.includes(x.id)
-      );
-      if (!include) {
-        result = cards?.expensesByType.filter(
-          (x: ExpenseResult) => !filter.includes(x.id)
-        );
-      }
-      console.log(result);
-      const summary = result.reduce(
-        (acc, r) => {
-          acc.totalValueMonth += Number(r.totalValueMonth);
-          acc.count += r.count;
-          return acc;
-        },
-        { totalValueMonth: 0, count: 0 }
-      );
-
-      return summary;
     } catch (error) {
       return { totalValueMonth: 0, count: 0 };
     }

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { startOfMonth, endOfMonth } from 'date-fns';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+
 import moment from 'moment';
-import { Col, Card as CardAnt, TableProps } from 'antd';
+import { Col, TableProps } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
@@ -11,20 +11,23 @@ import {
   appRoutes,
   booleanFilter,
   expensesTypesEnum,
-  roules,
-  systemColors
+  roules
 } from 'utils/defaultValues';
-import { initialStateFilter, Expense, ExpenseTotal } from '../interfaces';
+import {
+  initialStateFilter,
+  Expense,
+  CardsResult,
+  initialStateCards
+} from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import Action from 'components/Action';
 import { getTitle, getType } from '../utils';
-import Card from './Card';
-import { Header } from './Card/styles';
 import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
+import Cards from './Cards';
 
 interface DataType {
   paymentDate: string;
@@ -37,7 +40,7 @@ const List: React.FC = () => {
   const [items, setItems] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [dataTotal, setDataTotal] = useState<ExpenseTotal[]>();
+  const [dataTotal, setDataTotal] = useState<CardsResult>(initialStateCards);
   const [path, setPath] = useState(apiRoutes.expenses);
 
   useEffect(() => {
@@ -99,9 +102,8 @@ const List: React.FC = () => {
         return expense;
       });
       setItems(itemsFormatted);
-      console.log(itemsFormatted);
       setTotalRecords(count);
-      setDataTotal(data);
+      pageNumber === 1 && setDataTotal(data);
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -127,6 +129,10 @@ const List: React.FC = () => {
 
   return (
     <div>
+      <div style={{ marginBottom: '15px' }}>
+        <Cards dataTotal={dataTotal} loading={loading} />
+      </div>
+
       <PanelFilter
         title={`${getTitle(path, true)} cadastradas`}
         actionButton={() => actionFilter()}
@@ -203,31 +209,6 @@ const List: React.FC = () => {
           </Col>
         </ShowByRoule>
       </PanelFilter>
-
-      <Header>
-        <Card
-          loading={loading}
-          value={dataTotal?.find((x) => x.paidOut == true)?.totalValueMonth}
-          color={systemColors.GREEN}
-          text={'Pagas'}
-        />
-        <Card
-          loading={loading}
-          value={dataTotal?.find((x) => x.paidOut == false)?.totalValueMonth}
-          color={systemColors.RED}
-          text={'A pagar'}
-        />
-        <Card
-          loading={loading}
-          value={dataTotal
-            ?.map((x) => Number(x.totalValueMonth))
-            .reduce((acc, total) => {
-              return acc + total;
-            }, 0)}
-          color={systemColors.BLUE}
-          text={'Total'}
-        />
-      </Header>
 
       <GridList
         size="small"

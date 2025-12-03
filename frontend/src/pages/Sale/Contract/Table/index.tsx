@@ -81,9 +81,8 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
           </Header>
 
           <p style={{ textAlign: 'center' }}>
-            Prezado(a) Sr(a), <strong>{sale.contact}</strong> atendendo ao
-            seu pedido estamos enviando nossa proposta comercial de
-            Hidrossemeadura.
+            Prezado(a) Sr(a), <strong>{sale.contact}</strong> atendendo ao seu
+            pedido estamos enviando nossa proposta comercial de Hidrossemeadura.
           </p>
           <table
             style={{
@@ -169,17 +168,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     )}
                   </>
                 ))}
-              {/* </tbody>
-          </table>
-          <div
-            style={{
-              marginTop: '30px',
-              justifyContent: 'end',
-              display: 'flex'
-            }}
-          >
-            <table style={{ borderTop: '#eee solid 1px' }}>
-              <tbody> */}
+
               <tr>
                 <td
                   colSpan={3}
@@ -266,7 +255,6 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               </tr>
             </tbody>
           </table>
-          {/* </div> */}
 
           <Clause>
             <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
@@ -518,6 +506,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               </div>
             </Header>
           )}
+          {!sale.visit && <div style={{ height: '200px' }}></div>}
           <Row
             gutter={[16, 24]}
             style={{ marginBottom: '15px', marginTop: '15px' }}

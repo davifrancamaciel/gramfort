@@ -3,12 +3,12 @@
 const db = require('../../database');
 const { Op } = require('sequelize');
 const Expense = require('../../models/Expense')(db.sequelize, db.Sequelize);
-const { startOfMonth, endOfMonth, startOfDay, endOfDay, subDays, parseISO, addYears } = require('date-fns');
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { executeSelect, executeUpdate } = require("../../services/ExecuteQueryService");
 const { roules } = require("../../utils/defaultValues");
 const salesRepository = require('../../repositories/salesRepository')
+const expensesRepository = require('../../repositories/expensesRepository')
 const { formatDate } = require("../../utils/formatDate");
 
 module.exports.cards = async (event, context) => {
@@ -41,8 +41,8 @@ module.exports.cards = async (event, context) => {
         }
 
         if (checkRouleProfileAccess(user.groups, roules.expenses)) {
-            data.expenses = await expensesMonth(date, isAdm, user, companyId);
-            data.expensesByType = await expensesMonthByType(date, isAdm, user, companyId);
+            data.expenses = await expensesRepository.expensesMonthDash(date, isAdm, user, companyId);
+            data.expensesByType = await expensesRepository.expensesMonthByTypeDash(date, isAdm, user, companyId);
         }
 
         return handlerResponse(200, data)
@@ -50,9 +50,6 @@ module.exports.cards = async (event, context) => {
         return await handlerErrResponse(err)
     }
 };
-
-const andCompany = (alias, companyId) =>
-    companyId ? `AND ${alias}.companyId = '${companyId}'` : ''
 
 module.exports.productGraphBar = async (event, context) => {
     try {
@@ -142,28 +139,6 @@ module.exports.expensesUpdate = async (event, context) => {
         return await handlerErrResponse(err)
     }
 };
-
-const expensesMonth = async (date, isAdm, user, companyId) => {
-    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
-                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    WHERE e.paymentDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
-                    AND e.saleId IS NULL ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
-                    GROUP BY e.paidOut`
-
-    const result = await executeSelect(query);
-    return result
-}
-
-const expensesMonthByType = async (date, isAdm, user, companyId) => {
-    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, t.name, t.id FROM expenses e 
-                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    WHERE e.paymentDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
-                    AND e.saleId IS NULL ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
-                    GROUP BY e.expenseTypeId`
-
-    const result = await executeSelect(query);
-    return result
-}
 
 const productsSalesTotal = async (isAdm, user) => {
     const query = ` SELECT sp.productId id, p.name label, SUM(sp.amount) value
