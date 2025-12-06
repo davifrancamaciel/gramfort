@@ -119,7 +119,7 @@ module.exports.list = async (event, context) => {
             // order: [['expenseType', 'name', 'ASC'], ['paymentDate', 'ASC']],
             order: arrayOrder,
             include: [
-                { model: Company, as: 'company', attributes: ['name'] },
+                { model: Company, as: 'company', attributes: ['name', 'image'] },
                 {
                     model: ExpenseType,
                     as: 'expenseType',

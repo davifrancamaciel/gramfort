@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'antd';
-import { PrinterOutlined } from '@ant-design/icons';
 
+import { useAppContext } from 'hooks/contextLib';
 import PrintContainer from 'components/Report/PrintContainer';
 import TableReport from 'components/Report/TableReport';
 
-import { apiRoutes, systemColors } from 'utils/defaultValues';
-import { Filter, ExpenseType, Expense } from '../../interfaces';
+import { apiRoutes } from 'utils/defaultValues';
+import { Filter, Expense } from '../../../interfaces';
 
 import api from 'services/api-aws-amplify';
-import { formatDate } from 'utils/formatDate';
-import { formatPrice, priceToNumber } from 'utils/formatPrice';
+import { formatDate, formatDateHour } from 'utils/formatDate';
+import { formatPrice } from 'utils/formatPrice';
 import { Footer, Summary } from './styles';
 
 interface PropTypes {
@@ -19,12 +18,12 @@ interface PropTypes {
 
 interface ISummaryTotals {
   value: string;
-  ammount: string;
 }
 
 const Print: React.FC<PropTypes> = ({ state }) => {
+  const { setLoading } = useAppContext();
   const [items, setItems] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(false);
+
   const [print, setPrint] = useState(false);
   const [totalSummary, setTotalSummary] = useState<ISummaryTotals>(
     {} as ISummaryTotals
@@ -34,16 +33,14 @@ const Print: React.FC<PropTypes> = ({ state }) => {
     const summary = items.reduce(
       (acc, r) => {
         acc.value += Number(r.value);
-        // acc.ammount += Number(r.ammount || 0);
 
         return acc;
       },
-      { value: 0, ammount: 0, volume: 0 }
+      { value: 0 }
     );
-
+    console.log(summary);
     setTotalSummary({
-      value: formatPrice(summary.value),
-      ammount: formatPrice(summary.ammount)
+      value: formatPrice(summary.value)
     });
   }, [items]);
 
@@ -63,8 +60,10 @@ const Print: React.FC<PropTypes> = ({ state }) => {
       const { count, rows } = resp.data;
       const itemsFormatted = rows.map((item: Expense) => ({
         ...item,
-        value: formatPrice(Number(item.value) || 0),
-        paymentDate: formatDate(item.paymentDate || '')
+        paidOut: item.paidOut ? 'SIM' : 'NÃO',
+        valueFormatted: formatPrice(Number(item.value) || 0),
+        paymentDate: formatDate(item.paymentDate || ''),
+        createdAt: formatDateHour(item.createdAt || '')
       }));
 
       itemsArray = [...itemsArray, ...itemsFormatted];
@@ -85,50 +84,39 @@ const Print: React.FC<PropTypes> = ({ state }) => {
 
   return (
     <>
-      <Button
-        style={{ backgroundColor: systemColors.YELLOW, color: '#fff' }}
-        icon={<PrinterOutlined />}
-        onClick={() => actionFilter()}
-        loading={loading}
-        block
-      >
-        Imprimir
-      </Button>
+      <a onClick={() => actionFilter()}>Imprimir</a>
       <PrintContainer show={false} print={print}>
         <TableReport
-          image=""
-          // image={items[0]?.company?.image || ''}
+          image={items[0]?.company?.image || ''}
           title="Relatório de despesas"
           headerList={[
             'CÓDIGO',
+            'EMPRESA',
             'TIPO',
             'TITULO',
-            'STATUS',
+            'PAGO',
             'VALOR',
-            'VENCIMENTO',
-            'DATA CADASTRO.'
+            'VENCIMENTO'
           ]}
         >
           {items.map((item: Expense, i: number) => (
             <tr key={i}>
               <td>{item.id}</td>
+              <td>{item.company?.name}</td>
               <td>{item.expenseType?.name}</td>
               <td>{item.title}</td>
               <td>{item.paidOut}</td>
-              <td>{item.value}</td>
+              <td>{item.valueFormatted}</td>
               <td>{item.paymentDate}</td>
-              <td>{item.createdAt}</td>
             </tr>
           ))}
         </TableReport>
         <Footer>
           <div>
-            {/* <span>Quantidade total de volumes {totalSummary.volume}</span> */}
-            <span>Quantidade total de entregas {items.length}</span>
+            <span>Quantidade total {items.length}</span>
           </div>
           <Summary>
-            <span>Valor total de frete {totalSummary.value}</span>
-            {/* <span>Valor total das mercadorias {totalSummary.noteValue}</span> */}
+            <span>Valor total {totalSummary.value}</span>
           </Summary>
         </Footer>
       </PrintContainer>

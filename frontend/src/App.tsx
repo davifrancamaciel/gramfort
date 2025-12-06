@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [users, setUsers] = useState<IOptions[]>([]);
   const [companies, setCompanies] = useState<IOptions[]>([]);
+  const [loading, setLoading] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -41,7 +42,9 @@ const App: React.FC = () => {
     width,
     setWidth,
     companies,
-    setCompanies
+    setCompanies,
+    loading,
+    setLoading
   } as any;
 
   return (

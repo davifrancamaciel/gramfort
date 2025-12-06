@@ -29,6 +29,7 @@ import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
 import Cards from './Cards';
 import FastFilter from 'components/FastFilter';
+import Actions from './Actions';
 
 interface DataType {
   paymentDate: string;
@@ -69,12 +70,12 @@ const List: React.FC = () => {
     order: string = 'asc'
   ) => {
     try {
-      dispatch({ pageNumber, paymentDateStart, paymentDateEnd });
       const type = getType();
       let expenseTypeId: string = '';
       if (type == appRoutes.shopping) {
         expenseTypeId = expensesTypesEnum.COMPRAS.toString();
       }
+      dispatch({ pageNumber, paymentDateStart, paymentDateEnd, expenseTypeId });
       setLoading(true);
       const resp = await api.get(apiRoutes.expenses, {
         ...state,
@@ -222,6 +223,7 @@ const List: React.FC = () => {
       </PanelFilter>
 
       <GridList
+        headerChildren={<Actions state={state} />}
         size="small"
         scroll={{ x: 640 }}
         columns={[

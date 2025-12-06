@@ -12,6 +12,7 @@ export interface Expense {
   supplierId?: number;
   dividedIn: number;
   value?: number;
+  valueFormatted?: string;
   amount?: number;
   title?: string;
   paymentMethod?: string;
