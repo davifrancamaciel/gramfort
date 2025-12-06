@@ -1,13 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { format, subMonths, addMonths } from 'date-fns';
-import pt from 'date-fns/locale/pt';
+import React, { useEffect, useState } from 'react';
 import {
   WarningOutlined,
   CheckOutlined,
   ArrowDownOutlined,
   ArrowUpOutlined,
-  LeftOutlined,
-  RightOutlined,
   DollarOutlined,
   MediumOutlined
 } from '@ant-design/icons';
@@ -26,22 +22,19 @@ import { apiRoutes, appRoutes, expensesTypesEnum } from 'utils/defaultValues';
 import { formatPrice } from 'utils/formatPrice';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import Card from './Card';
-import { Container, Header } from './styles';
+import { Header } from './styles';
 import { formatDateEn } from 'utils/formatDate';
-import ShowByRoule from 'components/ShowByRoule';
-import { Col } from 'antd';
-import { Select } from 'components/_inputs';
 import { getValueExpensesByTypes } from 'pages/Expense/utils';
-import { ExpenseResult } from '@/pages/Expense/interfaces';
+import { ExpenseResult } from 'pages/Expense/interfaces';
+import FastFilter from 'components/FastFilter';
+import { Filter, initialState } from './interfaces';
 
 const Cards: React.FC = () => {
-  const { companies } = useAppContext();
   const { userAuthenticated } = useAppContext();
-  const [companyId, setCompanyId] = useState();
   const [groups, setGroups] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [cards, setCards] = useState<CardsResult>(initialStateCards);
-  const [date, setDate] = useState(new Date());
+  const [state, setState] = useState<Filter>(initialState);
   const [expensePaidOutYes, setExpensePaidOutYes] = useState<CardValues>(
     {} as CardValues
   );
@@ -58,10 +51,6 @@ const Cards: React.FC = () => {
   const [bruto, setBruto] = useState<number>(0);
 
   const [dateEn, setDateEn] = useState('');
-  const dateFormated = useMemo(
-    () => format(date, "MMMM 'de' yyyy", { locale: pt }),
-    [date]
-  );
 
   useEffect(() => {
     const { signInUserSession } = userAuthenticated;
@@ -69,13 +58,10 @@ const Cards: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const { date, companyId } = state;
     action(date, companyId);
     setDateEn(formatDateEn(date.toISOString()));
-  }, [date]);
-
-  useEffect(() => {
-    action(date, companyId);
-  }, [companyId]);
+  }, [state]);
 
   useEffect(() => {
     setExpensePaidOutYes(getValueExpenses(cards, 1));
@@ -155,7 +141,7 @@ const Cards: React.FC = () => {
       loading,
       value: formatPrice(faturamento),
       color: systemColors.GREEN,
-      text: `Faturamento das ${cards?.sales.count!} vendas`,
+      text: `vendas (${cards?.sales.count!})`,
       subText: `Visitas ${formatPrice(cards.sales.totalValueVisitsMonth)} (${
         cards.sales.countVisis
       })`,
@@ -197,10 +183,6 @@ const Cards: React.FC = () => {
     }
   };
 
-  const handlePrevMonth = () => setDate(subMonths(date, 1));
-
-  const handleNextMonth = () => setDate(addMonths(date, 1));
-
   const getPercent = (liquido: number, faturamento: number) => {
     const result = Number(liquido / faturamento);
     if (!result || result === -Infinity || result === NaN) return 0;
@@ -214,32 +196,7 @@ const Cards: React.FC = () => {
 
   return (
     <>
-      <ShowByRoule roule={roules.administrator}></ShowByRoule>
-      <Container>
-        <Col lg={5} md={6} sm={12} xs={8}>
-          <Select
-            placeholder={'Empresa'}
-            options={companies}
-            value={companyId}
-            onChange={(companyId) => setCompanyId(companyId)}
-          />
-        </Col>
-        <Col
-          lg={10}
-          md={10}
-          sm={12}
-          xs={14}
-          style={{ display: 'flex', justifyContent: 'end' }}
-        >
-          <span onClick={handlePrevMonth}>
-            <LeftOutlined />
-          </span>
-          <strong>{dateFormated}</strong>
-          <span onClick={handleNextMonth}>
-            <RightOutlined />
-          </span>
-        </Col>
-      </Container>
+      <FastFilter state={state} setState={setState} />
       <Header>
         {Boolean(checkRouleProfileAccess(groups, roules.expenses)) && (
           <>

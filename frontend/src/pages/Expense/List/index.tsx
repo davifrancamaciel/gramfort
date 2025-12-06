@@ -28,6 +28,7 @@ import { getTitle, getType } from '../utils';
 import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
 import Cards from './Cards';
+import FastFilter from 'components/FastFilter';
 
 interface DataType {
   paymentDate: string;
@@ -50,6 +51,15 @@ const List: React.FC = () => {
     actionFilter(1, paymentDateStart, paymentDateEnd);
     setPath(getType());
   }, []);
+
+  useEffect(() => {
+    if (state.date) {
+      const paymentDateStart = startOfMonth(state.date).toISOString();
+      const paymentDateEnd = endOfMonth(state.date).toISOString();
+      dispatch({ paymentDateStart, paymentDateEnd });
+      actionFilter(1, paymentDateStart, paymentDateEnd);
+    }
+  }, [state.date, state?.companyId]);
 
   const actionFilter = async (
     pageNumber: number = 1,
@@ -129,6 +139,7 @@ const List: React.FC = () => {
 
   return (
     <div>
+      <FastFilter state={state} setState={dispatch} />
       <div style={{ marginBottom: '15px' }}>
         <Cards dataTotal={dataTotal} loading={loading} />
       </div>

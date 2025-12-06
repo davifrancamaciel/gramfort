@@ -10,8 +10,7 @@ import {
   apiRoutes,
   appRoutes,
   categorIdsArrayProduct,
-  roules,
-  systemColors
+  roules
 } from 'utils/defaultValues';
 import { initialStateFilter, Sale, SaleProduct } from '../interfaces';
 import useFormState from 'hooks/useFormState';
@@ -26,7 +25,15 @@ import BooleanTag from 'components/BooleanTag';
 import { useAppContext } from 'hooks/contextLib';
 import { Link } from 'react-router-dom';
 import WhatsApp from 'components/WhatsApp';
-import { createMessageShare, getBalance, getTitle, getType } from '../utils';
+import {
+  createMessageShare,
+  getBalance,
+  getCostValue,
+  getTitle,
+  getType
+} from '../utils';
+import Cards from './Cards';
+import FastFilter from 'components/FastFilter';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -44,6 +51,15 @@ const List: React.FC = () => {
     const createdAtEnd = endOfMonth(date).toISOString();
     actionFilter(1, createdAtStart, createdAtEnd, typePath);
   }, []);
+
+  useEffect(() => {
+    if (state.date) {
+      const createdAtStart = startOfMonth(state.date).toISOString();
+      const createdAtEnd = endOfMonth(state.date).toISOString();
+      dispatch({ createdAtStart, createdAtEnd });
+      actionFilter(1, createdAtStart, createdAtEnd);
+    }
+  }, [state.date, state?.companyId]);
 
   const actionFilter = async (
     pageNumber: number = 1,
@@ -82,9 +98,7 @@ const List: React.FC = () => {
           companyName: p.company?.name,
           valueFormatted: formatPrice(Number(p.value!)),
           valueCostFormatted: formatPrice(
-            Number(path === appRoutes.sales ? p.valueInput : 0) +
-              Number(p.discountValue || 0) +
-              Number(p.visit?.value || 0)
+            getCostValue(p, path === appRoutes.sales)
           ),
           balanceFormatted: getBalance(p, path === appRoutes.sales),
           productsFormatted: formatProductName(p.productsSales),
@@ -130,6 +144,10 @@ const List: React.FC = () => {
 
   return (
     <div>
+      <FastFilter state={state} setState={dispatch} />
+      <div style={{ marginBottom: '15px' }}>
+        <Cards sales={items} loading={loading} />
+      </div>
       <PanelFilter
         title={`${getTitle(path, true)}`}
         actionButton={() => actionFilter()}

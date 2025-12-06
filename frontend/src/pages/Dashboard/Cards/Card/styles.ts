@@ -6,7 +6,7 @@ interface ContainerProps {
 
 export const Container = styled.div<ContainerProps>`
   background: ${(props) => (props.color ? props.color : '#fff')};
-  height: 150px;
+  height: 120px;
   display: flex;
   flex-direction: column;
   padding: 15px;
@@ -18,12 +18,20 @@ export const Container = styled.div<ContainerProps>`
     font-size: 30px;
     font-weight: bold;
   }
-  strong {
-    color: #fff;
-    font-size: 18px;
-    margin-top: 15px;
+  .card-decription {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-transform: uppercase;
+
+    > strong {
+      color: #fff;
+      font-size: 15px;
+      margin-top: 8px;
+    }
   }
-  div {
+  .card-icon {
     position: absolute;
     bottom: 15px;
     right: 15px;
@@ -34,7 +42,7 @@ export const Container = styled.div<ContainerProps>`
     }
   }
   &:hover {
-    div {
+    .card-icon {
       svg {
         font-size: 90px;
       }

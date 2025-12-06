@@ -28,10 +28,23 @@ export const createMessageShare = (sale?: Sale) => {
 };
 
 export const getBalance = (sale: Sale, isSubCost: boolean = false) => {
+  const value = getBalanceValue(sale, isSubCost);
+  return formatPrice(value);
+};
+
+export const getBalanceValue = (sale: Sale, isSubCost: boolean = false) => {
   const value =
     Number(sale.value || 0) -
     Number(sale.visit?.value || 0) -
     Number(sale.discountValue || 0) -
     Number(isSubCost ? sale.valueInput : 0 || 0);
-  return formatPrice(value);
+  return value;
+};
+
+export const getCostValue = (sale: Sale, isSumCost: boolean = false) => {
+  const value =
+    Number(isSumCost ? sale.valueInput : 0) +
+    Number(sale.discountValue || 0) +
+    Number(sale.visit?.value || 0);
+  return value;
 };

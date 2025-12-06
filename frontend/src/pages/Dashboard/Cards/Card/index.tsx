@@ -11,9 +11,11 @@ const Card: React.FC<CardPropTypes> = (props) => {
         <span>
           {props.loading ? <LoadingOutlined /> : props.value ? props.value : 0}
         </span>
-        <strong>{props.text}</strong>
-        {props?.subText && <strong>{props.subText}</strong>}
-        <div>{props.icon}</div>
+        <div className="card-decription">
+          <strong>{props.text}</strong>
+          {props?.subText && <strong>{props.subText}</strong>}
+        </div>
+        <div className="card-icon">{props.icon}</div>
       </Container>
     </Link>
   );

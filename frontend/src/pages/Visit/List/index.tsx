@@ -20,6 +20,7 @@ import Action from 'components/Action';
 import Print from './Print';
 import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
+import FastFilter from 'components/FastFilter';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -35,6 +36,15 @@ const List: React.FC = () => {
     const dateEnd = endOfMonth(date).toISOString();
     actionFilter(1, dateStart, dateEnd);
   }, []);
+
+  useEffect(() => {
+    if (state.date) {
+      const dateStart = startOfMonth(state.date).toISOString();
+      const dateEnd = endOfMonth(state.date).toISOString();
+      dispatch({ dateStart, dateEnd });
+      actionFilter(1, dateStart, dateEnd);
+    }
+  }, [state.date, state?.companyId]);
 
   const actionFilter = async (
     pageNumber: number = 1,
@@ -104,6 +114,7 @@ const List: React.FC = () => {
 
   return (
     <div>
+      <FastFilter state={state} setState={dispatch} />
       <PanelFilter
         title={`Visitas cadastradas`}
         actionButton={() => actionFilter()}
