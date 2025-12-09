@@ -17,7 +17,6 @@ import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
-import PrintAll from './PrintAll';
 
 import moment from 'moment';
 import ShowByRoule from 'components/ShowByRoule';
@@ -34,6 +33,7 @@ import {
 } from '../utils';
 import Cards from './Cards';
 import FastFilter from 'components/FastFilter';
+import Actions from './Actions';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -149,7 +149,7 @@ const List: React.FC = () => {
         <Cards sales={items} loading={loading} />
       </div>
       <PanelFilter
-        title={`${getTitle(path, true)}`}
+        title={getTitle(path, true)}
         actionButton={() => actionFilter()}
         loading={loading}
       >
@@ -252,7 +252,9 @@ const List: React.FC = () => {
         </Col> */}
       </PanelFilter>
       <GridList
-        headerChildren={<PrintAll state={state} />}
+        headerChildren={
+          <Actions state={state} title={getTitle(path, true)} path={path} />
+        }
         scroll={{ x: 840 }}
         columns={[
           { title: 'Código', dataIndex: 'id' },

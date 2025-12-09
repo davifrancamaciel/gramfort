@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import PrintContainer from 'components/Report/PrintContainer';
 import TableReport from 'components/Report/TableReport';
 
-import { Expense } from '../../../interfaces';
+import { Visit } from '../../../interfaces';
 
 import { formatPrice } from 'utils/formatPrice';
 import { Footer, Summary } from './styles';
@@ -42,19 +42,19 @@ const Print: React.FC<PropTypes> = ({ actionFilter, items, print, title }) => {
           headerList={[
             'CÓDIGO',
             'EMPRESA',
-            'TIPO',
-            'TITULO',
+            'CLIENTE',
+            'CONSUKTOR',
             'PAGO',
             'VALOR',
-            'VENCIMENTO'
+            'DATA PGTO'
           ]}
         >
-          {items.map((item: Expense, i: number) => (
+          {items.map((item: Visit, i: number) => (
             <tr key={i}>
               <td>{item.id}</td>
               <td>{item.company?.name}</td>
-              <td>{item.expenseType?.name}</td>
-              <td>{item.title}</td>
+              <td>{item.client?.name}</td>
+              <td>{item.user?.name}</td>
               <td>{item.paidOut}</td>
               <td>{item.valueFormatted}</td>
               <td>{item.paymentDate}</td>

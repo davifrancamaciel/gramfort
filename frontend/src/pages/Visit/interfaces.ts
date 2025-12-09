@@ -5,6 +5,9 @@ export interface User {
 }
 export interface Visit {
   id?: string;
+  clientName?: string;
+  userName?: string;
+  companyName?: string;
   client?: User;
   clientId?: number;
   user?: User;
@@ -12,6 +15,7 @@ export interface Visit {
   company?: Company;
   km?: number;
 
+  valueFormatted?: string;
   value?: number;
   paidOut: boolean;
   proposal: boolean;

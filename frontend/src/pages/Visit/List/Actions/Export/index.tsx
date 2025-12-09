@@ -14,14 +14,21 @@ const Export: React.FC<PropTypes> = ({ actionFilter, items, title }) => {
         headers={[
           { label: 'CÓDIGO', key: 'id' },
           { label: 'EMPRESA', key: 'companyName' },
-          { label: 'TIPO', key: 'typeName' },
-          { label: 'TITULO', key: 'title' },
-          { label: 'PAGO', key: 'paidOut' },
+          { label: 'CLIENTE', key: 'clientName' },
+          { label: 'COSULTOR', key: 'userName' },
           { label: 'VALOR', key: 'value' },
-          { label: 'VENCIMENTO', key: 'paymentDate' },
+          { label: 'PAGO', key: 'paidOut' },
+          { label: 'CONTRATO', key: 'proposal' },
+          { label: 'VENDA', key: 'sale' },
+          { label: 'KM', key: 'km' },
+          { label: 'ESTADO', key: 'state' },
+          { label: 'CIDADE', key: 'city' },
+          { label: 'ENDEREÇO', key: 'address' },
+          { label: 'DATA', key: 'date' },
+          { label: 'DATA PGTO', key: 'paymentDate' },
           { label: 'CADASTRO', key: 'createdAt' },
           { label: 'ALTERAÇÃO', key: 'updatedAt' },
-          { label: 'DESCRIÇÃO', key: 'description' }
+          { label: 'OBS', key: 'note' }
         ]}
       >
         <Button id="ghost-button" style={{ display: 'none' }}></Button>

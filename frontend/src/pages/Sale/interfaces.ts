@@ -31,6 +31,7 @@ export interface Sale {
   productsSales: SaleProduct[];
   costsSales: SaleProduct[];
   value?: number;
+  valueFormatted?: string;
   valueInput?: number;
   commission?: number;
   note?: string;

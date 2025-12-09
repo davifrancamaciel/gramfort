@@ -21,6 +21,7 @@ import Print from './Print';
 import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
 import FastFilter from 'components/FastFilter';
+import Actions from './Actions';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -198,6 +199,7 @@ const List: React.FC = () => {
       <GridList
         size="small"
         scroll={{ x: 840 }}
+        headerChildren={<Actions state={state} title={'Visitas'} />}
         columns={[
           // { title: 'Código', dataIndex: 'id' },
           { title: 'Empresa', dataIndex: 'companyName' },

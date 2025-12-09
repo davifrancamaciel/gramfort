@@ -223,7 +223,7 @@ const List: React.FC = () => {
       </PanelFilter>
 
       <GridList
-        headerChildren={<Actions state={state} />}
+        headerChildren={<Actions state={state} title={getTitle(path, true)} />}
         size="small"
         scroll={{ x: 640 }}
         columns={[

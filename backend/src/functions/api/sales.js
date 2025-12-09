@@ -109,7 +109,7 @@ module.exports.list = async (event, context) => {
             }, {
                 model: Company, as: 'company', attributes: ['name', 'image', 'individualCommission'],
             }, {
-                model: Visit, as: 'visit', attributes: ['date', 'value'],
+                model: Visit, as: 'visit', attributes: ['km', 'state', 'city', 'address', 'date', 'value', 'note'],
             }]
         })
         const salesIds = rows.map(x => x.id)

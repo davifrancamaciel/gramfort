@@ -14,7 +14,7 @@ import { formatPrice } from 'utils/formatPrice';
 
 import Export from './Export';
 import PrintAll from './PrintAll';
-import { Expense } from '../../interfaces';
+import { Visit } from '../../interfaces';
 
 interface PropTypes {
   state: any;
@@ -25,33 +25,39 @@ const Actions: React.FC<PropTypes> = ({ state, title }) => {
   const { loading, setLoading } = useAppContext();
 
   const [print, setPrint] = useState(false);
-  const [items, setItems] = useState<Expense[]>([]);
+  const [items, setItems] = useState<Visit[]>([]);
 
   const actionFilter = async (
     type: string,
     pageNumber: number = 1,
-    itemsArray: Expense[] = []
+    itemsArray: Visit[] = []
   ) => {
     try {
       setLoading(true);
       setPrint(false);
 
-      const resp = await api.get(apiRoutes.expenses, {
+      const resp = await api.get(apiRoutes.visits, {
         ...state,
         pageNumber,
         pageSize: 500
       });
 
       const { count, rows } = resp.data;
-      const itemsFormatted = rows.map((item: Expense) => ({
+      const itemsFormatted = rows.map((item: Visit) => ({
         ...item,
+        clientName: item.client?.name,
         companyName: item.company?.name,
-        typeName: item.expenseType?.name,
-        paidOut: item.paidOut ? 'SIM' : 'NÃO',
+        userName: item.user?.name,
         valueFormatted: formatPrice(Number(item.value) || 0),
-        paymentDate: formatDate(item.paymentDate || ''),
+
+        paymentDate: formatDate(item.paymentDate),
         createdAt: formatDateHour(item.createdAt),
-        updatedAt: formatDateHour(item.updatedAt)
+        updatedAt: formatDateHour(item.updatedAt),
+        date: formatDate(item.date),
+
+        paidOut: item.paidOut ? 'SIM' : 'NÃO',
+        proposal: item.proposal ? 'SIM' : 'NÃO',
+        sale: item.sale ? 'SIM' : 'NÃO'
       }));
 
       itemsArray = [...itemsArray, ...itemsFormatted];
