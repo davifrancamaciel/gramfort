@@ -48,3 +48,16 @@ export const getCostValue = (sale: Sale, isSumCost: boolean = false) => {
     Number(sale.visit?.value || 0);
   return value;
 };
+
+export const getTableColl = (key?: string) => {
+  switch (key) {
+    case 'valueFormatted':
+      return 'value';
+    case 'valueCostFormatted':
+      return 'valueInput';
+    case 'valuePerMeterFormatted':
+      return 'valuePerMeter';
+    default:
+      return key;
+  }
+};

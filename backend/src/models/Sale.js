@@ -22,6 +22,7 @@ module.exports = function (sequelize, DataTypes) {
         note: { type: DataTypes.STRING(500) },
         value: { type: DataTypes.DECIMAL },
         valueInput: { type: DataTypes.DECIMAL },
+        valuePerMeter: { type: DataTypes.DECIMAL },
         commission: { type: DataTypes.DECIMAL },
         invoiceNumber: { type: DataTypes.STRING(50) }, // numero da NF
 

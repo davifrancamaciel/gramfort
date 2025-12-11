@@ -17,7 +17,8 @@ import {
   initialStateFilter,
   Expense,
   CardsResult,
-  initialStateCards
+  initialStateCards,
+  DataType
 } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
@@ -30,11 +31,6 @@ import { useAppContext } from 'hooks/contextLib';
 import Cards from './Cards';
 import FastFilter from 'components/FastFilter';
 import Actions from './Actions';
-
-interface DataType {
-  paymentDate: string;
-  expenseTypeName: string;
-}
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -235,8 +231,8 @@ const List: React.FC = () => {
             dataIndex: 'paymentDate',
             sorter: true
           },
-          { title: 'Titulo', dataIndex: 'title' },
-          { title: 'Valor', dataIndex: 'value' },
+          { title: 'Titulo', dataIndex: 'title', sorter: true },
+          { title: 'Valor', dataIndex: 'value', sorter: true },
           { title: 'Paga', dataIndex: 'paidOut' }
         ]}
         dataSource={items}

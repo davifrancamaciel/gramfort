@@ -41,4 +41,11 @@ const userType = {
     SUPPLIER: 'SUPPLIER'
 }
 
-module.exports = { roules, cognito, companyIdDefault, userType, linkServices, path }
+const productCategoriesEnum = {
+    SERVICO: 1,
+    INSUMO: 2,
+    CUSTO: 3,
+    SERVICO_M2: 4
+};
+
+module.exports = { roules, cognito, companyIdDefault, userType, linkServices, path, productCategoriesEnum }

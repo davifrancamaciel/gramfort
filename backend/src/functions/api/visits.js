@@ -100,12 +100,13 @@ module.exports.list = async (event, context) => {
         if (!checkRouleProfileAccess(user.groups, roules.visits))
             whereStatement.userId = user.userId;
 
-        const { pageSize, pageNumber } = event.queryStringParameters
+        const { pageSize, pageNumber, field, order } = event.queryStringParameters
+        let arrayOrder = [[field ? field : 'id', order ? order : 'desc']];
         const { count, rows } = await Visit.findAndCountAll({
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * Number(pageSize),
-            order: [['id', 'DESC']],
+            order: arrayOrder,
             include: [
                 {
                     model: Company, as: 'company', attributes: ['name', 'image', 'pixKey']

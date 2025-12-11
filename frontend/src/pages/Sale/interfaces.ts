@@ -33,6 +33,7 @@ export interface Sale {
   value?: number;
   valueFormatted?: string;
   valueInput?: number;
+  valuePerMeter?: number;
   commission?: number;
   note?: string;
   userId?: string;
@@ -104,3 +105,5 @@ export const initialStateFilter: Filter = {
   pageSize: 100,
   showCommission: false
 };
+
+export interface DataType {}

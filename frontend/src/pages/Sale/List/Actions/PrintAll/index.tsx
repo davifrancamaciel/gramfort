@@ -73,7 +73,7 @@ const Print: React.FC<PropTypes> = ({
                   <tr>
                     <Td colSpan={1} title="Código" value={sale.id} />
                     <Td colSpan={1} title="Data" value={sale.saleDate} />
-                    <Td colSpan={2} title="Vendedor" value={sale.userName} />
+                    <Td colSpan={2} title="Consultor" value={sale.userName} />
                     <Td colSpan={2} title="Cliente" value={sale.clientName} />
                     <Td colSpan={2} title="Valor" value={sale.valueFormatted} />
                   </tr>

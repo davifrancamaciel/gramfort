@@ -43,7 +43,7 @@ const Print: React.FC<PropTypes> = ({ actionFilter, items, print, title }) => {
             'CÓDIGO',
             'EMPRESA',
             'CLIENTE',
-            'CONSUKTOR',
+            'CONSULTOR',
             'PAGO',
             'VALOR',
             'DATA PGTO'

@@ -20,6 +20,7 @@ const Export: React.FC<PropTypes> = ({ actionFilter, items, title }) => {
           { label: 'VALOR', key: 'value' },
           { label: 'CUSTO', key: 'cost' },
           { label: 'SALDO', key: 'balance' },
+          { label: 'VALOR MED M2', key: 'valuePerMeter' },
           { label: 'CAPTAÇÃO', key: 'capture' },
           { label: 'DEMANDA', key: 'demand' },
           { label: 'CONTATO', key: 'contact' },

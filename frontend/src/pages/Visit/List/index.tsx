@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { startOfMonth, endOfMonth } from 'date-fns';
-import { Col } from 'antd';
+import { Col, TableProps } from 'antd';
 import moment from 'moment';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
@@ -22,6 +22,7 @@ import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
 import FastFilter from 'components/FastFilter';
 import Actions from './Actions';
+import { DataType } from '@/pages/Sale/interfaces';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -50,7 +51,9 @@ const List: React.FC = () => {
   const actionFilter = async (
     pageNumber: number = 1,
     dateStart = state.dateStart,
-    dateEnd = state.dateEnd
+    dateEnd = state.dateEnd,
+    field = '',
+    order: string = 'asc'
   ) => {
     try {
       dispatch({ ...state, pageNumber, dateStart, dateEnd });
@@ -60,7 +63,9 @@ const List: React.FC = () => {
         ...state,
         pageNumber,
         dateStart,
-        dateEnd
+        dateEnd,
+        field,
+        order
       });
       setLoading(false);
 
@@ -111,6 +116,23 @@ const List: React.FC = () => {
       console.log(error);
       setLoading(false);
     }
+  };
+
+  const handleTableChange: TableProps<DataType>['onChange'] = (
+    pagination,
+    filters,
+    sorter
+  ) => {
+    const sortOrder = Array.isArray(sorter) ? undefined : sorter.order;
+    const sortField = Array.isArray(sorter) ? undefined : sorter.field;
+    const order = sortOrder === 'ascend' ? 'asc' : 'desc';
+    actionFilter(
+      1,
+      state.dateStart,
+      state.dateEnd,
+      sortField?.toString(),
+      order
+    );
   };
 
   return (
@@ -205,17 +227,19 @@ const List: React.FC = () => {
           { title: 'Empresa', dataIndex: 'companyName' },
           {
             title: 'Data PGTO',
-            dataIndex: 'paymentDate'
+            dataIndex: 'paymentDate',
+            sorter: true
           },
           {
             title: 'Data',
-            dataIndex: 'date'
+            dataIndex: 'date',
+            sorter: true
           },
-          { title: 'Valor', dataIndex: 'value' },
+          { title: 'Valor', dataIndex: 'value', sorter: true },
           { title: 'Cliente', dataIndex: 'clientName' },
           { title: 'Consultor', dataIndex: 'userName' },
-          { title: 'KM', dataIndex: 'km' },
-          { title: 'Cidade', dataIndex: 'city' },
+          { title: 'KM', dataIndex: 'km', sorter: true },
+          { title: 'Cidade', dataIndex: 'city', sorter: true },
           { title: 'Paga', dataIndex: 'paidOut' },
           { title: 'Contrato', dataIndex: 'proposal' },
           { title: 'Venda', dataIndex: 'sale' },
@@ -237,6 +261,7 @@ const List: React.FC = () => {
           routeUpdate: `/${appRoutes.visits}/edit`,
           routeDelete: `/${appRoutes.visits}`
         }}
+        onChange={handleTableChange}
       />
     </div>
   );

@@ -272,7 +272,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
               {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
               <p>
-                Santander Ag 4421 CC 13002793-2 Gramfort Hidrossemeadura Pix
+                Caixa Econômica Federal Ag 4146 CC 000577118764-6 Gramfort Hidrossemeadura Pix
                 CNPJ 50641930000100
               </p>
               <p>

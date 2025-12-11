@@ -109,7 +109,7 @@ module.exports.list = async (event, context) => {
         let arrayOrder = [[field ? field : 'paymentDate', order ? order : 'asc']]
         if (field === 'expenseTypeName')
             arrayOrder = [['expenseType', 'name', order], ['paymentDate', 'asc']]
-        console.log(arrayOrder)
+      
 
         const { pageSize, pageNumber } = event.queryStringParameters
         const { count, rows } = await Expense.findAndCountAll({

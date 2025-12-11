@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Col } from 'antd';
+import { Col, TableProps } from 'antd';
 import { startOfMonth, endOfMonth } from 'date-fns';
 
 import PanelFilter from 'components/PanelFilter';
@@ -12,7 +12,7 @@ import {
   categorIdsArrayProduct,
   roules
 } from 'utils/defaultValues';
-import { initialStateFilter, Sale, SaleProduct } from '../interfaces';
+import { DataType, initialStateFilter, Sale, SaleProduct } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
@@ -28,6 +28,7 @@ import {
   createMessageShare,
   getBalance,
   getCostValue,
+  getTableColl,
   getTitle,
   getType
 } from '../utils';
@@ -65,7 +66,9 @@ const List: React.FC = () => {
     pageNumber: number = 1,
     createdAtStart = state.createdAtStart,
     createdAtEnd = state.createdAtEnd,
-    path: string = state.path
+    path: string = state.path,
+    field = '',
+    order: string = 'asc'
   ) => {
     try {
       dispatch({ ...state, pageNumber, createdAtStart, createdAtEnd, path });
@@ -76,7 +79,9 @@ const List: React.FC = () => {
         pageNumber,
         createdAtStart,
         createdAtEnd,
-        path
+        path,
+        field,
+        order
       });
       setLoading(false);
 
@@ -97,6 +102,7 @@ const List: React.FC = () => {
             ),
           companyName: p.company?.name,
           valueFormatted: formatPrice(Number(p.value!)),
+          valuePerMeterFormatted: formatPrice(Number(p.valuePerMeter) || 0),
           valueCostFormatted: formatPrice(
             getCostValue(p, path === appRoutes.sales)
           ),
@@ -142,6 +148,24 @@ const List: React.FC = () => {
       : products;
   };
 
+  const handleTableChange: TableProps<DataType>['onChange'] = (
+    pagination,
+    filters,
+    sorter
+  ) => {
+    const sortOrder = Array.isArray(sorter) ? undefined : sorter.order;
+    const sortField = Array.isArray(sorter) ? undefined : sorter.field;
+    const order = sortOrder === 'ascend' ? 'asc' : 'desc';
+    actionFilter(
+      1,
+      state.createdAtStart,
+      state.createdAtEnd,
+      state.path,
+      getTableColl(sortField?.toString()),
+      order
+    );
+  };
+
   return (
     <div>
       <FastFilter state={state} setState={dispatch} />
@@ -172,7 +196,7 @@ const List: React.FC = () => {
         </Col>
         <Col lg={5} md={6} sm={24} xs={24}>
           <Input
-            label={'Vendedor'}
+            label={'Consultor'}
             placeholder="Ex.: Thamara"
             value={state.userName}
             onChange={(e) => dispatch({ userName: e.target.value })}
@@ -257,16 +281,25 @@ const List: React.FC = () => {
         }
         scroll={{ x: 840 }}
         columns={[
-          { title: 'Código', dataIndex: 'id' },
-          { title: 'Data', dataIndex: 'saleDate' },
+          { title: 'Código', dataIndex: 'id', sorter: true },
+          { title: 'Data', dataIndex: 'saleDate', sorter: true },
           { title: 'Empresa', dataIndex: 'companyName' },
           // { title: 'Produtos', dataIndex: 'productsFormatted' },
-          { title: 'Valor', dataIndex: 'valueFormatted' },
-          { title: 'Custos/descontos', dataIndex: 'valueCostFormatted' },
+          { title: 'Valor', dataIndex: 'valueFormatted', sorter: true },
+          {
+            title: 'Custos/descontos',
+            dataIndex: 'valueCostFormatted',
+            sorter: true
+          },
           { title: 'Saldo', dataIndex: 'balanceFormatted' },
+          {
+            title: 'Valor med M2',
+            dataIndex: 'valuePerMeterFormatted',
+            sorter: true
+          },
           { title: 'Cliente', dataIndex: 'clientName' },
           { title: 'Contato', dataIndex: 'contact' },
-          { title: 'Vendedor', dataIndex: 'userName' },
+          { title: 'Consultor', dataIndex: 'userName' },
           { title: 'Captação', dataIndex: 'capture' },
           { title: 'NF', dataIndex: 'invoiceAction' },
           // { title: 'Criada em', dataIndex: 'createdAt' },
@@ -288,6 +321,7 @@ const List: React.FC = () => {
           // routeView: `/${path}/details`,
           routeDelete: `/${appRoutes.sales}`
         }}
+        onChange={handleTableChange}
       />
     </div>
   );

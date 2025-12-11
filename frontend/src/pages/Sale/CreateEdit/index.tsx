@@ -297,7 +297,7 @@ const CreateEdit: React.FC = (props: any) => {
       <ShowByRoule roule={roules.saleUserIdChange}>
         <Col lg={6} md={8} sm={12} xs={24}>
           <Select
-            label={'Vendedor'}
+            label={'Consultor'}
             options={usersOptions?.filter((u: any) => u.type === userType.USER)}
             value={state?.userId}
             onChange={(userId) => dispatch({ userId })}

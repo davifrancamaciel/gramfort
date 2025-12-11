@@ -74,3 +74,8 @@ export const initialStateCards: CardsResult = {
   pay: [],
   type: []
 };
+
+export interface DataType {
+  paymentDate: string;
+  expenseTypeName: string;
+}

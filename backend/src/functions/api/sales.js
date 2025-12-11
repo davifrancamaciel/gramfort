@@ -14,9 +14,10 @@ const Visit = require('../../models/Visit')(db.sequelize, db.Sequelize);
 
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { executeSelect, executeDelete, executeUpdate } = require("../../services/ExecuteQueryService");
-const { roules, path } = require("../../utils/defaultValues");
+const { roules, path, productCategoriesEnum } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const imageService = require("../../services/ImageService");
+const { sum } = require('../../utils');
 
 const RESOURCE_NAME = 'Venda'
 
@@ -93,12 +94,14 @@ module.exports.list = async (event, context) => {
                 };
         }
 
-        const { pageSize, pageNumber } = event.queryStringParameters
+        const { pageSize, pageNumber, field, order } = event.queryStringParameters
+        let arrayOrder = [[field ? field : 'saleDate', order ? order : 'asc']];
+        
         let { count, rows } = await Sale.findAndCountAll({
             where: whereStatement,
             limit: Number(pageSize) || 10,
             offset: (Number(pageNumber) - 1) * pageSize,
-            order: [['saleDate', 'ASC']],
+            order: arrayOrder,
             include: [{
                 model: User, as: 'user', attributes: ['name'], where: whereStatementUser
             }, {
@@ -259,12 +262,14 @@ module.exports.update = async (event) => {
         if (!item)
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
 
-        const value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
-        const valueInput = body.costsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+        const value = sum(body.productsSales, 'valueAmount');
+        const valueInput = sum(body.costsSales, 'valueAmount');
+        const valuePerMeter = calcValueMeter(body);
         const objOnSave = {
             ...body,
             value,
             valueInput: valueInput ? valueInput : 0,
+            valuePerMeter,
             userId: user.userId,
         }
         if (checkRouleProfileAccess(user.groups, roules.saleUserIdChange) && body.userId)
@@ -376,7 +381,7 @@ const createSalesProduct = async (companyId, saleId, productsSales) => {
     const validProducts = productsSales.filter(p => p.productId)
     if (validProducts === null || !validProducts.length)
         return [];
-        
+
     const list = validProducts.map(ps => ({
         companyId,
         saleId,
@@ -400,9 +405,12 @@ const getCommission = async (userId) => {
 const createSale = async (objOnSave, body) => {
 
     objOnSave.commission = await getCommission(objOnSave.userId);
-    objOnSave.value = body.productsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
-    const valueInput = body.costsSales.reduce(function (acc, p) { return acc + Number(p.valueAmount); }, 0);
+    objOnSave.value = sum(body.productsSales, 'valueAmount');
+    objOnSave.valuePerMeter = calcValueMeter(body);
+
+    const valueInput = sum(body.costsSales, 'valueAmount');
     objOnSave.valueInput = valueInput ? valueInput : 0
+
     if (body.path === path.contracts)
         objOnSave.hash = uuid.v4();
     if (body.path === path.sales)
@@ -437,3 +445,13 @@ const getTitle = (type, isPlural = false) => {
             return `Contrato${isPlural ? 's' : ''}`;
     }
 };
+
+const calcValueMeter = (body) => {
+
+    const produts = body.productsSales.filter(p => p.product.categoryId === productCategoriesEnum.SERVICO_M2);
+    const value = sum(produts, 'valueAmount');
+    const amount = sum(produts, 'amount');
+    const valuePerMeter = value / amount;
+
+    return valuePerMeter;
+}

@@ -70,6 +70,7 @@ const Actions: React.FC<PropTypes> = ({ state, title, path }) => {
         address: item.visit?.address,
 
         valueFormatted: formatPrice(Number(item.value) || 0),
+        valuePerMeterFormatted: formatPrice(Number(item.valuePerMeter) || 0),
         valueCostFormatted: formatPrice(
           getCostValue(item, path === appRoutes.sales)
         ),

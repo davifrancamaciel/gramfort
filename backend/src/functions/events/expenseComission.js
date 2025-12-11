@@ -10,6 +10,7 @@ const { handlerResponse, handlerErrResponse } = require("../../utils/handleRespo
 const formatPrice = require("../../utils/formatPrice");
 const { sendMessage } = require('../../services/AwsQueueService')
 const { linkServices } = require("../../utils/defaultValues");
+const { sum } = require('../../utils');
 
 module.exports.handler = async (event, context) => {
     try {
@@ -89,9 +90,3 @@ const sendEmails = async (expenses) => {
         await sendMessage('send-email-queue', { to, subject, body, companyName });
     }
 }
-
-const sum = function (items, prop) {
-    return items.reduce(function (a, b) {
-        return Number(a) + Number(b[prop]);
-    }, 0);
-};
