@@ -7,14 +7,14 @@ import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
 import { initialStateFilter, Users } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
-import { formatDateHour } from 'utils/formatDate';
+import { formatDateHour, formatDate } from 'utils/formatDate';
 import ShowByRoule from 'components/ShowByRoule';
 import BooleanTag from 'components/BooleanTag';
 import { useAppContext } from 'hooks/contextLib';
 import ExportCSV from './Export';
 import { useQuery } from 'hooks/queryString';
 import WhatsApp from 'components/WhatsApp';
-import { getTitle, getType } from '../utils';
+import { arrayMonth, arrayNature, getTitle, getType } from '../utils';
 
 const List: React.FC = () => {
   const query = useQuery();
@@ -62,7 +62,8 @@ const List: React.FC = () => {
         deleteName: `${item.name} da empresa ${item.company?.name}`,
         companyName: item.company?.name,
         createdAt: formatDateHour(item.createdAt),
-        updatedAt: formatDateHour(item.updatedAt)
+        updatedAt: formatDateHour(item.updatedAt),
+        dateOfBirth: formatDate(item.dateOfBirth)
       }));
       dispatch({ pageNumber });
       setItems(dataItemsFormatted);
@@ -71,6 +72,35 @@ const List: React.FC = () => {
     } catch (error) {
       setLoading(false);
     }
+  };
+
+  const getColls = () => {
+    let colls: Array<any> = [];
+    if (path !== userType.CLIENT)
+      colls.push({ title: 'Imagem', dataIndex: 'image' });
+
+    colls.push({ title: 'Código', dataIndex: 'id' });
+    colls.push({
+      title: 'Empresa',
+      dataIndex: 'companyName'
+    });
+    colls.push({ title: 'Nome', dataIndex: 'name' });
+    if (path === userType.CLIENT)
+      colls.push({ title: 'CPF/CNPJ', dataIndex: 'cpfCnpj' });
+    colls.push({ title: 'Email', dataIndex: 'email' });
+    colls.push({ title: 'Telefone', dataIndex: 'phone' });
+    if (path === userType.CLIENT) {
+      colls.push({ title: 'Estado', dataIndex: 'state' });
+      colls.push({ title: 'Cidade', dataIndex: 'city' });
+      colls.push({ title: 'Captação', dataIndex: 'capture' });
+      colls.push({ title: 'Data nascimento', dataIndex: 'dateOfBirth' });
+    }
+    if (path !== userType.CLIENT) {
+      colls.push({ title: 'Ativo', dataIndex: 'active' });
+      colls.push({ title: 'Criado em', dataIndex: 'createdAt' });
+      colls.push({ title: 'Alterado em', dataIndex: 'updatedAt' });
+    }
+    return colls;
   };
 
   return (
@@ -106,35 +136,31 @@ const List: React.FC = () => {
             />
           </Col>
         </ShowByRoule>
+        {path === userType.CLIENT && (
+          <>
+            <Col lg={8} md={8} sm={12} xs={24}>
+              <Select
+                label={'Natureza'}
+                options={arrayNature}
+                value={state?.nature}
+                onChange={(nature) => dispatch({ nature })}
+              />
+            </Col>
+            <Col lg={8} md={8} sm={12} xs={24}>
+              <Select
+                label={'Aniversário'}
+                options={arrayMonth}
+                value={state?.dateOfBirth}
+                onChange={(dateOfBirth) => dispatch({ dateOfBirth })}
+              />
+            </Col>
+          </>
+        )}
       </PanelFilter>
       <GridList
         scroll={{ x: 600 }}
         headerChildren={<ExportCSV {...state} />}
-        columns={[
-          { title: 'Imagem', dataIndex: 'image' },
-          { title: 'Código', dataIndex: 'id' },
-          {
-            title: 'Empresa',
-            dataIndex: 'companyName'
-          },
-          { title: 'Nome', dataIndex: 'name' },
-          { title: 'Email', dataIndex: 'email' },
-          // {
-          //   title: checkRouleProfileAccess(groups, roules.administrator)
-          //     ? 'Empresa'
-          //     : 'Telefone',
-          //   dataIndex: checkRouleProfileAccess(groups, roules.administrator)
-          //     ? 'companyName'
-          //     : 'phone'
-          // },
-          {
-            title: 'Telefone',
-            dataIndex: 'phone'
-          },
-          { title: 'Ativo', dataIndex: 'active' },
-          { title: 'Criado em', dataIndex: 'createdAt' },
-          { title: 'Alterado em', dataIndex: 'updatedAt' }
-        ]}
+        columns={getColls()}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}
         onDelete={() => actionFilter(state.pageNumber)}

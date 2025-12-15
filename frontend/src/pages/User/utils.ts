@@ -86,9 +86,30 @@ const demandArray = [
   'Empreendimento ',
   'Prefeitura ',
   'Lote/Terreno',
-  'Outros',
+  'Outros'
 ];
 export const arrayDemand: IOptions[] = demandArray.map((item: string) => ({
   value: item,
   label: item
 }));
+
+const monthArray = [
+  'JANEIRO',
+  'FEVEREIRO',
+  'MARÇO',
+  'ABRIL',
+  'MAIO',
+  'JUNHO',
+  'JULHO',
+  'AGOSTO',
+  'SETEMBRO',
+  'OUTUBRO',
+  'NOVEMBRO',
+  'DEZEMBRO'
+];
+export const arrayMonth: IOptions[] = monthArray.map(
+  (item: string, index: number) => ({
+    value: `${index + 1}`,
+    label: item
+  })
+);

@@ -22,11 +22,11 @@ module.exports.list = async (event) => {
         if (checkProfile(user))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
-        const whereStatement = {};
+        let whereStatement = {};
         const whereStatementCompany = {};
 
         if (queryStringParameters) {
-            const { id, companyName, name, type, email, createdAtStart, createdAtEnd, companyId } = queryStringParameters
+            const { id, companyName, name, type, email, createdAtStart, createdAtEnd, companyId, nature, dateOfBirth } = queryStringParameters
 
             if (companyId) whereStatement.companyId = companyId;
 
@@ -43,6 +43,11 @@ module.exports.list = async (event) => {
                 whereStatement.name = { [Op.like]: `%${name}%` }
             if (email)
                 whereStatement.email = { [Op.like]: `%${email}%` }
+            if (nature)
+                whereStatement.nature = nature;
+            if (dateOfBirth) {
+                whereStatement.dateOfBirthMonth = dateOfBirth;
+            }
 
             if (createdAtStart)
                 whereStatement.createdAt = {
@@ -144,12 +149,13 @@ module.exports.create = async (event) => {
                 return handlerResponse(400, {}, `${getTitle(type)} já existe`)
         }
 
+        const dateOfBirthMonth = getMonthBirth(dateOfBirth)
         const objOnSave = {
             email,
             name,
             companyId,
             commissionMonth: commissionMonth ? Number(commissionMonth) : 0,
-            phone, type, active: status, cpfCnpj, state, city, address, dateOfBirth, hiringDate, salesRepresentative, capture
+            phone, type, active: status, cpfCnpj, state, city, address, dateOfBirth, dateOfBirthMonth, hiringDate, salesRepresentative, capture
         }
 
         let resultNewUser = await User.create(objOnSave);
@@ -216,8 +222,8 @@ module.exports.update = async (event) => {
 
         if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
-
-        const resultUserDb = await item.update({ ...body, active: status });
+        const dateOfBirthMonth = getMonthBirth(body.dateOfBirth)
+        const resultUserDb = await item.update({ ...body, dateOfBirthMonth, active: status });
         console.log('PARA ', resultUserDb.dataValues)
         if (type === userType.USER) {
             const groups = await cognitoRequest(cognito.adminListGroupsForUser, { Username: item.email })
@@ -370,3 +376,13 @@ const getTitle = (path, isPlural = false) => {
 
 const checkProfile = (user) =>
     !checkRouleProfileAccess(user.groups, roules.users) && !checkRouleProfileAccess(user.groups, roules.clients) && !checkRouleProfileAccess(user.groups, roules.suppliers)
+
+
+const getMonthBirth = (dateOfBirth) => {
+    if (!dateOfBirth)
+        return null;
+
+    const dateOfBirthMoth = new Date(dateOfBirth).getMonth();
+
+    return dateOfBirthMoth + 1
+}

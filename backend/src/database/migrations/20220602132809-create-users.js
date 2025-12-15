@@ -40,6 +40,9 @@ module.exports = {
       dateOfBirth: {
         type: Sequelize.DATE
       },
+      dateOfBirthMonth: {
+        type: Sequelize.INTEGER
+      },
       hiringDate: {
         type: Sequelize.DATE
       },

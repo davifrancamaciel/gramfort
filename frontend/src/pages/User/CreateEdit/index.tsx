@@ -138,36 +138,38 @@ const CreateEdit: React.FC = (props: any) => {
       loadingBtnAction={loading}
       loadingPanel={false}
     >
-      <Col lg={6} md={24} sm={24} xs={24}>
-        <Row gutter={[16, 24]}>
-          <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
-            <UploadImages setFileList={setFileList} fileList={fileList} />
-          </Col>
-          {type === 'update' && (
-            <>
-              <Col
-                lg={24}
-                md={24}
-                sm={24}
-                xs={24}
-                style={{ display: 'flex', justifyContent: 'center' }}
-              >
-                {state.statusText}
-              </Col>
-              <Col
-                lg={24}
-                md={24}
-                sm={24}
-                xs={24}
-                style={{ display: 'flex', justifyContent: 'center' }}
-              >
-                {state.userStatusText}
-              </Col>
-            </>
-          )}
-        </Row>
-      </Col>
-      <Col lg={18} md={24} sm={24} xs={24}>
+      {path !== userType.CLIENT && (
+        <Col lg={6} md={24} sm={24} xs={24}>
+          <Row gutter={[16, 24]}>
+            <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
+              <UploadImages setFileList={setFileList} fileList={fileList} />
+            </Col>
+            {type === 'update' && (
+              <>
+                <Col
+                  lg={24}
+                  md={24}
+                  sm={24}
+                  xs={24}
+                  style={{ display: 'flex', justifyContent: 'center' }}
+                >
+                  {state.statusText}
+                </Col>
+                <Col
+                  lg={24}
+                  md={24}
+                  sm={24}
+                  xs={24}
+                  style={{ display: 'flex', justifyContent: 'center' }}
+                >
+                  {state.userStatusText}
+                </Col>
+              </>
+            )}
+          </Row>
+        </Col>
+      )}
+      <Col lg={path !== userType.CLIENT ? 18 : 24} md={24} sm={24} xs={24}>
         <Row gutter={[16, 24]}>
           <ShowByRoule roule={roules.administrator}>
             <Col lg={8} md={8} sm={12} xs={24}>
@@ -198,6 +200,16 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={(e) => dispatch({ email: e.target.value })}
             />
           </Col>
+          {path === userType.CLIENT && (
+            <Col lg={8} md={8} sm={12} xs={24}>
+              <Select
+                label={'Natureza'}
+                options={arrayNature}
+                value={state?.nature}
+                onChange={(nature) => dispatch({ nature })}
+              />
+            </Col>
+          )}
           <Col lg={8} md={8} sm={12} xs={24}>
             <Input
               label={'CPF CNPJ'}
@@ -251,24 +263,14 @@ const CreateEdit: React.FC = (props: any) => {
           )}
 
           {path === userType.CLIENT && (
-            <>
-              <Col lg={8} md={8} sm={12} xs={24}>
-                <Select
-                  label={'Captação'}
-                  options={arrayCapture}
-                  value={state?.capture}
-                  onChange={(capture) => dispatch({ capture })}
-                />
-              </Col>
-              <Col lg={8} md={8} sm={12} xs={24}>
-                <Select
-                  label={'Natureza'}
-                  options={arrayNature}
-                  value={state?.nature}
-                  onChange={(nature) => dispatch({ nature })}
-                />
-              </Col>
-            </>
+            <Col lg={8} md={8} sm={12} xs={24}>
+              <Select
+                label={'Captação'}
+                options={arrayCapture}
+                value={state?.capture}
+                onChange={(capture) => dispatch({ capture })}
+              />
+            </Col>
           )}
           {/* <ShowByRoule roule={roules.sales}>
             {path === userType.USER && (

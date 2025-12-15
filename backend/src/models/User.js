@@ -17,6 +17,7 @@ module.exports = function (sequelize, DataTypes) {
         city: { type: DataTypes.STRING(100), },
         address: { type: DataTypes.STRING(300), },
         dateOfBirth: { type: DataTypes.DATE },
+        dateOfBirthMonth: { type: DataTypes.INTEGER },
         hiringDate: { type: DataTypes.DATE },
         salesRepresentative: { type: DataTypes.STRING(255) },
         capture: { type: DataTypes.STRING(300), },
