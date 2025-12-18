@@ -11,7 +11,7 @@ import {
   userType
 } from 'utils/defaultValues';
 import useFormState from 'hooks/useFormState';
-import { getCost, initialStateForm } from '../interfaces';
+import { calcInput, getCost, initialStateForm } from '../interfaces';
 import api from 'services/api-aws-amplify';
 import ShowByRoule from 'components/ShowByRoule';
 import { formatNumberWhithDecimalCaseOnChange } from 'utils/formatPrice';
@@ -30,6 +30,11 @@ const CreateEdit: React.FC = (props: any) => {
     const cost = getCost(product);
     dispatch({ cost });
   }, [state.inventoryCount, state.price]);
+
+  useEffect(() => {
+    const { totalTank, totalM2 } = calcInput(state);
+    dispatch({ totalTank, totalM2 });
+  }, [state.kgPerTank, state.m2PerTank, state.bag, state.inventoryCount]);
 
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
@@ -124,29 +129,85 @@ const CreateEdit: React.FC = (props: any) => {
               }
             />
           </Col>
-          <Col lg={6} md={12} sm={24} xs={24}>
-            <Input
-              label={'Estoque'}
-              type={'number'}
-              placeholder="1"
-              value={state.inventoryCount}
-              onChange={(e) => dispatch({ inventoryCount: e.target.value })}
-            />
-          </Col>
 
           {state.categoryId === productCategoriesEnum.INSUMO && (
-            <Col lg={6} md={12} sm={24} xs={24}>
-              <Input label={'Custo'} disabled={true} value={state.cost} />
-            </Col>
+            <>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Input
+                  label={'Estoque'}
+                  type={'number'}
+                  placeholder="1"
+                  value={state.inventoryCount}
+                  onChange={(e) => dispatch({ inventoryCount: e.target.value })}
+                />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Input label={'Custo'} disabled={true} value={state.cost} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Input
+                  label={'KG por tanque'}
+                  placeholder="15"
+                  type={'number'}
+                  value={state.kgPerTank}
+                  onChange={(e) =>
+                    dispatch({
+                      kgPerTank: e.target.value
+                    })
+                  }
+                />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Input
+                  label={'Sacaria'}
+                  type={'number'}
+                  placeholder="15"
+                  value={state.bag}
+                  onChange={(e) =>
+                    dispatch({
+                      bag: e.target.value
+                    })
+                  }
+                />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Input
+                  label={'M2 por tanque'}
+                  type={'number'}
+                  placeholder="15"
+                  value={state.m2PerTank}
+                  onChange={(e) =>
+                    dispatch({
+                      m2PerTank: e.target.value
+                    })
+                  }
+                />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Input
+                  label={'Total tanque'}
+                  disabled={true}
+                  value={state.totalTank}
+                />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Input
+                  label={'Total m2'}
+                  disabled={true}
+                  value={state.totalM2}
+                />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <Select
+                  label={'Fornecedor'}
+                  url={`${apiRoutes.users}/all?type=${userType.SUPPLIER}`}
+                  value={state.supplierId}
+                  onChange={(supplierId) => dispatch({ supplierId })}
+                />
+              </Col>
+            </>
           )}
-          <Col lg={6} md={12} sm={24} xs={24}>
-            <Select
-              label={'Fornecedor'}
-              url={`${apiRoutes.users}/all?type=${userType.SUPPLIER}`}
-              value={state.supplierId}
-              onChange={(supplierId) => dispatch({ supplierId })}
-            />
-          </Col>
+
           <Col lg={6} md={12} sm={24} xs={24}>
             <Switch
               label={'Ativo'}

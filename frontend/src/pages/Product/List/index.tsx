@@ -8,18 +8,19 @@ import {
   appRoutes,
   booleanFilter,
   pageItemsFilter,
+  productCategoriesEnum,
   roules
 } from 'utils/defaultValues';
 import { initialStateFilter, Product, getCost } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
-import { formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import { useQuery } from 'hooks/queryString';
 import ExportCSV from './Export';
 import Action from 'components/Action';
 import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
+import Cards from './Cards';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -51,12 +52,13 @@ const List: React.FC = () => {
       const { count, rows } = resp.data;
       const itemsFormatted = rows.map((p: Product) => ({
         ...p,
-        companyName: p.company?.name,
+        companyName:
+          p.categoryId === productCategoriesEnum.INSUMO ? p.company?.name : '',
+        inventoryCount:
+          p.categoryId === productCategoriesEnum.INSUMO ? p.inventoryCount : '',
         categoryName: p.category?.name,
-        price: formatPrice(Number(p.price) || 0),
+        priceFormatted: formatPrice(Number(p.price) || 0),
         cost: getCost(p),
-        createdAt: formatDateHour(p.createdAt),
-        updatedAt: formatDateHour(p.updatedAt),
         active: (
           <Action
             item={p}
@@ -76,6 +78,9 @@ const List: React.FC = () => {
 
   return (
     <div>
+      <div style={{ marginBottom: '15px' }}>
+        <Cards items={items} loading={loading} />
+      </div>
       <PanelFilter
         title="Produtos cadastrados"
         actionButton={() => actionFilter()}
@@ -183,16 +188,16 @@ const List: React.FC = () => {
         headerChildren={<ExportCSV {...state} />}
         columns={[
           { title: 'Código', dataIndex: 'id' },
-          // {
-          //   title: 'Empresa',
-          //   dataIndex: 'companyName'
-          // },
+          {
+            title: 'Empresa',
+            dataIndex: 'companyName'
+          },
           {
             title: 'Categoria',
             dataIndex: 'categoryName'
           },
           { title: 'Nome do produto', dataIndex: 'name' },
-          { title: 'Preço', dataIndex: 'price' },
+          { title: 'Preço', dataIndex: 'priceFormatted' },
           {
             title: 'Estoque',
             dataIndex: 'inventoryCount'
@@ -201,8 +206,6 @@ const List: React.FC = () => {
             title: 'Custo',
             dataIndex: 'cost'
           },
-          { title: 'Criado em', dataIndex: 'createdAt' },
-          { title: 'Alterado em', dataIndex: 'updatedAt' },
           { title: 'Ativo', dataIndex: 'active' }
         ]}
         dataSource={items}

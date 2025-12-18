@@ -21,6 +21,9 @@ export interface Product {
   active: boolean;
   createdAt?: string;
   updatedAt?: string;
+  m2PerTank?: number;
+  kgPerTank?: number;
+  bag?: number;
 }
 
 export const initialStateForm: Product = {
@@ -29,7 +32,8 @@ export const initialStateForm: Product = {
   price: '',
   active: true,
   createdAt: '',
-  updatedAt: ''
+  updatedAt: '',
+  m2PerTank: 250
 };
 
 export interface Filter {
@@ -50,8 +54,24 @@ export const initialStateFilter: Filter = {
   pageSize: 100
 };
 
+export const getCostValue = (p: Product) => {
+  if (p.categoryId != productCategoriesEnum.INSUMO) return 0;
+
+  return Number(p.price) * Number(p.inventoryCount);
+};
+
 export const getCost = (p: Product) => {
   if (p.categoryId != productCategoriesEnum.INSUMO) return '';
 
-  return formatPrice(Number(p.price) * Number(p.inventoryCount));
+  return formatPrice(getCostValue(p));
+};
+
+export const calcInput = (state: Product) => {
+  let totalTank = 0;
+  if (state.inventoryCount && state.kgPerTank)
+    totalTank = state.inventoryCount / state.kgPerTank;
+  let totalM2 = 0;
+  if (totalTank && state.m2PerTank) totalM2 = state.m2PerTank * totalTank;
+
+  return { totalTank, totalM2 };
 };

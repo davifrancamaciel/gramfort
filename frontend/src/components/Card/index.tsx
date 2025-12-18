@@ -8,11 +8,12 @@ interface CardPropTypes {
   value: string;
   color?: string;
   icon?: any;
+  width?: number;
 }
 
 const Card: React.FC<CardPropTypes> = (props) => {
   return (
-    <ContainerCard color={props.color}>
+    <ContainerCard color={props.color} width={props.width}>
       <span>
         {props.loading ? <LoadingOutlined /> : props.value ? props.value : 0}
       </span>

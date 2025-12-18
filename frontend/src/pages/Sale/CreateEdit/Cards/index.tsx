@@ -46,11 +46,10 @@ const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
     visits
   ]);
 
-  const sum = (items: SaleProduct[]) => {
-    const value = items.reduce(
-      (acc: number, p: SaleProduct) => acc + Number(p.valueAmount),
-      0
-    );
+  const sum = (items: SaleProduct[]) => {    
+    const value = items
+      .filter((p: SaleProduct) => p.valueAmount)
+      .reduce((acc: number, p: SaleProduct) => acc + Number(p.valueAmount), 0);
     return value ? value : 0;
   };
 

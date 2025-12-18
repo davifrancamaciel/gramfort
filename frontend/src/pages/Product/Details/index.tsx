@@ -6,12 +6,23 @@ import useFormState from 'hooks/useFormState';
 import PanelCrud from 'components/PanelCrud';
 import ViewData from 'components/ViewData';
 
-import { initialStateForm, Product, getCost } from 'pages/Product/interfaces';
+import {
+  initialStateForm,
+  Product,
+  getCost,
+  calcInput
+} from 'pages/Product/interfaces';
 import api from 'services/api-aws-amplify';
-import { apiRoutes, appRoutes } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  productCategoriesEnum,
+  roules
+} from 'utils/defaultValues';
 import { formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import BooleanTag from 'components/BooleanTag';
+import ShowByRoule from 'components/ShowByRoule';
 
 const Details: React.FC = (props: any) => {
   const history = useHistory();
@@ -28,6 +39,8 @@ const Details: React.FC = (props: any) => {
       const resp = await api.get(`${apiRoutes.products}/${id}`);
       setLoading(false);
       const { data } = resp;
+
+      const { totalTank, totalM2 } = calcInput(data);
       const item: Product = {
         ...data,
         cost: getCost(data),
@@ -35,7 +48,9 @@ const Details: React.FC = (props: any) => {
         createdAt: formatDateHour(data.createdAt),
         updatedAt: formatDateHour(data.updatedAt),
         activeTag: <BooleanTag value={data.active} />,
-        categoryName: data.category?.name
+        categoryName: data.category?.name,
+        totalTank,
+        totalM2
       };
       dispatch(item);
       console.log(item);
@@ -61,6 +76,13 @@ const Details: React.FC = (props: any) => {
           <Col lg={6} md={12} sm={24} xs={24}>
             <ViewData label="Código do produto" value={props.match.params.id} />
           </Col>
+          {state.categoryId === productCategoriesEnum.INSUMO && (
+            <ShowByRoule roule={roules.administrator}>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="Empresa" value={state.company.name} />
+              </Col>
+            </ShowByRoule>
+          )}
           <Col lg={6} md={12} sm={24} xs={24}>
             <ViewData label="Nome do produto" value={state.name} />
           </Col>
@@ -72,16 +94,35 @@ const Details: React.FC = (props: any) => {
             <ViewData label="Categoria" value={state.categoryName} />
           </Col>
 
-          <Col lg={6} md={12} sm={24} xs={24}>
-            <ViewData label="Fornecedor" value={state?.supplier?.name} />
-          </Col>
+          {state.categoryId === productCategoriesEnum.INSUMO && (
+            <>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="Estoque" value={state.inventoryCount} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="Custo" value={state.cost} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="KG por tanque" value={state.kgPerTank} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="Sacaria" value={state.bag} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="M2 por tanque" value={state.m2PerTank} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="Total tanque" value={state.totalTank} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="Total m2" value={state.totalM2} />
+              </Col>
+              <Col lg={6} md={12} sm={24} xs={24}>
+                <ViewData label="Fornecedor" value={state?.supplier?.name} />
+              </Col>
+            </>
+          )}
 
-          <Col lg={6} md={12} sm={24} xs={24}>
-            <ViewData label="Estoque" value={state.inventoryCount} />
-          </Col>
-          <Col lg={6} md={12} sm={24} xs={24}>
-            <ViewData label="Custo" value={state.cost} />
-          </Col>
           <Col lg={6} md={12} sm={12} xs={24}>
             <ViewData label="Ativo" value={state.activeTag} />
           </Col>

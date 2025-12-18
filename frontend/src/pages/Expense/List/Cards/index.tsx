@@ -109,6 +109,7 @@ const Cards: React.FC<PropTypes> = ({ dataTotal, loading }) => {
           color={systemColors.GREEN}
           text={`PAGO (${total.payTrue.count})`}
           icon={<CheckOutlined />}
+          width={150}
         />
 
         <Card
@@ -117,6 +118,7 @@ const Cards: React.FC<PropTypes> = ({ dataTotal, loading }) => {
           color={systemColors.RED}
           text={`A PAGAR (${total.payFalse.count})`}
           icon={<WarningOutlined />}
+          width={150}
         />
 
         <Card
@@ -125,6 +127,7 @@ const Cards: React.FC<PropTypes> = ({ dataTotal, loading }) => {
           color={systemColors.BLUE}
           text={`TOTAL (${total.payTotal.count})`}
           icon={<ArrowUpOutlined />}
+          width={150}
         />
         {typePath === appRoutes.expenses && (
           <>
@@ -134,6 +137,7 @@ const Cards: React.FC<PropTypes> = ({ dataTotal, loading }) => {
               color={systemColors.ORANGE}
               text={`DESPESA (${total.expense.count})`}
               icon={<ArrowUpOutlined />}
+              width={150}
             />
             <Card
               loading={loading}
@@ -141,6 +145,7 @@ const Cards: React.FC<PropTypes> = ({ dataTotal, loading }) => {
               color={systemColors.ORANGE}
               text={`INVESTIMENTO (${total.investment.count})`}
               icon={<ArrowUpOutlined />}
+              width={150}
             />
             <Card
               loading={loading}
@@ -148,6 +153,7 @@ const Cards: React.FC<PropTypes> = ({ dataTotal, loading }) => {
               color={systemColors.ORANGE}
               text={`INSUMO (${total.input.count})`}
               icon={<ArrowUpOutlined />}
+              width={150}
             />
           </>
         )}

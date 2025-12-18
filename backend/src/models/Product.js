@@ -11,8 +11,11 @@ module.exports = function (sequelize, DataTypes) {
 
         name: { type: DataTypes.STRING(255) },
         price: { type: DataTypes.DECIMAL },       
-        description: { type: DataTypes.STRING(100) },
+        kgPerTank: { type: DataTypes.INTEGER },       
+        m2PerTank: { type: DataTypes.INTEGER },       
+        bag: { type: DataTypes.INTEGER },       
         inventoryCount: { type: DataTypes.INTEGER },
+        description: { type: DataTypes.STRING(100) },
         active: { type: DataTypes.BOOLEAN }
     });
 
