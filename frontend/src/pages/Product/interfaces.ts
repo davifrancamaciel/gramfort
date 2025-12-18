@@ -1,5 +1,7 @@
 import { Company } from './../Company/interfaces';
 import { Users } from '../User/interfaces';
+import { productCategoriesEnum } from 'utils/defaultValues';
+import { formatPrice } from 'utils/formatPrice';
 
 export interface Category {
   name?: string;
@@ -46,4 +48,10 @@ export const initialStateFilter: Filter = {
   name: '',
   pageNumber: 1,
   pageSize: 100
+};
+
+export const getCost = (p: Product) => {
+  if (p.categoryId != productCategoriesEnum.INSUMO) return '';
+
+  return formatPrice(Number(p.price) * Number(p.inventoryCount));
 };

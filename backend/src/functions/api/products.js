@@ -11,7 +11,6 @@ const { getUser, checkRouleProfileAccess } = require("../../services/UserService
 const { executeSelect } = require("../../services/ExecuteQueryService");
 const formatPrice = require("../../utils/formatPrice");
 const { roules } = require("../../utils/defaultValues");
-const imageService = require("../../services/ImageService");
 
 const RESOURCE_NAME = 'Produto'
 
@@ -164,8 +163,6 @@ module.exports.create = async (event) => {
 
         const result = await Product.create(objOnSave);
 
-        await imageService.add('products', result.dataValues, body.fileList);
-
         return handlerResponse(201, result, `${RESOURCE_NAME} criado com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, body)
@@ -197,8 +194,6 @@ module.exports.update = async (event) => {
         const result = await item.update(body);
         console.log('PARA ', result.dataValues)
 
-        await imageService.add('products', result.dataValues, body.fileList);
-
         return handlerResponse(200, result, `${RESOURCE_NAME} alterado com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, body)
@@ -222,8 +217,6 @@ module.exports.delete = async (event) => {
         //     return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
 
         await Product.destroy({ where: { id } });
-
-        await imageService.remove(item.image);
 
         return handlerResponse(200, {}, `${RESOURCE_NAME} código (${id}) removido com sucesso`)
     } catch (err) {

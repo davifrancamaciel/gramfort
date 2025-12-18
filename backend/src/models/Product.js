@@ -10,8 +10,7 @@ module.exports = function (sequelize, DataTypes) {
         categoryId: { type: DataTypes.INTEGER },
 
         name: { type: DataTypes.STRING(255) },
-        price: { type: DataTypes.DECIMAL },
-        image: { type: DataTypes.STRING(500) },
+        price: { type: DataTypes.DECIMAL },       
         description: { type: DataTypes.STRING(100) },
         inventoryCount: { type: DataTypes.INTEGER },
         active: { type: DataTypes.BOOLEAN }

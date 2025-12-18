@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Col, notification, Row, UploadFile } from 'antd';
+import { Col, notification, Row } from 'antd';
 import { Input, Select, Switch, Textarea } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
-import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  productCategoriesEnum,
+  roules,
+  userType
+} from 'utils/defaultValues';
 import useFormState from 'hooks/useFormState';
-import { initialStateForm } from '../interfaces';
+import { getCost, initialStateForm } from '../interfaces';
 import api from 'services/api-aws-amplify';
 import ShowByRoule from 'components/ShowByRoule';
-import UploadImages from 'components/UploadImages';
 import { formatNumberWhithDecimalCaseOnChange } from 'utils/formatPrice';
 import { useAppContext } from 'hooks/contextLib';
 
@@ -18,11 +23,14 @@ const CreateEdit: React.FC = (props: any) => {
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
-  const [fileList, setFileList] = useState<Array<UploadFile>>([]);
 
   useEffect(() => {
-    console.log(state);
-  }, [state]);
+    const product = { ...state, price: Number(state.price) };
+
+    const cost = getCost(product);
+    dispatch({ cost });
+  }, [state.inventoryCount, state.price]);
+
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
@@ -36,17 +44,7 @@ const CreateEdit: React.FC = (props: any) => {
         ...resp.data,
         price: formatNumberWhithDecimalCaseOnChange(resp.data?.price || 0)
       });
-      if (resp.data && resp.data.image) {
-        const imageArr = resp.data.image.split('/');
-        setFileList([
-          {
-            uid: '-1',
-            name: imageArr[imageArr.length - 1],
-            status: 'done',
-            url: resp.data.image
-          }
-        ]);
-      }
+
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -63,10 +61,7 @@ const CreateEdit: React.FC = (props: any) => {
       }
       setLoading(true);
       const method = type === 'update' ? 'put' : 'post';
-      const result = await api[method](apiRoutes.products, {
-        ...state,
-        fileList
-      });
+      const result = await api[method](apiRoutes.products, state);
       setLoading(false);
 
       result.success && history.push(`/${appRoutes.products}`);
@@ -83,15 +78,7 @@ const CreateEdit: React.FC = (props: any) => {
       loadingBtnAction={false}
       loadingPanel={loading}
     >
-      <Col lg={6} md={24} sm={24} xs={24}>
-        <Row gutter={[16, 24]}>
-          <Col xs={24} style={{ display: 'flex', justifyContent: 'center' }}>
-            <UploadImages setFileList={setFileList} fileList={fileList} />
-          </Col>
-        </Row>
-      </Col>
-
-      <Col lg={18} md={24} sm={24} xs={24}>
+      <Col lg={24} md={24} sm={24} xs={24}>
         <Row gutter={[16, 24]}>
           <ShowByRoule roule={roules.administrator}>
             <Col lg={6} md={12} sm={24} xs={24}>
@@ -146,6 +133,12 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={(e) => dispatch({ inventoryCount: e.target.value })}
             />
           </Col>
+
+          {state.categoryId === productCategoriesEnum.INSUMO && (
+            <Col lg={6} md={12} sm={24} xs={24}>
+              <Input label={'Custo'} disabled={true} value={state.cost} />
+            </Col>
+          )}
           <Col lg={6} md={12} sm={24} xs={24}>
             <Select
               label={'Fornecedor'}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Image } from 'antd';
+import { Col } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, Select } from 'components/_inputs';
@@ -10,7 +10,7 @@ import {
   pageItemsFilter,
   roules
 } from 'utils/defaultValues';
-import { initialStateFilter, Product } from '../interfaces';
+import { initialStateFilter, Product, getCost } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDateHour } from 'utils/formatDate';
@@ -53,12 +53,8 @@ const List: React.FC = () => {
         ...p,
         companyName: p.company?.name,
         categoryName: p.category?.name,
-        image: (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Image style={{ height: '60px' }} src={p.image} />
-          </div>
-        ),
         price: formatPrice(Number(p.price) || 0),
+        cost: getCost(p),
         createdAt: formatDateHour(p.createdAt),
         updatedAt: formatDateHour(p.updatedAt),
         active: (
@@ -186,7 +182,6 @@ const List: React.FC = () => {
         scroll={{ x: 840 }}
         headerChildren={<ExportCSV {...state} />}
         columns={[
-          { title: 'Imagem', dataIndex: 'image' },
           { title: 'Código', dataIndex: 'id' },
           // {
           //   title: 'Empresa',
@@ -201,6 +196,10 @@ const List: React.FC = () => {
           {
             title: 'Estoque',
             dataIndex: 'inventoryCount'
+          },
+          {
+            title: 'Custo',
+            dataIndex: 'cost'
           },
           { title: 'Criado em', dataIndex: 'createdAt' },
           { title: 'Alterado em', dataIndex: 'updatedAt' },
