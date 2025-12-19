@@ -14,7 +14,7 @@ export const Header = styled.section`
   @media (max-width: 650px) {
     grid-template-columns: repeat(2, 1fr);
   }
-  @media (max-width: 450px) {
+  @media (max-width: 300px) {
     grid-template-columns: repeat(1, 1fr);
   }
 `;

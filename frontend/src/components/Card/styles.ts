@@ -68,4 +68,7 @@ export const ContainerCard = styled.div<ContainerProps>`
       }
     }
   }
+  @media (max-width: 950px) {
+    width: 150px ;
+  }
 `;

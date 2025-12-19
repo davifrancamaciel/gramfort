@@ -287,7 +287,7 @@ const List: React.FC = () => {
           // { title: 'Produtos', dataIndex: 'productsFormatted' },
           { title: 'Valor', dataIndex: 'valueFormatted', sorter: true },
           {
-            title: 'Custos/descontos',
+            title: 'Custos+descontos',
             dataIndex: 'valueCostFormatted',
             sorter: true
           },

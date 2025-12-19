@@ -15,12 +15,14 @@ export interface PropTypes {
 interface Totals {
   total: number;
   cost: number;
+  discount: number;
   balance: number;
 }
 
 const initialState: Totals = {
   total: 0,
   cost: 0,
+  discount: 0,
   balance: 0
 };
 
@@ -28,13 +30,16 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
   const [total, setTotal] = useState<Totals>(initialState);
   const path = getType();
   useEffect(() => {
-   ;
     const _total = sales.reduce(
       (acc: number, p: Sale) => acc + Number(p.value),
       0
     );
     const cost = sales.reduce(
-      (acc: number, s: Sale) => acc + getCostValue(s, path === appRoutes.sales),
+      (acc: number, s: Sale) => acc + Number(s.valueInput),
+      0
+    );
+    const discount = sales.reduce(
+      (acc: number, s: Sale) => acc + getCostValue(s, false),
       0
     );
     const balance = sales.reduce(
@@ -43,7 +48,7 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
       0
     );
 
-    setTotal({ ...total, total: _total, balance, cost });
+    setTotal({ ...total, total: _total, balance, cost, discount });
   }, [sales]);
 
   return (
@@ -57,11 +62,20 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
           icon={<DollarOutlined />}
         />
 
+        {path === appRoutes.sales && (
+          <Card
+            loading={loading}
+            value={`-${formatPrice(total.cost)}`}
+            color={systemColors.LIGHT_PINK}
+            text={`CUSTOS`}
+            icon={<DollarOutlined />}
+          />
+        )}
         <Card
           loading={loading}
-          value={`-${formatPrice(total.cost)}`}
+          value={`-${formatPrice(total.discount)}`}
           color={systemColors.BLUE}
-          text={`CUSTOS/DESC`}
+          text={`DESCONTOS`}
           icon={<DollarOutlined />}
         />
 
