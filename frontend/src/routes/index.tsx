@@ -18,6 +18,7 @@ const Login = lazy(() => import('pages/Login'));
 const Forgot = lazy(() => import('pages/ForgotPassword'));
 const ChangePassword = lazy(() => import('pages/ChangePassword'));
 const Dashboard = lazy(() => import('pages/Dashboard'));
+const Dre = lazy(() => import('pages/Dre'));
 const UserList = lazy(() => import('pages/User/List'));
 const UserCreateEdit = lazy(() => import('pages/User/CreateEdit'));
 const SaleList = lazy(() => import('pages/Sale/List'));
@@ -42,6 +43,7 @@ const routesArray: IRouteProps[] = [
   { path: '/forgot-password', component: Forgot, isPrivate: false },
   { path: '/change-password', component: ChangePassword },
   { path: '/', component: Dashboard },
+  { path: '/dre', component: Dre, roule: roules.sales },
   { path: `/${appRoutes.users}`, component: UserList, roule: roules.users },
   {
     path: `/${appRoutes.users}/create`,

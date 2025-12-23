@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { format, subMonths, addMonths } from 'date-fns';
+import { format, subMonths, addMonths, addYears, subYears } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
@@ -16,15 +16,21 @@ import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 interface PropTypes {
   state: any;
   setState: (state: any) => void;
+  type?: 'MONTH' | 'YEAR';
 }
 
-const FastFilter: React.FC<PropTypes> = ({ state, setState }) => {
+const FastFilter: React.FC<PropTypes> = ({
+  state,
+  setState,
+  type = 'MONTH'
+}) => {
   const { companies, userAuthenticated } = useAppContext();
   const [date, setDate] = useState(new Date());
   const [groups, setGroups] = useState<string[]>([]);
 
+  const formatByType = type === 'MONTH' ? "MMMM 'de' yyyy" : 'yyyy';
   const dateFormated = useMemo(
-    () => format(date, "MMMM 'de' yyyy", { locale: pt }),
+    () => format(date, formatByType, { locale: pt }),
     [date]
   );
 
@@ -38,9 +44,15 @@ const FastFilter: React.FC<PropTypes> = ({ state, setState }) => {
     setState({ ...state, date, _date });
   }, [date]);
 
-  const handlePrevMonth = () => setDate(subMonths(date, 1));
+  const handlePrevMonth = () => {
+    if (type === 'MONTH') setDate(subMonths(date, 1));
+    if (type === 'YEAR') setDate(subYears(date, 1));
+  };
 
-  const handleNextMonth = () => setDate(addMonths(date, 1));
+  const handleNextMonth = () => {
+    if (type === 'MONTH') setDate(addMonths(date, 1));
+    if (type === 'YEAR') setDate(addYears(date, 1));
+  };
 
   return (
     <Container

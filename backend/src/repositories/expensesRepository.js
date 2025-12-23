@@ -59,4 +59,18 @@ const expensesMonthByTypeDash = async (date, isAdm, user, companyId) => {
     return result
 }
 
-module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType }
+
+const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
+    const dateString = startOfMonth(date).toISOString()
+    const query = ` SELECT et.name, SUM(e.value) total,MONTH(e.paymentDate) month, YEAR(e.paymentDate) year, e.expenseTypeId 
+                    FROM expenses e 
+                    INNER JOIN expenseTypes et ON et.id = e.expenseTypeId
+                    WHERE YEAR(e.paymentDate) = YEAR('${dateString}') 
+                          ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}  
+                    GROUP BY et.name, MONTH (e.paymentDate), YEAR(e.paymentDate), e.expenseTypeId  
+                    ORDER BY YEAR(e.paymentDate) DESC, MONTH (e.paymentDate) DESC, et.name`
+    //-- AND e.paidOut = true
+    const result = await executeSelect(query);
+    return result
+}
+module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType, expensesMonthByTypeDre }

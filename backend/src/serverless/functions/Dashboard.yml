@@ -30,3 +30,11 @@ dashboardExpensesUpdate:
         method: put
         authorizer: verifyToken
         cors: true
+dre:
+  handler: src/functions/api/dre.handler
+  events:
+    - http:
+        path: dre
+        method: get
+        authorizer: verifyToken
+        cors: true

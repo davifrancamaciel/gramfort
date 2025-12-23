@@ -43,6 +43,18 @@ const visitsPaidOut = async (date, isAdm, user, companyId) => {
     return result
 }
 
+const visitsPaidOutDre = async (date, isAdm, user, companyId) => {
+    const dateString = startOfMonth(date).toISOString()
+    const query = ` SELECT 'VISITAS' name, SUM(v.value) total, MONTH(v.paymentDate) month, YEAR(v.paymentDate) year FROM visits v
+                    WHERE v.paidOut = true AND YEAR(v.paymentDate) = YEAR('${dateString}')
+                    ${isAdm ? andCompany(companyId, 'v') : andCompany(user.companyId, 'v')}
+                    GROUP BY MONTH (v.paymentDate), YEAR(v.paymentDate)
+                    ORDER BY YEAR(v.paymentDate) DESC, MONTH (v.paymentDate) DESC`
+
+    const result = await executeSelect(query);
+    return result
+}
+
 const totalValueVisitsInSalesMonth = async (date, isAdm, user, companyId) => {
     const start = startOfMonth(date).toISOString();
     const end = endOfMonth(date).toISOString();
@@ -57,8 +69,8 @@ const totalValueVisitsInSalesMonth = async (date, isAdm, user, companyId) => {
     return result
 }
 
-const andCompany = (companyId) =>
-    companyId ? `AND s.companyId = '${companyId}'` : ''
+const andCompany = (companyId, alias = 's') =>
+    companyId ? `AND ${alias}.companyId = '${companyId}'` : ''
 
 
 const salesMonthExpenseCommission = async (date) => {
@@ -84,4 +96,4 @@ const salesMonthExpenseCommission = async (date) => {
     return result
 }
 
-module.exports = { salesMonthExpenseCommission, salesMonthDashboard }
+module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre }

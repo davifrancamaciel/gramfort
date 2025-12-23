@@ -27,11 +27,13 @@ export const appRoutes = {
   services: 'services',
   shopping: 'shopping',
   visits: 'visits',
-  vehicles: 'vehicles'
+  vehicles: 'vehicles',
+  dre: 'dre',
 };
 
 export const apiRoutes = {
   dashboard: 'dashboard',
+  dre: appRoutes.dre,
   groups: 'groups',
   users: appRoutes.users,
   products: appRoutes.products,
@@ -47,6 +49,7 @@ export const apiRoutes = {
 
 export const apiRoutesArray = [
   apiRoutes.dashboard,
+  apiRoutes.dre,
   apiRoutes.users,
   apiRoutes.groups,
   apiRoutes.products,
