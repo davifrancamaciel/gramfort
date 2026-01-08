@@ -106,7 +106,7 @@ export const pageItemsFilter: IOptions[] = [
 
 export const expensesTypesEnum = {
   COMPRAS: 1,
-  OUTROS: 2,
+  RETIRADAS: 2, // MUDOU PARA RETIRADAS -> RETI
   COMI: 3,
   DFIX: 4,
   PAGAMENTO: 5,

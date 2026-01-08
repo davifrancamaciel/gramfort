@@ -61,6 +61,7 @@ const totalValueVisitsInSalesMonth = async (date, isAdm, user, companyId) => {
     const query = ` SELECT SUM(v.value) totalValueVisitsInSalesMonth FROM visits v 
                     INNER JOIN sales s ON s.visitId = v.id 
                     WHERE v.paidOut = true AND 
+                          s.approved = true AND 
                           v.paymentDate BETWEEN '${start}' AND '${end}' AND 
                           s.saleDate    BETWEEN '${start}' AND '${end}' 
                     ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`

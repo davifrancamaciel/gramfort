@@ -26,7 +26,7 @@ function load() {
 
 const data_array = [
   // 'COMPRAS',  
-  // 'OUTROS',
+  // 'RETIRADAS',
   // 'COMISSÕES',
   // 'DESPESAS FIXAS',
   // 'PAGAMENTOS',

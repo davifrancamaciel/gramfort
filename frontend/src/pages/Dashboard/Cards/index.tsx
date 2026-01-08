@@ -43,7 +43,7 @@ const Cards: React.FC = () => {
   );
   const [investment, setInvestiment] = useState<CardValues>({} as CardValues);
   const [input, setInput] = useState<CardValues>({} as CardValues);
-  const [others, setOthers] = useState<CardValues>({} as CardValues);
+  const [cashWithdrawal, setCashWithdrawal] = useState<CardValues>({} as CardValues);
   const [expenses, setExpenses] = useState<CardValues>({} as CardValues);
   const [faturamento, setFaturamento] = useState<number>(0);
   const [liquido, setLiquido] = useState<number>(0);
@@ -81,19 +81,19 @@ const Cards: React.FC = () => {
     );
     setInput(_input);
 
-    const _others = getValueExpensesByTypes(
+    const _cashWithdrawal = getValueExpensesByTypes(
       cards?.expensesByType,
-      [expensesTypesEnum.OUTROS],
+      [expensesTypesEnum.RETIRADAS],
       true
     );
-    setOthers(_others);
+    setCashWithdrawal(_cashWithdrawal);
 
     const _expenses = getValueExpensesByTypes(
       cards?.expensesByType,
       [
         expensesTypesEnum.INSUMOS,
         expensesTypesEnum.INVESTIMENTOS,
-        expensesTypesEnum.OUTROS
+        expensesTypesEnum.RETIRADAS
       ],
       false
     );
@@ -255,9 +255,9 @@ const Cards: React.FC = () => {
             />
             <Card
               loading={loading}
-              value={formatPrice(others.totalValueMonth)}
+              value={formatPrice(cashWithdrawal.totalValueMonth)}
               color={systemColors.LIGHT_GREY}
-              text={`OUTROS (${others.count})`}
+              text={`RETIRADAS (${cashWithdrawal.count})`}
               icon={<ArrowUpOutlined />}
               url={`${appRoutes.expenses}?dateReference=${dateEn}`}
             />
