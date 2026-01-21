@@ -3,6 +3,29 @@ export const { format: formatPrice } = new Intl.NumberFormat('pt-BR', {
   currency: 'BRL'
 });
 
+export const formatPrice2 = (currency: string, value: number) => {
+  const { locale } = getCurrency(currency);
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency
+  });
+};
+
+interface CompanyLocale {
+  locale: string;
+  currency: string;
+}
+
+const getCurrency = (currency: string) => {
+  switch (currency) {
+    case 'PYG':
+      return { locale: 'es-PY', currency: 'PYG' } as CompanyLocale;
+
+    default:
+      return { locale: 'pt-BR', currency: 'BRL' } as CompanyLocale;
+  }
+};
+
 export const priceToNumber = (v: string) => {
   if (!v) {
     return 0;

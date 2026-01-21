@@ -4,7 +4,8 @@ import api from 'services/api-aws-amplify';
 import {
   DownloadOutlined,
   DownOutlined,
-  PrinterOutlined
+  PrinterOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 
 import { formatDate, formatDateHour } from 'utils/formatDate';
@@ -15,13 +16,21 @@ import { formatPrice } from 'utils/formatPrice';
 import Export from './Export';
 import PrintAll from './PrintAll';
 import { Expense } from '../../interfaces';
+import Delete from './Delete';
 
 interface PropTypes {
   state: any;
   title: string;
+  selectedItems?: Expense[];
+  onComplete?: () => void;
 }
 
-const Actions: React.FC<PropTypes> = ({ state, title }) => {
+const Actions: React.FC<PropTypes> = ({
+  state,
+  title,
+  selectedItems,
+  onComplete
+}) => {
   const { loading, setLoading } = useAppContext();
 
   const [print, setPrint] = useState(false);
@@ -92,6 +101,9 @@ const Actions: React.FC<PropTypes> = ({ state, title }) => {
 
       <Menu.Item key="2" icon={<DownloadOutlined />}>
         <Export actionFilter={actionFilter} items={items} title={title} />
+      </Menu.Item>
+      <Menu.Item key="3" icon={<DeleteOutlined />}>
+        <Delete onComplete={onComplete} selectedItems={selectedItems} state={state} />
       </Menu.Item>
     </Menu>
   );

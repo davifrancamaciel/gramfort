@@ -38,6 +38,14 @@ expensesDelete:
         method: delete
         authorizer: verifyToken
         cors: true
+expensesDeletePost:
+  handler: src/functions/api/expenses.delete
+  events:
+    - http:
+        path: expenses/delete
+        method: post
+        authorizer: verifyToken
+        cors: true
 expenseTypes:
   handler: src/functions/api/expenseTypes.listAll
   events:

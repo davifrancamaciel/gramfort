@@ -96,7 +96,7 @@ module.exports.list = async (event, context) => {
 
         const { pageSize, pageNumber, field, order } = event.queryStringParameters
         let arrayOrder = [[field ? field : 'saleDate', order ? order : 'asc']];
-        
+
         let { count, rows } = await Sale.findAndCountAll({
             where: whereStatement,
             limit: Number(pageSize) || 10,
@@ -262,6 +262,9 @@ module.exports.update = async (event) => {
         if (!item)
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrada`)
 
+        if (body.action)
+            return updateSimple(item, body);
+
         const value = sum(body.productsSales, 'valueAmount');
         const valueInput = sum(body.costsSales, 'valueAmount');
         const valuePerMeter = calcValueMeter(body);
@@ -296,6 +299,11 @@ module.exports.update = async (event) => {
     } catch (err) {
         return await handlerErrResponse(err, body)
     }
+}
+
+const updateSimple = async (item, objOnSave) => {
+    const result = await item.update(objOnSave);
+    return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso`)
 }
 
 module.exports.updatePublic = async (event) => {

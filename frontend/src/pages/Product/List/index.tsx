@@ -52,8 +52,7 @@ const List: React.FC = () => {
       const { count, rows } = resp.data;
       const itemsFormatted = rows.map((p: Product) => ({
         ...p,
-        companyName:
-          p.categoryId === productCategoriesEnum.INSUMO ? p.company?.name : '',
+        companyName: p.company?.name,
         inventoryCount:
           p.categoryId === productCategoriesEnum.INSUMO ? p.inventoryCount : '',
         categoryName: p.category?.name,

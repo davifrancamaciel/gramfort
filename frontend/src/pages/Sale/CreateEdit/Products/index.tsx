@@ -9,7 +9,8 @@ import {
   apiRoutes,
   categorIdsArrayProduct,
   categorIdsArrayCost,
-  systemColors
+  systemColors,
+  roules
 } from 'utils/defaultValues';
 import {
   formatPrice,
@@ -18,14 +19,31 @@ import {
 import api from 'services/api-aws-amplify';
 import { SaleProduct, Product } from '../../interfaces';
 import { IOptions } from 'utils/commonInterfaces';
+import { useAppContext } from 'hooks/contextLib';
+import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 
-const Products: React.FC<PropTypes> = ({ products, setProducts, isCost }) => {
+const Products: React.FC<PropTypes> = ({
+  products,
+  setProducts,
+  isCost,
+  companyId
+}) => {
   const [loading, setLoading] = useState(false);
   const [productsOptions, setProductsOptions] = useState<Product[]>([]);
+  const [productsOptionsByCategory, setProductsOptionsByCategory] = useState<
+    Product[]
+  >([]);
   const [options, setOptions] = useState<IOptions[]>([]);
+  const { companies, userAuthenticated } = useAppContext();
+
   useEffect(() => {
     onLoad();
   }, []);
+
+  useEffect(() => {
+    filterByCompany(productsOptionsByCategory, companyId);
+  }, [companyId]);
+
   useEffect(() => {
     !products.length && add();
   }, [products]);
@@ -68,13 +86,7 @@ const Products: React.FC<PropTypes> = ({ products, setProducts, isCost }) => {
   const changeDescription = (sp: SaleProduct) => {
     const newProducts = products.map((product: SaleProduct) => {
       return product.id === sp.id
-        ? {
-            ...product,
-            // amount: formatNumberWhithDecimalCaseOnChange(sp.amountStr),
-            // value: sp?.value,
-            // valueAmount: formatNumberWhithDecimalCaseOnChange(sp.amountStr) *  product?.value,
-            description: sp.description
-          }
+        ? { ...product, description: sp.description }
         : product;
     });
     setProducts(newProducts);
@@ -106,18 +118,40 @@ const Products: React.FC<PropTypes> = ({ products, setProducts, isCost }) => {
     setProducts(newProducts);
   };
 
+  const filterByCompany = (
+    productsOptionsByCategory: Array<Product>,
+    companyId?: string
+  ) => {
+    if (companyId) {
+      const data = productsOptionsByCategory.filter(
+        (x: Product) => x.companyId === companyId
+      );
+      const dataByCompany = data.map(
+        (x: Product) => ({ value: x.value, label: x.label } as IOptions)
+      );
+      setOptions(dataByCompany);
+    }
+  };
+
   const onLoad = async () => {
     try {
+      const { signInUserSession } = userAuthenticated;
+      const groups = signInUserSession.accessToken.payload['cognito:groups'];
       setLoading(true);
       const resp = await api.get(`${apiRoutes.products}/all`);
-      const data = isCost
+      let data = isCost
         ? resp.data.filter((p: Product) =>
             categorIdsArrayCost.includes(p.categoryId || 0)
           )
         : resp.data.filter((p: Product) =>
             categorIdsArrayProduct.includes(p.categoryId || 0)
           );
-      setOptions(data.map((x: IOptions) => x));
+      setProductsOptionsByCategory(data);
+      if (!checkRouleProfileAccess(groups, roules.administrator)) {
+        const companyId =
+          signInUserSession.idToken.payload['custom:company_id'];
+        filterByCompany(data, companyId);
+      } else filterByCompany(data, companyId);
       setProductsOptions(resp.data);
       setLoading(false);
     } catch (error) {

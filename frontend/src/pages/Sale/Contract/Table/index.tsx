@@ -16,6 +16,7 @@ import logo from 'assets/logo-vertical.jpeg';
 import logoGota from 'assets/logo-gota.png';
 import { Clause, Footer, Header } from './styles';
 import { getBalance } from '../../utils';
+import { numberWithDots } from 'utils';
 
 interface PropTypes {
   sale: Sale;
@@ -133,7 +134,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               DETALHES DO ORÇAMENTO
             </p>
 
-            <table>
+            <table style={{ fontSize: '14px' }}>
               <thead>
                 <tr
                   style={{
@@ -164,7 +165,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                       >
                         <td>{index + 1}</td>
                         <td>{sp.product.name}</td>
-                        <td>{sp.amount}</td>
+                        <td>{numberWithDots(Number(sp.amount))}</td>
                         <td>{formatPrice(Number(sp.value!))}</td>
                         <td>{formatPrice(Number(sp.valueAmount!))}</td>
                       </tr>
@@ -272,8 +273,8 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
               {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
               <p>
-                Caixa Econômica Federal Ag 4146 CC 000577118764-6 Gramfort Hidrossemeadura Pix
-                CNPJ 50641930000100
+                Caixa Econômica Federal Ag 4146 CC 000577118764-6 Gramfort
+                Hidrossemeadura Pix CNPJ 50641930000100
               </p>
               <p>
                 Data prevista para execução{' '}
@@ -456,35 +457,9 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   </thead>
                   <tbody>
                     {sale.visit && (
-                      <tr>
-                        <td
-                          style={{
-                            width: '30%'
-                          }}
-                        >
-                          Realizada por
-                        </td>
-                        <td
-                          style={{
-                            backgroundColor: systemColors.LIGHT_BLUE,
-                            width: '40%'
-                          }}
-                        >
-                          {sale.visit?.user?.name}
-                        </td>
-                        <td
-                          style={{
-                            width: '10%'
-                          }}
-                        >
-                          em
-                        </td>
-                        <td
-                          style={{
-                            backgroundColor: systemColors.LIGHT_BLUE,
-                            width: '20%'
-                          }}
-                        >
+                      <tr style={{ fontSize: '14px' }}>
+                        <td>
+                          Realizada por {sale.visit?.user?.name} em{' '}
                           {formatDate(sale.visit?.date)}
                         </td>
                       </tr>
@@ -500,7 +475,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                             colSpan={4}
                             style={{
                               color: '#fff',
-                              backgroundColor: systemColors.GREEN
+                              backgroundColor: systemColors.DARK_BLUE
                             }}
                           >
                             INFORMAÇÕES IMPORTANTES
@@ -511,7 +486,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     {sale?.note
                       ?.split('\n')
                       .map((item: string, index: number) => (
-                        <tr key={index + 100}>
+                        <tr key={index + 100} style={{ fontSize: '14px' }}>
                           <td colSpan={4}>{item}</td>
                         </tr>
                       ))}
@@ -522,54 +497,82 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 </div>
               </Header>
               <Row
-                gutter={[16, 24]}
+                gutter={[24, 24]}
                 style={{ marginBottom: '15px', marginTop: '15px' }}
               >
-                <Col
-                  lg={24}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-around',
-                    width: '100%'
-                  }}
-                >
-                  {sale.image1 && (
-                    <Image style={{ height: '200px' }} src={sale.image1} />
-                  )}
-                  {sale.image2 && (
-                    <Image style={{ height: '200px' }} src={sale.image2} />
-                  )}
-                </Col>
+                {sale.image1 && (
+                  <Col
+                    lg={12}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'end',
+                      width: '50%'
+                    }}
+                  >
+                    <Image
+                      style={{ height: '200px', maxWidth: '350px' }}
+                      src={sale.image1}
+                    />
+                  </Col>
+                )}
+                {sale.image2 && (
+                  <Col
+                    lg={12}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'start',
+                      width: '50%'
+                    }}
+                  >
+                    <Image
+                      style={{ height: '200px', maxWidth: '350px' }}
+                      src={sale.image2}
+                    />
+                  </Col>
+                )}
               </Row>
               <Row gutter={[16, 24]}>
                 <Col
                   lg={12}
                   style={{
                     display: 'flex',
-                    justifyContent: 'center',
+                    justifyContent: 'end',
                     width: '50%'
                   }}
                 >
                   {sale.image3 && (
-                    <Image style={{ height: '500px' }} src={sale.image3} />
+                    <Image
+                      style={{ height: '500px', maxWidth: '350px' }}
+                      src={sale.image3}
+                    />
                   )}
                 </Col>
                 <Col
                   lg={12}
                   style={{
                     display: 'grid',
-                    justifyContent: 'space-around',
-                    width: '50%'
+                    justifyContent: 'start  ',
+                    width: '50%',
+                    gap: '10px'
                   }}
                 >
                   {sale.image4 && (
-                    <Image style={{ height: '150px' }} src={sale.image4} />
+                    <Image
+                      style={{ height: '160px', maxWidth: '350px' }}
+                      src={sale.image4}
+                    />
                   )}
                   {sale.image5 && (
-                    <Image style={{ height: '150px' }} src={sale.image5} />
+                    <Image
+                      style={{ height: '160px', maxWidth: '350px' }}
+                      src={sale.image5}
+                    />
                   )}
                   {sale.image6 && (
-                    <Image style={{ height: '150px' }} src={sale.image6} />
+                    <Image
+                      style={{ height: '160px', maxWidth: '350px' }}
+                      src={sale.image6}
+                    />
                   )}
                 </Col>
               </Row>

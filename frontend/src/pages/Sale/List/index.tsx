@@ -35,6 +35,7 @@ import {
 import Cards from './Cards';
 import FastFilter from 'components/FastFilter';
 import Actions from './Actions';
+import Action from 'components/Action';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -111,7 +112,15 @@ const List: React.FC = () => {
           createdAt: formatDateHour(p.createdAt),
           updatedAt: formatDateHour(p.updatedAt),
           saleDate: formatDate(p.saleDate),
-          invoiceAction: <BooleanTag value={p.invoice} />
+          invoiceAction: (
+            <Action
+              item={{ ...p, action: true }}
+              setUpdate={() => {}}
+              apiRoutes={apiRoutes.sales}
+              propName="invoice"
+            />
+          ),
+          approved: <BooleanTag value={p.approved!} />
         };
         return {
           ...sale,
@@ -164,6 +173,43 @@ const List: React.FC = () => {
       getTableColl(sortField?.toString()),
       order
     );
+  };
+  const getColls = (path: string) => {
+    let arrayCols = [];
+
+    arrayCols.push({ title: 'Código', dataIndex: 'id', sorter: true });
+    arrayCols.push({ title: 'Data', dataIndex: 'saleDate', sorter: true });
+    arrayCols.push({ title: 'Empresa', dataIndex: 'companyName' });
+    //  arrayCols.push({ title: 'Produtos', dataIndex: 'productsFormatted' });
+    arrayCols.push({
+      title: 'Valor',
+      dataIndex: 'valueFormatted',
+      sorter: true
+    });
+    arrayCols.push({
+      title: 'Custos+descontos',
+      dataIndex: 'valueCostFormatted',
+      sorter: true
+    });
+    arrayCols.push({ title: 'Saldo', dataIndex: 'balanceFormatted' });
+    arrayCols.push({
+      title: 'Valor med M2',
+      dataIndex: 'valuePerMeterFormatted',
+      sorter: true
+    });
+    arrayCols.push({ title: 'Cliente', dataIndex: 'clientName' });
+    arrayCols.push({ title: 'Contato', dataIndex: 'contact' });
+    arrayCols.push({ title: 'Consultor', dataIndex: 'userName' });
+    arrayCols.push({ title: 'Captação', dataIndex: 'capture' });
+    if (path === appRoutes.sales)
+      arrayCols.push({ title: 'NF', dataIndex: 'invoiceAction' });
+    if (path === appRoutes.contracts)
+      arrayCols.push({ title: 'Venda', dataIndex: 'approved' });
+    //  arrayCols.push({ title: 'Criada em', dataIndex: 'createdAt' });
+    //  arrayCols.push({ title: 'Alterada em', dataIndex: 'updatedAt' });
+    arrayCols.push({ title: 'Contrato', dataIndex: 'contract' });
+
+    return arrayCols;
   };
 
   return (
@@ -280,32 +326,7 @@ const List: React.FC = () => {
           <Actions state={state} title={getTitle(path, true)} path={path} />
         }
         scroll={{ x: 840 }}
-        columns={[
-          { title: 'Código', dataIndex: 'id', sorter: true },
-          { title: 'Data', dataIndex: 'saleDate', sorter: true },
-          { title: 'Empresa', dataIndex: 'companyName' },
-          // { title: 'Produtos', dataIndex: 'productsFormatted' },
-          { title: 'Valor', dataIndex: 'valueFormatted', sorter: true },
-          {
-            title: 'Custos+descontos',
-            dataIndex: 'valueCostFormatted',
-            sorter: true
-          },
-          { title: 'Saldo', dataIndex: 'balanceFormatted' },
-          {
-            title: 'Valor med M2',
-            dataIndex: 'valuePerMeterFormatted',
-            sorter: true
-          },
-          { title: 'Cliente', dataIndex: 'clientName' },
-          { title: 'Contato', dataIndex: 'contact' },
-          { title: 'Consultor', dataIndex: 'userName' },
-          { title: 'Captação', dataIndex: 'capture' },
-          { title: 'NF', dataIndex: 'invoiceAction' },
-          // { title: 'Criada em', dataIndex: 'createdAt' },
-          // { title: 'Alterada em', dataIndex: 'updatedAt' },
-          { title: 'Contrato', dataIndex: 'contract' }
-        ]}
+        columns={getColls(path)}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}
         onDelete={() => {

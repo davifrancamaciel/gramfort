@@ -10,7 +10,8 @@ export const Clause = styled.div`
 
   p {
     text-align: center;
-    margin-bottom: 2px;
+    margin-bottom: -2px;
+    font-size: 13px;
   }
 `;
 

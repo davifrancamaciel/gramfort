@@ -1,10 +1,12 @@
+import { IOptions } from 'utils/commonInterfaces';
 import { Users } from '../User/interfaces';
 import { Company } from './../Company/interfaces';
 import { Visit } from './../Visit/interfaces';
 
-export interface Product {
+export interface Product extends IOptions {
   id?: number;
   categoryId?: number;
+  companyId?: string;
   name: string;
   size: string;
   price: number;

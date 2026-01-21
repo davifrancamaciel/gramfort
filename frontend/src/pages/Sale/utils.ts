@@ -61,3 +61,23 @@ export const getTableColl = (key?: string) => {
       return key;
   }
 };
+
+export const setImages = (data: any) => {
+  let array: Array<any> = [];
+  for (let i = 1; i <= 6; i++) {
+    array.push(getImages(i, data[`image${i}`]));
+  }
+  return array.filter((x: any) => x !== undefined);
+};
+
+const getImages = (index: number, image?: string) => {
+  if (image) {
+    const imageArr = image.split('/');
+    return {
+      uid: `-${index}`,
+      name: imageArr[imageArr.length - 1],
+      status: 'done',
+      url: image
+    };
+  }
+};

@@ -34,8 +34,8 @@ module.exports.list = async (event, context) => {
 
             if (companyId) whereStatement.companyId = companyId;
 
-            // if (!checkRouleProfileAccess(user.groups, roules.administrator))
-            //     whereStatement.companyId = user.companyId
+            if (!checkRouleProfileAccess(user.groups, roules.administrator))
+                whereStatement.companyId = user.companyId
 
             if (id) whereStatement.id = id;
 
@@ -132,8 +132,8 @@ module.exports.listById = async (event) => {
         })
         if (!result)
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrado`)
-        // if (!checkRouleProfileAccess(user.groups, roules.administrator) && result.companyId !== user.companyId)
-        //     return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
+        if (!checkRouleProfileAccess(user.groups, roules.administrator) && result.companyId !== user.companyId)
+            return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
 
         const query = ` SELECT SUM(amount) totalSaled FROM saleProducts WHERE productId = ${pathParameters.id}`
         const [resultSale] = await executeSelect(query);
@@ -188,8 +188,8 @@ module.exports.update = async (event) => {
         if (!item)
             return handlerResponse(400, {}, `${RESOURCE_NAME} não encontrado`)
 
-        // if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
-        //     return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
+        if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
+            return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
 
         const result = await item.update(body);
         console.log('PARA ', result.dataValues)
@@ -213,8 +213,8 @@ module.exports.delete = async (event) => {
 
         const { id } = pathParameters
         const item = await Product.findByPk(id)
-        // if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
-        //     return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
+        if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
+            return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
 
         await Product.destroy({ where: { id } });
 
@@ -235,8 +235,8 @@ module.exports.listAll = async (event, context) => {
             return handlerResponse(400, {}, 'Usuário não encontrado')
         if (!checkRouleProfileAccess(user.groups, roules.sales))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
-        // if (!checkRouleProfileAccess(user.groups, roules.administrator))
-        //     whereStatement.companyId = user.companyId
+        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+            whereStatement.companyId = user.companyId
 
         if (queryStringParameters) {
             const { active } = queryStringParameters;

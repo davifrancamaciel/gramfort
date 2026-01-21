@@ -32,7 +32,7 @@ import ShowByRoule from 'components/ShowByRoule';
 import { arrayCapture, arrayLevel, arrayNature } from 'pages/User/utils';
 import { arrayDemand } from '../../User/utils';
 import UploadImages from 'components/UploadImages';
-import { getTitle, getType } from '../utils';
+import { getTitle, getType, setImages } from '../utils';
 import { IOptions } from 'utils/commonInterfaces';
 import { Visit } from 'pages/Visit/interfaces';
 import { formatDate } from 'utils/formatDate';
@@ -57,11 +57,19 @@ const CreateEdit: React.FC = (props: any) => {
   const [fileList, setFileList] = useState<Array<UploadFile>>([]);
   const [visits, setVisits] = useState<Visit[]>([]);
   const [visitsOptions, setVisitsOptions] = useState<IOptions[]>();
+  const [groups, setGroups] = useState<string[]>([]);
 
   useEffect(() => {
+    const { signInUserSession } = userAuthenticated;
+    const groups = signInUserSession.accessToken.payload['cognito:groups'];
+    setGroups(groups);
+    if (!checkRouleProfileAccess(groups, roules.administrator)) {
+      const companyId = signInUserSession.idToken.payload['custom:company_id'];
+      dispatch({ companyId });
+    }
     const typePath = getType();
     setPath(typePath);
-    onLoadUsersSales();
+    onLoadUsersSales(groups);
   }, []);
 
   useEffect(() => {
@@ -128,17 +136,8 @@ const CreateEdit: React.FC = (props: any) => {
           resp.data?.discountValue
         )
       });
-      if (resp.data && resp.data.image1) {
-        const imageArr = resp.data.image1.split('/');
-        setFileList([
-          {
-            uid: '-1',
-            name: imageArr[imageArr.length - 1],
-            status: 'done',
-            url: resp.data.image1
-          }
-        ]);
-      }
+      if (resp.data) setFileList(setImages(resp.data));
+
       setLoading(false);
       setLoadingEdit(false);
     } catch (error) {
@@ -194,15 +193,12 @@ const CreateEdit: React.FC = (props: any) => {
     dispatch({ costsSales });
   };
 
-  const onLoadUsersSales = async () => {
+  const onLoadUsersSales = async (groups: any) => {
     try {
       setLoading(true);
       const resp = await api.get(`${apiRoutes.users}/all`);
       setUsers(resp.data);
       setLoading(false);
-      // debugger
-      const { signInUserSession } = userAuthenticated;
-      const groups = signInUserSession.accessToken.payload['cognito:groups'];
       if (!checkRouleProfileAccess(groups, roules.administrator)) {
         setUsersOptions(resp.data);
       }
@@ -231,6 +227,61 @@ const CreateEdit: React.FC = (props: any) => {
         totals={totals}
         setTotals={setTotals}
       />
+
+      <ShowByRoule roule={roules.administrator}>
+        <Col lg={3} md={6} sm={12} xs={24}>
+          <Select
+            label={'Empresa'}
+            options={companies}
+            value={state.companyId}
+            onChange={(companyId) => dispatch({ companyId })}
+          />
+        </Col>
+      </ShowByRoule>
+      <ShowByRoule roule={roules.saleUserIdChange}>
+        <Col
+          lg={!checkRouleProfileAccess(groups, roules.administrator) ? 6 : 4}
+          md={!checkRouleProfileAccess(groups, roules.administrator) ? 12 : 9}
+          sm={12}
+          xs={24}
+        >
+          <Select
+            label={'Consultor'}
+            options={usersOptions?.filter((u: any) => u.type === userType.USER)}
+            value={state?.userId}
+            onChange={(userId) => dispatch({ userId })}
+          />
+        </Col>
+      </ShowByRoule>
+      <ShowByRoule roule={roules.clients}>
+        <Col
+          lg={!checkRouleProfileAccess(groups, roules.administrator) ? 6 : 5}
+          md={!checkRouleProfileAccess(groups, roules.administrator) ? 12 : 9}
+          sm={12}
+          xs={24}
+        >
+          <Select
+            label={'Cliente'}
+            required={true}
+            options={usersOptions?.filter(
+              (u: any) => u.type === userType.CLIENT
+            )}
+            value={state?.clientId}
+            onChange={(clientId) => dispatch({ clientId })}
+          />
+        </Col>
+      </ShowByRoule>
+
+      <Col lg={12} md={24} sm={24} xs={24}>
+        <Select
+          loading={loadingVisit}
+          label={'Visita'}
+          options={visitsOptions}
+          value={state?.visitId}
+          onChange={(visitId) => dispatch({ visitId })}
+        />
+      </Col>
+
       <Divider>
         Produtos d{path === appRoutes.sales ? 'a' : 'o'}{' '}
         {getTitle(path).toLocaleLowerCase()}
@@ -239,6 +290,7 @@ const CreateEdit: React.FC = (props: any) => {
         products={state.productsSales}
         setProducts={setProducts}
         isCost={false}
+        companyId={state.companyId}
       />
 
       {path == appRoutes.sales && (
@@ -248,6 +300,7 @@ const CreateEdit: React.FC = (props: any) => {
             products={state.costsSales}
             setProducts={setCosts}
             isCost={true}
+            companyId={state.companyId}
           />
 
           <Col lg={6} md={8} sm={12} xs={24}>
@@ -283,40 +336,6 @@ const CreateEdit: React.FC = (props: any) => {
           </Col>
         </>
       )}
-
-      <ShowByRoule roule={roules.administrator}>
-        <Col lg={6} md={8} sm={12} xs={24}>
-          <Select
-            label={'Empresa'}
-            options={companies}
-            value={state.companyId}
-            onChange={(companyId) => dispatch({ companyId })}
-          />
-        </Col>
-      </ShowByRoule>
-      <ShowByRoule roule={roules.saleUserIdChange}>
-        <Col lg={6} md={8} sm={12} xs={24}>
-          <Select
-            label={'Consultor'}
-            options={usersOptions?.filter((u: any) => u.type === userType.USER)}
-            value={state?.userId}
-            onChange={(userId) => dispatch({ userId })}
-          />
-        </Col>
-      </ShowByRoule>
-      <ShowByRoule roule={roules.clients}>
-        <Col lg={6} md={8} sm={12} xs={24}>
-          <Select
-            label={'Cliente'}
-            required={true}
-            options={usersOptions?.filter(
-              (u: any) => u.type === userType.CLIENT
-            )}
-            value={state?.clientId}
-            onChange={(clientId) => dispatch({ clientId })}
-          />
-        </Col>
-      </ShowByRoule>
       <Col lg={6} md={8} sm={12} xs={24}>
         <Select
           label={'Captação'}
@@ -325,53 +344,6 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(capture) => dispatch({ capture })}
         />
       </Col>
-      <Col lg={12} md={16} sm={12} xs={24}>
-        <Select
-          loading={loadingVisit}
-          label={'Visita'}
-          options={visitsOptions}
-          value={state?.visitId}
-          onChange={(visitId) => dispatch({ visitId })}
-        />
-      </Col>
-      {path == appRoutes.contracts && (
-        <>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Descrição desconto'}
-              placeholder=""
-              value={state.discountDescription}
-              onChange={(e) =>
-                dispatch({ discountDescription: e.target.value })
-              }
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Valor de desconto'}
-              type={'tel'}
-              disabled={!state.discountDescription}
-              placeholder="15,00"
-              value={state.discountValue}
-              onChange={(e) =>
-                dispatch({
-                  discountValue: formatValueWhithDecimalCaseOnChange(
-                    e.target.value
-                  )
-                })
-              }
-            />
-          </Col>
-          <Col lg={24} md={24} sm={24} xs={24}>
-            <Input
-              label={'Forma de pagamento'}
-              placeholder=""
-              value={state.paymentMethod}
-              onChange={(e) => dispatch({ paymentMethod: e.target.value })}
-            />
-          </Col>
-        </>
-      )}
 
       <Col lg={6} md={8} sm={12} xs={24}>
         <Input
@@ -472,7 +444,40 @@ const CreateEdit: React.FC = (props: any) => {
               onChange={(e) => dispatch({ sunOrientation: e.target.value })}
             />
           </Col>
-
+          <Col lg={6} md={8} sm={12} xs={24}>
+            <Input
+              label={'Descrição desconto'}
+              placeholder=""
+              value={state.discountDescription}
+              onChange={(e) =>
+                dispatch({ discountDescription: e.target.value })
+              }
+            />
+          </Col>
+          <Col lg={6} md={8} sm={12} xs={24}>
+            <Input
+              label={'Valor de desconto'}
+              type={'tel'}
+              disabled={!state.discountDescription}
+              placeholder="15,00"
+              value={state.discountValue}
+              onChange={(e) =>
+                dispatch({
+                  discountValue: formatValueWhithDecimalCaseOnChange(
+                    e.target.value
+                  )
+                })
+              }
+            />
+          </Col>
+          <Col lg={24} md={24} sm={24} xs={24}>
+            <Input
+              label={'Forma de pagamento'}
+              placeholder=""
+              value={state.paymentMethod}
+              onChange={(e) => dispatch({ paymentMethod: e.target.value })}
+            />
+          </Col>
           <Col lg={6} md={8} sm={12} xs={24}>
             <Switch
               label={'Proposta aprovada'}

@@ -40,6 +40,8 @@ const List: React.FC = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [dataTotal, setDataTotal] = useState<CardsResult>(initialStateCards);
   const [path, setPath] = useState(apiRoutes.expenses);
+  const [selectedRowKeysLoad, setSelectedRowKeysLoad] = useState<number[]>([]);
+  const [selectedItems, setSelectedItems] = useState<Expense[]>([]);
 
   useEffect(() => {
     const date = new Date();
@@ -134,6 +136,13 @@ const List: React.FC = () => {
     );
   };
 
+  const rowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: Expense[]) => {
+      setSelectedItems(selectedRows);
+    }
+    // selectedRowKeys: selectedRowKeysLoad
+  };
+
   return (
     <div>
       <FastFilter state={state} setState={dispatch} />
@@ -219,9 +228,20 @@ const List: React.FC = () => {
       </PanelFilter>
 
       <GridList
-        headerChildren={<Actions state={state} title={getTitle(path, true)} />}
+        headerChildren={
+          <Actions
+            state={state}
+            title={getTitle(path, true)}
+            selectedItems={selectedItems}
+            onComplete={actionFilter}
+          />
+        }
         size="small"
         scroll={{ x: 640 }}
+        rowSelection={{
+          type: 'checkbox',
+          ...rowSelection
+        }}
         columns={[
           // { title: 'Código', dataIndex: 'id' },
           { title: 'Empresa', dataIndex: 'companyName' },

@@ -12,6 +12,7 @@ const { getUser, checkRouleProfileAccess } = require("../../services/UserService
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const expensesRepository = require('../../repositories/expensesRepository')
+const { executeDelete } = require("../../services/ExecuteQueryService");
 
 const RESOURCE_NAME = 'Despesa'
 
@@ -109,7 +110,7 @@ module.exports.list = async (event, context) => {
         let arrayOrder = [[field ? field : 'paymentDate', order ? order : 'asc']]
         if (field === 'expenseTypeName')
             arrayOrder = [['expenseType', 'name', order], ['paymentDate', 'asc']]
-      
+
 
         const { pageSize, pageNumber } = event.queryStringParameters
         const { count, rows } = await Expense.findAndCountAll({
@@ -281,17 +282,30 @@ module.exports.delete = async (event) => {
         if (!checkRouleProfileAccess(user.groups, roules.expenses))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
 
-        const { id } = pathParameters
-        const item = await Expense.findByPk(id)
-        if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
-            return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
+        if (event.httpMethod === 'POST') {
+            const body = JSON.parse(event.body);
+            const { ids } = body;
 
-        await Expense.destroy({ where: { id } });
-        return handlerResponse(200, {}, `${getTitle(item.expenseTypeId)} código (${id}) removida com sucesso`)
+            const query = `DELETE FROM expenses WHERE id IN (${ids.map(x => x).join(',')})`;
+            await executeDelete(query);
+
+            return handlerResponse(200, {}, `Items removidos com sucesso`)
+        }
+
+        if (event.httpMethod === 'DELETE') {
+            const { id } = pathParameters
+            const item = await Expense.findByPk(id)
+            if (!checkRouleProfileAccess(user.groups, roules.administrator) && item.companyId !== user.companyId)
+                return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
+
+            await Expense.destroy({ where: { id } });
+            return handlerResponse(200, {}, `${getTitle(item.expenseTypeId)} código (${id}) removida com sucesso`)
+        }
     } catch (err) {
         return await handlerErrResponse(err, pathParameters)
     }
 }
+
 
 const getTitle = (type, isPlural = false) => {
     switch (type) {

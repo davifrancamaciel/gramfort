@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Container } from './styles';
-import imageLastPage from 'assets/contract.jpg';
+import imageLastPage from 'assets/contract.png';
 
 interface PropTypes {
   title: string;
@@ -67,7 +67,11 @@ const TableReport: React.FC<PropTypes> = ({
             justifyContent: 'center'
           }}
         >
-          <img src={imageLastPage} alt="" style={{ maxWidth: '93%' }} />
+          <img
+            src={imageLastPage}
+            alt=""
+            style={{ maxWidth: '710px' }}
+          />
         </div>
       )}
     </Container>

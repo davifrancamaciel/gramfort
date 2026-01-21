@@ -76,13 +76,13 @@ const Details: React.FC = (props: any) => {
           <Col lg={6} md={12} sm={24} xs={24}>
             <ViewData label="Código do produto" value={props.match.params.id} />
           </Col>
-          {state.categoryId === productCategoriesEnum.INSUMO && (
-            <ShowByRoule roule={roules.administrator}>
-              <Col lg={6} md={12} sm={24} xs={24}>
-                <ViewData label="Empresa" value={state.company.name} />
-              </Col>
-            </ShowByRoule>
-          )}
+
+          <ShowByRoule roule={roules.administrator}>
+            <Col lg={6} md={12} sm={24} xs={24}>
+              <ViewData label="Empresa" value={state.company.name} />
+            </Col>
+          </ShowByRoule>
+
           <Col lg={6} md={12} sm={24} xs={24}>
             <ViewData label="Nome do produto" value={state.name} />
           </Col>
