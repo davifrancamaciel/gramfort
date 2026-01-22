@@ -192,8 +192,7 @@ const listByIdResult = async (id) => {
             },
             {
                 model: Company,
-                as: 'company',
-                attributes: ['name', 'image'],
+                as: 'company'                
             },
             {
                 model: SaleProduct,

@@ -12,7 +12,6 @@ import {
 import { formatDate, formatDateText } from 'utils/formatDate';
 
 import assinatura from 'assets/assinatura.png';
-import logo from 'assets/logo-vertical.jpeg';
 import logoGota from 'assets/logo-gota.png';
 import { Clause, Footer, Header } from './styles';
 import { getBalance } from '../../utils';
@@ -33,6 +32,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
     <TableReport
       title={``}
       image={sale?.company?.image || ''}
+      imageFooterContract={sale?.company?.imageFooterContract || ''}
       showImageLastPage={true}
     >
       <tr style={{ border: '0', fontSize: '10px' }}>
@@ -53,32 +53,37 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                         borderRight: '0',
                         color: '#fff',
                         backgroundColor: systemColors.DARK_BLUE,
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        textTransform: 'uppercase'
                       }}
                     >
-                      GRAMFORT HIDROSSEMEADURA E SOLUÇÕES AMBIENTAIS LTDA
+                      {sale.company?.fantasyName}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>CNPJ 50.641.930/0001-00 Fone +55 24 98100.8000</td>
-                  </tr>
-                  <tr>
                     <td>
-                      Estrada União e Industria, 20647. Petrópolis/RJ. CEP
-                      25.750-222
+                      CNPJ {sale.company?.cnpj} Fone {sale.company?.phone}
                     </td>
                   </tr>
                   <tr>
                     <td>
-                      www.gramfort.com.br | gramfort@hotmail.com | @gramfort_
+                      {sale.company?.address} {sale.company?.city}/
+                      {sale.company?.state}. CEP
+                      {sale.company?.zipCode}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      {sale.company?.site} | {sale.company?.email} |{' '}
+                      {sale.company?.instagran}
                     </td>
                   </tr>
                 </tbody>
               </table>
               <div>
-                <img src={logo} alt="" />
+                <img src={sale.company?.imageHeaderContract} alt="" />
               </div>
             </Header>
 
@@ -273,8 +278,8 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
               {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
               <p>
-                Caixa Econômica Federal Ag 4146 CC 000577118764-6 Gramfort
-                Hidrossemeadura Pix CNPJ 50641930000100
+                {sale.company?.agencyBank} {sale.company?.fantasyName} Pix CNPJ{' '}
+                {sale.company?.pixKey}
               </p>
               <p>
                 Data prevista para execução{' '}
@@ -433,7 +438,9 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 <strong>{sale.client?.name}</strong>
               </p>
               <p>Cliente/Contratante</p>
-              <p>Petrópolis, {formatDateText(sale.createdAt!)}</p>
+              <p>
+                {sale.company?.city}, {formatDateText(sale.createdAt!)}
+              </p>
             </div>
           </Footer>
           {sale.image1 && (
@@ -493,7 +500,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   </tbody>
                 </table>
                 <div>
-                  <img src={logo} alt="" />
+                  <img src={sale.company?.imageHeaderContract} alt="" />
                 </div>
               </Header>
               <Row

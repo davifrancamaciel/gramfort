@@ -22,6 +22,16 @@ module.exports = function (sequelize, DataTypes) {
         state: { type: DataTypes.STRING(100), },
         city: { type: DataTypes.STRING(100), },
         address: { type: DataTypes.STRING(300), },
+
+        fantasyName: { type: DataTypes.STRING(100), },
+        imageHeaderContract: { type: DataTypes.STRING(500), },
+        imageFooterContract: { type: DataTypes.STRING(500), },
+        agencyBank: { type: DataTypes.STRING(100), },
+        site: { type: DataTypes.STRING(100), },
+        instagran: { type: DataTypes.STRING(100), },
+        cnpj: { type: DataTypes.STRING(50), },
+        zipCode: { type: DataTypes.STRING(50), },
+        currency: { type: DataTypes.STRING(10), },
     });
 
     Company.beforeCreate(c => c.id = uuid.v4());

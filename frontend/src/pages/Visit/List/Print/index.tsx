@@ -6,7 +6,7 @@ import TableReport from 'components/Report/TableReport';
 import { Visit } from '../../interfaces';
 import { formatPrice } from 'utils/formatPrice';
 import assinatura from 'assets/assinatura.png';
-import { extractHour, formatDate, formatDateText } from 'utils/formatDate';
+import { formatDate, formatDateText } from 'utils/formatDate';
 
 interface PropTypes {
   item: Visit;
@@ -29,14 +29,13 @@ const Print: React.FC<PropTypes> = ({ item }) => {
           >
             <p>
               Eu, <strong>{item.user?.name}</strong>, na qualidade de Consultor
-              Técnico da empresa{' '}
-              <strong>Gramfort Hidrossemeadura Soluções Ambientais LTDA</strong>
-              , inscrita no CNPJ sob nº 50.641.930/0001-00, com sede na Estrada
-              União e Indústria, 22.373, Galpão 04 – Pedro do Rio –
-              Petrópolis/RJ, declaro, para os devidos fins, que recebi nesta
-              data do(a) Sr(a). <strong>{item.client?.name}</strong> a quantia
-              de <strong>{formatPrice(Number(item.value))}</strong>, referente
-              ao pagamento de uma visita técnica.{' '}
+              Técnico da empresa <strong>{item.company?.fantasyName}</strong>,
+              inscrita no CNPJ sob nº {item.company?.cnpj}, com sede na{' '}
+              {item.company?.address} – {item.company?.city}/
+              {item.company?.state}, declaro, para os devidos fins, que recebi
+              nesta data do(a) Sr(a). <strong>{item.client?.name}</strong> a
+              quantia de <strong>{formatPrice(Number(item.value))}</strong>,
+              referente ao pagamento de uma visita técnica.{' '}
             </p>
             <p>
               A referida visita técnica será agendada e realizada no prazo de
@@ -60,7 +59,7 @@ const Print: React.FC<PropTypes> = ({ item }) => {
               justifyContent: 'center'
             }}
           >
-            Petrópolis, {formatDateText(item.createdAt!)}
+            {item.company?.city}, {formatDateText(item.createdAt!)}
           </p>
 
           <div
@@ -82,17 +81,9 @@ const Print: React.FC<PropTypes> = ({ item }) => {
                 marginBottom: '2px'
               }}
             >
-              Gramfort Hidrossemeadura
+              {item.company?.fantasyName}
             </p>
-            <p
-              style={{
-                fontSize: '11px',
-                marginTop: '2px',
-                marginBottom: '2px'
-              }}
-            >
-              Soluções Ambientais LTDA
-            </p>
+
             <p
               style={{
                 fontSize: '11px',

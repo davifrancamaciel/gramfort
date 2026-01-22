@@ -109,7 +109,7 @@ module.exports.list = async (event, context) => {
             order: arrayOrder,
             include: [
                 {
-                    model: Company, as: 'company', attributes: ['name', 'image', 'pixKey']
+                    model: Company, as: 'company', attributes: ['name', 'pixKey', 'image', 'fantasyName', 'cnpj', 'address', 'city', 'state']
                 },
                 {
                     model: User, as: 'user', attributes: ['name'], where: whereStatementUsers

@@ -3,17 +3,29 @@ export interface Company {
   name?: string;
   groups?: string;
   image?: string;
+  email?: string;
+  phone?: string;
   banner?: string;
   groupsFormatted: string[];
   createdAt?: string;
   updatedAt?: string;
   pixKey?: string;
   active: boolean;
-  individualCommission: boolean;    
+  individualCommission: boolean;
   state?: string;
   city?: string;
   address?: string;
   manager?: string;
+
+  fantasyName?: string;
+  imageHeaderContract?: string;
+  imageFooterContract?: string;
+  agencyBank?: string;
+  site?: string;
+  instagran?: string;
+  cnpj?: string;
+  zipCode?: string;
+  currency?: string;
 }
 
 export const initialStateForm: Company = {
@@ -24,7 +36,7 @@ export const initialStateForm: Company = {
   createdAt: '',
   updatedAt: '',
   active: true,
-  individualCommission: false,
+  individualCommission: false
 };
 
 export interface Filter {

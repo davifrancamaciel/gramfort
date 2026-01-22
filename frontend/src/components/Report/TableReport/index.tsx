@@ -1,10 +1,9 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Container } from './styles';
-import imageLastPage from 'assets/contract.png';
-
 interface PropTypes {
   title: string;
   image: string;
+  imageFooterContract?: string;
   children: ReactNode;
   headerList?: string[];
   showImageLastPage?: boolean;
@@ -15,7 +14,8 @@ const TableReport: React.FC<PropTypes> = ({
   children,
   headerList,
   image,
-  showImageLastPage
+  showImageLastPage,
+  imageFooterContract
 }) => {
   const [headerListItens, setHeaderListItens] = useState<string[]>([]);
   useEffect(() => {
@@ -60,18 +60,14 @@ const TableReport: React.FC<PropTypes> = ({
           <tbody>{children}</tbody>
         </table>
       </div>
-      {showImageLastPage && (
+      {showImageLastPage && imageFooterContract && (
         <div
           style={{
             display: 'flex',
             justifyContent: 'center'
           }}
         >
-          <img
-            src={imageLastPage}
-            alt=""
-            style={{ maxWidth: '710px' }}
-          />
+          <img src={imageFooterContract} alt="" style={{ maxWidth: '710px' }} />
         </div>
       )}
     </Container>

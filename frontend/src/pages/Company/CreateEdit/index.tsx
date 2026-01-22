@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Col, notification, UploadFile } from 'antd';
-import { Input, Switch } from 'components/_inputs';
+import { Input, Select, Switch } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import { apiRoutes, appRoutes } from 'utils/defaultValues';
 import useFormState from 'hooks/useFormState';
@@ -9,6 +9,7 @@ import { initialStateForm } from '../interfaces';
 import api from 'services/api-aws-amplify';
 import AccessType from 'pages/User/CreateEdit/AccessType';
 import UploadImages from 'components/UploadImages';
+import { arrayCurrency } from 'pages/User/utils';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
@@ -16,6 +17,12 @@ const CreateEdit: React.FC = (props: any) => {
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState<Array<UploadFile>>([]);
+  const [imageHeaderContractList, setImageHeaderContractList] = useState<
+    Array<UploadFile>
+  >([]);
+  const [imageFooterContractList, setImageFooterContractList] = useState<
+    Array<UploadFile>
+  >([]);
 
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
@@ -39,6 +46,30 @@ const CreateEdit: React.FC = (props: any) => {
         ]);
       }
 
+      if (resp.data && resp.data.imageHeaderContract) {
+        const imageArr = resp.data.imageHeaderContract.split('/');
+        setImageHeaderContractList([
+          {
+            uid: '-1',
+            name: imageArr[imageArr.length - 1],
+            status: 'done',
+            url: resp.data.imageHeaderContract
+          }
+        ]);
+      }
+
+      if (resp.data && resp.data.imageFooterContract) {
+        const imageArr = resp.data.imageFooterContract.split('/');
+        setImageFooterContractList([
+          {
+            uid: '-1',
+            name: imageArr[imageArr.length - 1],
+            status: 'done',
+            url: resp.data.imageFooterContract
+          }
+        ]);
+      }
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -57,7 +88,9 @@ const CreateEdit: React.FC = (props: any) => {
       const method = type === 'update' ? 'put' : 'post';
       const result = await api[method](apiRoutes.companies, {
         ...state,
-        fileList
+        fileList,
+        imageHeaderContractList,
+        imageFooterContractList
       });
 
       setLoading(false);
@@ -86,11 +119,43 @@ const CreateEdit: React.FC = (props: any) => {
       </Col>
       <Col lg={6} md={6} sm={12} xs={24}>
         <Input
+          label={'Nome fantasia'}
+          maxLength={100}
+          value={state.fantasyName}
+          onChange={(e) => dispatch({ fantasyName: e.target.value })}
+        />
+      </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
+          label={'Site'}
+          maxLength={100}
+          value={state.site}
+          onChange={(e) => dispatch({ site: e.target.value })}
+        />
+      </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
+          label={'Instagran'}
+          maxLength={100}
+          value={state.instagran}
+          onChange={(e) => dispatch({ instagran: e.target.value })}
+        />
+      </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
           label={'Email'}
           required={true}
           type={'email'}
           value={state.email}
           onChange={(e) => dispatch({ email: e.target.value })}
+        />
+      </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
+          label={'CNPJ'}
+          maxLength={50}
+          value={state.cnpj}
+          onChange={(e) => dispatch({ cnpj: e.target.value })}
         />
       </Col>
       <Col lg={6} md={6} sm={12} xs={24}>
@@ -108,6 +173,21 @@ const CreateEdit: React.FC = (props: any) => {
           maxLength={100}
           value={state.pixKey}
           onChange={(e) => dispatch({ pixKey: e.target.value })}
+        />
+      </Col>
+      <Col lg={12} md={12} sm={12} xs={24}>
+        <Input
+          label={'Informações bancárias'}
+          maxLength={100}
+          value={state.agencyBank}
+          onChange={(e) => dispatch({ agencyBank: e.target.value })}
+        />
+      </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
+          label={'CEP'}
+          value={state.zipCode}
+          onChange={(e) => dispatch({ zipCode: e.target.value })}
         />
       </Col>
       <Col lg={6} md={6} sm={12} xs={24}>
@@ -138,6 +218,14 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(e) => dispatch({ manager: e.target.value })}
         />
       </Col>
+      <Col lg={6} md={8} sm={12} xs={24}>
+        <Select
+          label={'Moeda'}
+          options={arrayCurrency}
+          value={state?.currency}
+          onChange={(currency) => dispatch({ currency })}
+        />
+      </Col>
       <Col
         lg={3}
         md={6}
@@ -146,6 +234,30 @@ const CreateEdit: React.FC = (props: any) => {
         style={{ display: 'flex', justifyContent: 'center' }}
       >
         <UploadImages setFileList={setFileList} fileList={fileList} />
+      </Col>
+      <Col
+        lg={3}
+        md={6}
+        sm={12}
+        xs={12}
+        style={{ display: 'flex', justifyContent: 'center' }}
+      >
+        <UploadImages
+          setFileList={setImageHeaderContractList}
+          fileList={imageHeaderContractList}
+        />
+      </Col>
+      <Col
+        lg={3}
+        md={6}
+        sm={12}
+        xs={12}
+        style={{ display: 'flex', justifyContent: 'center' }}
+      >
+        <UploadImages
+          setFileList={setImageFooterContractList}
+          fileList={imageFooterContractList}
+        />
       </Col>
       <Col lg={3} md={4} sm={24} xs={24}>
         <Switch

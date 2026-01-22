@@ -108,7 +108,9 @@ module.exports.create = async (event) => {
 
         const result = await Company.create(objOnSave);
 
-        await imageService.add('companies', result.dataValues, body.fileList);        
+        await imageService.add('companies', result.dataValues, body.fileList);
+        await imageService.add('companies', result.dataValues, body.imageHeaderContractList, 'imageHeaderContract');
+        await imageService.add('companies', result.dataValues, body.imageFooterContractList, 'imageFooterContract');
         await createFile(result.dataValues);
 
         return handlerResponse(201, result, `${RESOURCE_NAME} criada com sucesso`)
@@ -143,6 +145,8 @@ module.exports.update = async (event) => {
         const result = await item.update(objOnSave);
         console.log('PARA ', result.dataValues)
         await imageService.add('companies', result.dataValues, body.fileList);
+        await imageService.add('companies', result.dataValues, body.imageHeaderContractList, 'imageHeaderContract');
+        await imageService.add('companies', result.dataValues, body.imageFooterContractList, 'imageFooterContract');
         await createFile(result.dataValues);
 
         return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso`)
@@ -167,6 +171,8 @@ module.exports.delete = async (event) => {
         const item = await Company.findByPk(id);
 
         await imageService.remove(item.image);
+        await imageService.remove(item.imageHeaderContract);
+        await imageService.remove(item.imageFooterContract);
 
         await Company.destroy({ where: { id } });
 
@@ -181,7 +187,7 @@ module.exports.listAll = async (event, context) => {
         const user = await getUser(event)
 
         if (!user)
-            return handlerResponse(400, {}, 'Usuário não encontrado')      
+            return handlerResponse(400, {}, 'Usuário não encontrado')
 
         context.callbackWaitsForEmptyEventLoop = false;
 

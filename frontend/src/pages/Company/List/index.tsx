@@ -49,7 +49,7 @@ const List: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <Image style={{ height: '60px' }} src={c.image} />
             </div>
-          ),         
+          )
         };
         return { ...item };
       });
@@ -103,7 +103,6 @@ const List: React.FC = () => {
         scroll={{ x: 840 }}
         columns={[
           { title: 'Logo', dataIndex: 'image' },
-          { title: 'Código', dataIndex: 'id' },
           { title: 'Empresa', dataIndex: 'name' },
           { title: 'Permissões', dataIndex: 'accessTypeText' },
           { title: 'Criada em', dataIndex: 'createdAt' },

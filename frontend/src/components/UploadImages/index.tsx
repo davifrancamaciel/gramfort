@@ -18,8 +18,6 @@ const UploadImages: React.FC<PropTypes> = (props) => {
   const [previewImage, setPreviewImage] = useState('');
   const [maxCount, setMaxCount] = useState(1);
 
- 
-
   useEffect(() => {
     props.maxCount && setMaxCount(props.maxCount);
   }, [props.maxCount]);
@@ -35,7 +33,7 @@ const UploadImages: React.FC<PropTypes> = (props) => {
       props.setFileList(files);
     } else {
       props.setFileList(file.fileList);
-    }    
+    }
   };
 
   const handlePreview = async (file: any) => {
