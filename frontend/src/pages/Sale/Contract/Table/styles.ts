@@ -39,7 +39,7 @@ export const Header = styled.div`
     width: 220px;
     > img {
       width: 120px;
-      max-height: min-content;
+      max-height: 120px;
     }
   }
 `;

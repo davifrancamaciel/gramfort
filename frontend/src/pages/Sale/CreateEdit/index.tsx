@@ -40,6 +40,7 @@ import { Users } from 'pages/User/interfaces';
 import Cards from './Cards';
 import { initialState, TotalSale } from './Cards/interfaces';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
+import ContractButton from '../Contract/Button';
 
 const CreateEdit: React.FC = (props: any) => {
   const { companies, userAuthenticated } = useAppContext();
@@ -220,6 +221,14 @@ const CreateEdit: React.FC = (props: any) => {
       onClickActionButton={action}
       loadingBtnAction={loading}
       loadingPanel={loadingEdit}
+      extra={
+        type === 'update' &&
+        state.hash && (
+          <span style={{ marginLeft: '10px' }}>
+            <ContractButton id={state.id!} />
+          </span>
+        )
+      }
     >
       <Cards
         sale={state}
