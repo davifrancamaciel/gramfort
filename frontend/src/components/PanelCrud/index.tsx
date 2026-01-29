@@ -86,6 +86,7 @@ const Index: React.FC<PropTypes> = (props) => {
           </span>
           <span>
             <GoBack />
+            {props?.extra && props.extra}
           </span>
         </Header>
       }

@@ -14,7 +14,7 @@ interface PropTypes {
 
 const Print: React.FC<PropTypes> = ({ item }) => {
   return (
-    <PrintContainer show={true}>
+    <PrintContainer show={true} filename={`Visita ${item.id} ${item.client?.name}`}>
       <TableReport title={``} image={item?.company?.image || ''}>
         <div style={{ padding: '35px', fontSize: '15px' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '50px' }}>

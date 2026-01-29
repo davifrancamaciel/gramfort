@@ -61,7 +61,7 @@ const Print: React.FC<PropTypes> = ({
   return (
     <>
       <a onClick={() => actionFilter('pdf')}>Imprimir</a>
-      <PrintContainer show={false} print={print}>
+      <PrintContainer show={false} print={print} filename={`Relatório de ${title} ${filteredPeriod}`}>
         <TableReport
           image={items[0]?.company?.image || ''}
           title={`Relatório de ${title} ${filteredPeriod}`}

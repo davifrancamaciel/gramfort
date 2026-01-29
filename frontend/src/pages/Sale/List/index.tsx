@@ -36,6 +36,7 @@ import Cards from './Cards';
 import FastFilter from 'components/FastFilter';
 import Actions from './Actions';
 import Action from 'components/Action';
+import ContractButton from '../Contract/Button';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -120,7 +121,8 @@ const List: React.FC = () => {
               propName="invoice"
             />
           ),
-          approved: <BooleanTag value={p.approved!} />
+          approved: <BooleanTag value={p.approved!} />,
+          print: p.hash ? <ContractButton id={p.id!} /> : undefined
         };
         return {
           ...sale,
@@ -208,6 +210,7 @@ const List: React.FC = () => {
     //  arrayCols.push({ title: 'Criada em', dataIndex: 'createdAt' });
     //  arrayCols.push({ title: 'Alterada em', dataIndex: 'updatedAt' });
     arrayCols.push({ title: 'Contrato', dataIndex: 'contract' });
+    arrayCols.push({ title: 'Imprimir', dataIndex: 'print' });
 
     return arrayCols;
   };

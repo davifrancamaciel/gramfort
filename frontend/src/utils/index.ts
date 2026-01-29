@@ -60,3 +60,19 @@ export const createQueryString = (queryObject: any) => {
     .join('&');
   return queryString ? `?${queryString}` : '';
 };
+
+export const currency = {
+  BRL: 'BRL',
+  PYG: 'PYG'
+};
+
+export const arrayCurrency: IOptions[] = [
+  {
+    value: currency.BRL,
+    label: 'REAL'
+  },
+  {
+    value: currency.PYG,
+    label: 'GUARANY'
+  }
+];

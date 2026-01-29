@@ -48,7 +48,8 @@ const CreateEdit: React.FC = (props: any) => {
   useEffect(() => {
     const typePath = getType();
     setPath(typePath);
-    if (typePath == appRoutes.shopping) dispatch({ expenseTypeId: expensesTypesEnum.COMPRAS });
+    if (typePath == appRoutes.shopping)
+      dispatch({ expenseTypeId: expensesTypesEnum.COMPRAS });
     onLoad(typePath);
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
@@ -116,8 +117,21 @@ const CreateEdit: React.FC = (props: any) => {
       });
 
       setLoading(false);
-
-      result.success && history.push(`/${path}`);
+      if (result.success) {
+        if (type === 'update') history.goBack();
+        else
+          dispatch({
+            ...initialStateForm,
+            title: '',
+            description: '',
+            supplierId: null,
+            vehicleId: null,
+            dividedIn: 1,
+            value: 0,
+            userId: null,
+            paidOut: false
+          });
+      }
     } catch (error) {
       setLoading(false);
     }

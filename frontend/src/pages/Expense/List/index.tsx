@@ -31,6 +31,9 @@ import { useAppContext } from 'hooks/contextLib';
 import Cards from './Cards';
 import FastFilter from 'components/FastFilter';
 import Actions from './Actions';
+import { createQueryString } from 'utils';
+import { useHistory } from 'react-router-dom';
+import { useQuery } from 'hooks/queryString';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -42,12 +45,26 @@ const List: React.FC = () => {
   const [path, setPath] = useState(apiRoutes.expenses);
   const [selectedRowKeysLoad, setSelectedRowKeysLoad] = useState<number[]>([]);
   const [selectedItems, setSelectedItems] = useState<Expense[]>([]);
+  const history = useHistory();
+  const query = useQuery();
 
   useEffect(() => {
     const date = new Date();
     const paymentDateStart = startOfMonth(date).toISOString();
     const paymentDateEnd = endOfMonth(date).toISOString();
-    actionFilter(1, paymentDateStart, paymentDateEnd);
+
+    const newState = {
+      ...state,
+      paymentDateStart: query.get('paymentDateStart') || paymentDateStart,
+      paymentDateEnd: query.get('paymentDateEnd') || paymentDateEnd,
+      title: query.get('title') || state.title,
+      paidOut: query.get('paidOut') || state.paidOut,
+      userName: query.get('userName') || state.userName,
+      companyId: query.get('companyId') || state.companyId,
+      expenseTypeName: query.get('expenseTypeName') || state.expenseTypeName,
+      setDate: 'false'
+    };
+    actionFilter(newState);
     setPath(getType());
   }, []);
 
@@ -55,35 +72,29 @@ const List: React.FC = () => {
     if (state.date) {
       const paymentDateStart = startOfMonth(state.date).toISOString();
       const paymentDateEnd = endOfMonth(state.date).toISOString();
-      dispatch({ paymentDateStart, paymentDateEnd });
-      actionFilter(1, paymentDateStart, paymentDateEnd);
+
+      actionFilter({
+        ...state,
+        pageNumber: 1,
+        paymentDateStart,
+        paymentDateEnd
+      });
     }
   }, [state.date, state?.companyId]);
 
-  const actionFilter = async (
-    pageNumber: number = 1,
-    paymentDateStart = state.paymentDateStart,
-    paymentDateEnd = state.paymentDateEnd,
-    field = '',
-    order: string = 'asc'
-  ) => {
+  const actionFilter = async (state: any) => {
     try {
       const type = getType();
       let expenseTypeId: string = '';
       if (type == appRoutes.shopping) {
         expenseTypeId = expensesTypesEnum.COMPRAS.toString();
       }
-      dispatch({ pageNumber, paymentDateStart, paymentDateEnd, expenseTypeId });
+
       setLoading(true);
-      const resp = await api.get(apiRoutes.expenses, {
-        ...state,
-        pageNumber,
-        expenseTypeId,
-        paymentDateStart,
-        paymentDateEnd,
-        field,
-        order
-      });
+      const newState = { ...state, expenseTypeId };
+      setHistoryPath(type, newState);
+      dispatch(newState);
+      const resp = await api.get(apiRoutes.expenses, newState);
       setLoading(false);
 
       const { count, rows, data } = resp.data;
@@ -112,7 +123,7 @@ const List: React.FC = () => {
       });
       setItems(itemsFormatted);
       setTotalRecords(count);
-      pageNumber === 1 && setDataTotal(data);
+      state.pageNumber === 1 && setDataTotal(data);
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -127,13 +138,13 @@ const List: React.FC = () => {
     const sortOrder = Array.isArray(sorter) ? undefined : sorter.order;
     const sortField = Array.isArray(sorter) ? undefined : sorter.field;
     const order = sortOrder === 'ascend' ? 'asc' : 'desc';
-    actionFilter(
-      1,
-      state.paymentDateStart,
-      state.paymentDateEnd,
-      sortField?.toString(),
+    const newState = {
+      ...state,
+      pageNumber: 1,
+      sortField: sortField?.toString(),
       order
-    );
+    };
+    actionFilter(newState);
   };
 
   const rowSelection = {
@@ -141,6 +152,13 @@ const List: React.FC = () => {
       setSelectedItems(selectedRows);
     }
     // selectedRowKeys: selectedRowKeysLoad
+  };
+
+  const setHistoryPath = (path: string, state: any) => {
+    history.push({
+      pathname: `/${path}`,
+      search: createQueryString(state)
+    });
   };
 
   return (
@@ -152,7 +170,7 @@ const List: React.FC = () => {
 
       <PanelFilter
         title={`${getTitle(path, true)} cadastradas`}
-        actionButton={() => actionFilter()}
+        actionButton={() => actionFilter(state)}
         loading={loading}
       >
         <Col lg={6} md={24} sm={24} xs={24}>
@@ -233,7 +251,7 @@ const List: React.FC = () => {
             state={state}
             title={getTitle(path, true)}
             selectedItems={selectedItems}
-            onComplete={actionFilter}
+            onComplete={() => actionFilter}
           />
         }
         size="small"

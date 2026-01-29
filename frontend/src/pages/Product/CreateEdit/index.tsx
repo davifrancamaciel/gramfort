@@ -16,6 +16,7 @@ import api from 'services/api-aws-amplify';
 import ShowByRoule from 'components/ShowByRoule';
 import { formatNumberWhithDecimalCaseOnChange } from 'utils/formatPrice';
 import { useAppContext } from 'hooks/contextLib';
+import { Company } from 'pages/Company/interfaces';
 
 const CreateEdit: React.FC = (props: any) => {
   const { companies } = useAppContext();
@@ -30,6 +31,13 @@ const CreateEdit: React.FC = (props: any) => {
     const cost = getCost(product);
     dispatch({ cost });
   }, [state.inventoryCount, state.price]);
+
+  useEffect(() => {
+    if (state.companyId) {
+      const company = companies.find((c: Company) => c.id === state.companyId);
+      dispatch({ m2PerTank: company.sizeTank });
+    }
+  }, [state.companyId]);
 
   useEffect(() => {
     const { totalTank, totalM2 } = calcInput(state);

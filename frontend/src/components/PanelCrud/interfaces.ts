@@ -5,4 +5,5 @@ export interface PropTypes {
   loadingBtnAction: boolean;
   loadingPanel: boolean;
   textBtnAction?: string;
+  extra?: any;
 }

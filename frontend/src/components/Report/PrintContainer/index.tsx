@@ -11,21 +11,23 @@ interface PropTypes {
   show: boolean;
   print?: boolean;
   title?: string;
+  filename?: string;
 }
 
 const PrintContainer: React.FC<PropTypes> = ({
   children,
   show,
   print,
-  title
+  title,filename
 }) => {
+  const componentRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     print && handlePrint();
   }, [print]);
-  const componentRef = useRef<HTMLHeadingElement>(null);
+
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: 'Gramfort Hidrossemeadura'
+    documentTitle: filename
   });
 
   return (
