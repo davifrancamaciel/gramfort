@@ -1,28 +1,22 @@
-export const { format: formatPrice } = new Intl.NumberFormat('pt-BR', {
+import * as utils from './index';
+
+export const { format: formatPriceBrl } = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
-  currency: 'BRL'
+  currency: utils.currency.BRL
 });
 
-export const formatPrice2 = (currency: string, value: number) => {
-  const { locale } = getCurrency(currency);
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency
-  });
-};
+export const { format: formatPricePyg } = new Intl.NumberFormat('es-PY', {
+  style: 'currency',
+  currency: utils.currency.PYG
+});
 
-interface CompanyLocale {
-  locale: string;
-  currency: string;
-}
-
-const getCurrency = (currency: string) => {
+export const formatPrice = (value: number) => {
+  const currency = localStorage.getItem('currencySelected');
   switch (currency) {
-    case 'PYG':
-      return { locale: 'es-PY', currency: 'PYG' } as CompanyLocale;
-
+    case utils.currency.PYG:
+      return formatPricePyg(value);
     default:
-      return { locale: 'pt-BR', currency: 'BRL' } as CompanyLocale;
+      return formatPriceBrl(value);
   }
 };
 

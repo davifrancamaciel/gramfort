@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Image, Row } from 'antd';
 import TableReport from 'components/Report/TableReport';
 import Td from './Td';
@@ -7,7 +7,8 @@ import { formatPrice } from 'utils/formatPrice';
 import {
   systemColors,
   categorIdsArrayProduct,
-  productCategoriesEnum
+  productCategoriesEnum,
+  appRoutes
 } from 'utils/defaultValues';
 import { formatDate, formatDateText } from 'utils/formatDate';
 
@@ -15,16 +16,31 @@ import assinatura from 'assets/assinatura.png';
 import logoGota from 'assets/logo-gota.png';
 import { Clause, Footer, Header } from './styles';
 import { getBalance } from '../../utils';
-import { numberWithDots } from 'utils';
+import { numberWithDots, currency } from 'utils';
+import { ContractLabels, language } from 'utils/languages';
 
 interface PropTypes {
   sale: Sale;
 }
 
 const Table: React.FC<PropTypes> = ({ sale }) => {
+  const [labels, setLabels] = useState<ContractLabels>();
+
+  useEffect(() => {
+    const currencyCompany = sale.company?.currency
+      ? sale.company?.currency
+      : currency.BRL;
+    const label = language[appRoutes.contracts][
+      currencyCompany
+    ] as ContractLabels;
+    setLabels(label);
+  }, [sale]);
+
   const getPrefixProductDescription = (sp: SaleProduct) => {
     return sp.product.categoryId === productCategoriesEnum.SERVICO_M2
-      ? `${(sp.amount / 250) * 2000} litros de insumos `
+      ? `${(sp.amount / sale.company?.sizeTank!) * 2000} ${
+          labels?.textAmountInput
+        } `
       : '';
   };
 
@@ -64,13 +80,14 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 <tbody>
                   <tr>
                     <td>
-                      CNPJ {sale.company?.cnpj} Fone {sale.company?.phone}
+                      {labels?.cpfCnpj} {sale.company?.cnpj} {labels?.phone}{' '}
+                      {sale.company?.phone}
                     </td>
                   </tr>
                   <tr>
                     <td>
                       {sale.company?.address} {sale.company?.city}/
-                      {sale.company?.state}. CEP
+                      {sale.company?.state}. {labels?.zipCode}{' '}
                       {sale.company?.zipCode}
                     </td>
                   </tr>
@@ -87,10 +104,10 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               </div>
             </Header>
 
-            <p style={{ textAlign: 'center' }}>
-              Prezado(a) Sr(a), <strong>{sale.contact}</strong> atendendo ao seu
-              pedido estamos enviando nossa proposta comercial de
-              Hidrossemeadura.
+            <p style={{ textAlign: 'center' }} id="contact">
+              {labels?.textClient
+                .replace('{contact}', `${sale.contact}`)
+                .replace('null', '')}
             </p>
             <table
               style={{
@@ -100,46 +117,55 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
             >
               <tbody>
                 <tr>
+                  <Td colSpan={2} title={labels?.id} value={sale.id} />
                   <Td
                     colSpan={2}
-                    title="Proposta Comercial nº"
-                    value={sale.id}
-                  />
-                  <Td
-                    colSpan={2}
-                    title="Consultor Técnico"
+                    title={labels?.user}
                     value={sale.user?.name}
                   />
                 </tr>
                 <tr>
-                  <Td colSpan={2} title="Cliente" value={sale.client?.name} />
                   <Td
                     colSpan={2}
-                    title="CNPJ/CPF"
+                    title={labels?.client}
+                    value={sale.client?.name}
+                  />
+                  <Td
+                    colSpan={2}
+                    title={labels?.cpfCnpj}
                     value={sale.client?.cpfCnpj}
                   />
                 </tr>
                 <tr>
-                  <Td colSpan={2} title="E-mail" value={sale.client?.email} />
-                  <Td colSpan={2} title="Fone" value={sale.client?.phone} />
+                  <Td
+                    colSpan={2}
+                    title={labels?.email}
+                    value={sale.client?.email}
+                  />
+                  <Td
+                    colSpan={2}
+                    title={labels?.phone}
+                    value={sale.client?.phone}
+                  />
                 </tr>
                 <tr>
                   <Td
                     colSpan={2}
-                    title="Local Aplicação"
+                    title={labels?.address}
                     value={`${sale.visit?.address || ''} ${
                       sale.visit?.city || ''
                     } ${sale.visit?.state || ''}`}
                   />
-                  <Td colSpan={2} title="KM da Base" value={sale.distance} />
+                  <Td
+                    colSpan={2}
+                    title={labels?.distance}
+                    value={sale.distance}
+                  />
                 </tr>
               </tbody>
             </table>
-            <p style={{ textAlign: 'center', marginTop: '15px' }}>
-              DETALHES DO ORÇAMENTO
-            </p>
 
-            <table style={{ fontSize: '14px' }}>
+            <table style={{ fontSize: '14px', marginTop: '10px' }}>
               <thead>
                 <tr
                   style={{
@@ -148,13 +174,17 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     textAlign: 'center'
                   }}
                 >
-                  <th style={{ borderRight: '0' }}>ITEM</th>
+                  <th style={{ borderRight: '0' }}>{labels?.item}</th>
                   <th style={{ borderRight: '0', borderLeft: '0' }}>
-                    DESCRIÇÃO
+                    {labels?.decription}
                   </th>
-                  <th style={{ borderRight: '0', borderLeft: '0' }}>METROS</th>
-                  <th style={{ borderRight: '0', borderLeft: '0' }}>R$/M2</th>
-                  <th style={{ borderLeft: '0' }}>TOTAL</th>
+                  <th style={{ borderRight: '0', borderLeft: '0' }}>
+                    {labels?.amount}
+                  </th>
+                  <th style={{ borderRight: '0', borderLeft: '0' }}>
+                    {labels?.curency}
+                  </th>
+                  <th style={{ borderLeft: '0' }}>{labels?.total}</th>
                 </tr>
               </thead>
               <tbody>
@@ -195,7 +225,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                       borderRight: '#eee solid 1px'
                     }}
                   ></td>
-                  <td>Total de serviços</td>
+                  <td>{labels?.totalService}</td>
                   <td>{formatPrice(Number(sale.value))}</td>
                 </tr>
                 {sale.discountDescription && sale.discountValue && (
@@ -225,7 +255,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     </td>
                   </tr>
                 )}
-                {sale.visit?.value && (
+                {sale.visit?.value && Boolean(Number(sale.visit?.value)) && (
                   <tr>
                     <td
                       colSpan={3}
@@ -240,7 +270,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                         backgroundColor: systemColors.DARK_BLUE
                       }}
                     >
-                      Desconto visita técnica
+                      {labels?.visitDicount}
                     </td>
                     <td
                       style={{
@@ -261,7 +291,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                       borderRight: '#eee solid 1px'
                     }}
                   ></td>
-                  <td>Valor total da proposta</td>
+                  <td>{labels?.valueTotal}</td>
                   <td
                     style={{
                       color: '#fff',
@@ -275,23 +305,23 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
             </table>
 
             <Clause>
-              <h3>CLÁUSULA PRIMEIRA - DA FORMA DE PAGAMENTO</h3>
+              <h3>{labels?.clause1}</h3>
               {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
               <p>
-                {sale.company?.agencyBank} {sale.company?.fantasyName} Pix CNPJ{' '}
-                {sale.company?.pixKey}
+                {sale.company?.agencyBank} {sale.company?.fantasyName} Pix{' '}
+                {labels?.cpfCnpj} {sale.company?.pixKey}
               </p>
               <p>
-                Data prevista para execução{' '}
+                {labels?.expectedDateForApplication}{' '}
                 <strong>
                   {sale.expectedDateForApplication
                     ? formatDate(sale.expectedDateForApplication)
-                    : 'a definir'}
+                    : labels?.textDefinition}
                 </strong>
               </p>
             </Clause>
             <Clause>
-              <h3>CLÁUSULA SEGUNDA - DAS OBRIGAÇÕES GERAIS</h3>
+              <h3>{labels?.clause2}</h3>
               <p>
                 Equipe, equipamento e insumos serão de responsabilidade da
                 contratada assim como entrega da aplicação.
@@ -307,10 +337,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               </p>
             </Clause>
             <Clause>
-              <h3>
-                CLÁUSULA TERCEIRA - DAS OBRIGAÇÕES DO CONTRATANTE PARA
-                MANUTENÇÃO DA GARANTIA
-              </h3>
+              <h3>{labels?.clause3}</h3>
               <p>
                 <strong>1. Isolar a área</strong> aplicada para evitar
                 pisoteamento de pessoas e animais, pois compromete a germinação
@@ -340,7 +367,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               </p>
             </Clause>
             <Clause>
-              <h3>CLÁUSULA QUARTA - INFORMAÇÕES/TERMOS ADCIONAIS</h3>
+              <h3>{labels?.clause4}</h3>
               <p>
                 A técnica garante a cobertura vegetal do solo, e apesar de
                 contribuir para sua estabilidade, não elimina os riscos
@@ -367,8 +394,8 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 período de 90 (noventa) dias não ocorrer a
               </p>
               <p>
-                germinação de 90% da área, a GRAMFORT se compromete a refazer o
-                plantio.
+                germinação de 90% da área, a {sale.company?.fantasyName} se
+                compromete a refazer o plantio.
               </p>
             </Clause>
           </div>
@@ -405,7 +432,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   justifyContent: 'end'
                 }}
               >
-                Diretor Comercial GramFort
+                {labels?.textDir}
               </p>
               <p
                 style={{
@@ -413,7 +440,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   justifyContent: 'end'
                 }}
               >
-                Proposta Comercial nº {sale.id}
+                {labels?.id} {sale.id}
               </p>
             </div>
             <img
@@ -437,7 +464,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               >
                 <strong>{sale.client?.name}</strong>
               </p>
-              <p>Cliente/Contratante</p>
+              <p>{labels?.client}</p>
               <p>
                 {sale.company?.city}, {formatDateText(sale.createdAt!)}
               </p>
@@ -458,7 +485,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                           textAlign: 'center'
                         }}
                       >
-                        RELATÓRIO DE VISITA TÉCNICA
+                        {labels?.visitTitle}
                       </th>
                     </tr>
                   </thead>
@@ -466,7 +493,10 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     {sale.visit && (
                       <tr style={{ fontSize: '14px' }}>
                         <td>
-                          Realizada por {sale.visit?.user?.name} em{' '}
+                          {labels?.textRealization.replace(
+                            '{user}',
+                            sale.visit?.user?.name ? sale.visit?.user?.name : ''
+                          )}{' '}
                           {formatDate(sale.visit?.date)}
                         </td>
                       </tr>
@@ -485,7 +515,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                               backgroundColor: systemColors.DARK_BLUE
                             }}
                           >
-                            INFORMAÇÕES IMPORTANTES
+                            {labels?.info}
                           </td>
                         </tr>
                       </>

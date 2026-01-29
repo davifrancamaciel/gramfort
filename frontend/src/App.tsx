@@ -8,6 +8,7 @@ import { Group, IOptions } from './utils/commonInterfaces';
 import BackToTop from 'components/BackToTop';
 import api from './services/api-aws-amplify';
 import { apiRoutes } from './utils/defaultValues';
+import { Company } from './pages/Company/interfaces';
 
 const App: React.FC = () => {
   const [isAuthenticated, userHasAuthenticated] = useState(false);
@@ -16,6 +17,10 @@ const App: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [users, setUsers] = useState<IOptions[]>([]);
   const [companies, setCompanies] = useState<IOptions[]>([]);
+  const [userCompanyId, setUserCompanyId] = useState<string>();
+  const [companySelected, setCompanySelected] = useState<Company>(
+    {} as Company
+  );
   const [loading, setLoading] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
 
@@ -43,6 +48,10 @@ const App: React.FC = () => {
     setWidth,
     companies,
     setCompanies,
+    companySelected,
+    setCompanySelected,
+    userCompanyId,
+    setUserCompanyId,
     loading,
     setLoading
   } as any;

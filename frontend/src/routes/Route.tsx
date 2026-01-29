@@ -8,6 +8,7 @@ import AuthLayout from 'pages/_layout/Auth';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import { IRouteProps } from './interfaces';
 import { useAppContext } from 'hooks/contextLib';
+import { Company } from '@/pages/Company/interfaces';
 
 const Route: React.FC<IRouteProps> = ({
   isPrivate = true,
@@ -16,15 +17,22 @@ const Route: React.FC<IRouteProps> = ({
   roule,
   ...rest
 }) => {
-  const { isAuthenticated, userHasAuthenticated, setUserAuthenticated } =
-    useAppContext();
+  const {
+    isAuthenticated,
+    userHasAuthenticated,
+    userAuthenticated,
+    setUserAuthenticated,
+    companies,
+    setCompanySelected,
+    setUserCompanyId
+  } = useAppContext();
   const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [groupsUser, setGroupsUser] = useState<string[]>([]);
 
   useEffect(() => {
     const checkAccessToken = async () => {
       try {
-        const userAuth = await Auth.currentAuthenticatedUser();       
+        const userAuth = await Auth.currentAuthenticatedUser();
         userHasAuthenticated(!!userAuth);
         setUserAuthenticated(userAuth);
         const groupsAuth =
@@ -41,6 +49,16 @@ const Route: React.FC<IRouteProps> = ({
     };
     checkAccessToken();
   }, []);
+
+  useEffect(() => {
+    const companyId =
+      userAuthenticated?.signInUserSession?.idToken?.payload[
+        'custom:company_id'
+      ];
+    setUserCompanyId(companyId);
+    const company = companies.find((c: Company) => c.id === companyId);
+    setCompanySelected(company);
+  }, [userAuthenticated, companies]);
 
   if (!isAuthenticating && !isAuthenticated && isPrivate) {
     const returnUrl = `?r=${window.location.pathname}${window.location.search}`;

@@ -12,6 +12,9 @@ import { Col } from 'antd';
 import { Select } from 'components/_inputs';
 import { Container } from './styles';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
+import { useQuery } from 'hooks/queryString';
+import { Company } from 'pages/Company/interfaces';
+import { currency } from 'utils';
 
 interface PropTypes {
   state: any;
@@ -24,8 +27,18 @@ const FastFilter: React.FC<PropTypes> = ({
   setState,
   type = 'MONTH'
 }) => {
-  const { companies, userAuthenticated } = useAppContext();
-  const [date, setDate] = useState(new Date());
+  const {
+    companies,
+    userAuthenticated,
+    companySelected,
+    setCompanySelected,
+    userCompanyId
+  } = useAppContext();
+  const query = useQuery();
+  const queryDate = query.get('_date')
+    ? new Date(query.get('_date')!)
+    : new Date();
+  const [date, setDate] = useState(queryDate);
   const [groups, setGroups] = useState<string[]>([]);
 
   const formatByType = type === 'MONTH' ? "MMMM 'de' yyyy" : 'yyyy';
@@ -43,6 +56,20 @@ const FastFilter: React.FC<PropTypes> = ({
     const _date = formatDateEn(date.toISOString());
     setState({ ...state, date, _date });
   }, [date]);
+
+  useEffect(() => {
+    const company = companySelected as Company;
+    const currencySelected = company?.currency
+      ? company?.currency
+      : currency.BRL;
+    localStorage.setItem('currencySelected', currencySelected);
+  }, [companySelected]);
+
+  useEffect(() => {
+    const companyId = state.companyId ? state.companyId : userCompanyId;
+    const company = companies.find((c: Company) => c.id === companyId);
+    setCompanySelected(company);
+  }, [state.companyId]);
 
   const handlePrevMonth = () => {
     if (type === 'MONTH') setDate(subMonths(date, 1));
