@@ -17,6 +17,7 @@ export interface Company {
   address?: string;
   manager?: string;
 
+  currency?: string;
   fantasyName?: string;
   imageHeaderContract?: string;
   imageFooterContract?: string;
@@ -25,7 +26,9 @@ export interface Company {
   instagran?: string;
   cnpj?: string;
   zipCode?: string;
-  currency?: string;
+  financeName?: string;
+  financePhone?: string;
+  sizeTank?: number;
 }
 
 export const initialStateForm: Company = {

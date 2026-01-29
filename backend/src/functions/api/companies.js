@@ -196,7 +196,7 @@ module.exports.listAll = async (event, context) => {
         })
 
         const respFormated = resp.map(item => ({
-            ...item,
+            ...item.dataValues,
             value: item.id,
             label: item.name,
         }));

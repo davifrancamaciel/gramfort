@@ -12,6 +12,7 @@ export interface Product {
   category?: Category;
   id?: string;
   categoryId?: number;
+  companyId?: string;
   supplierId?: number;
   name?: string;
   price?: string;

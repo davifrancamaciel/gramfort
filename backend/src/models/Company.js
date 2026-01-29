@@ -32,6 +32,9 @@ module.exports = function (sequelize, DataTypes) {
         cnpj: { type: DataTypes.STRING(50), },
         zipCode: { type: DataTypes.STRING(50), },
         currency: { type: DataTypes.STRING(10), },
+        financeName: { type: DataTypes.STRING(100), },
+        financePhone: { type: DataTypes.STRING(20), },
+        sizeTank: { type: DataTypes.INTEGER },
     });
 
     Company.beforeCreate(c => c.id = uuid.v4());

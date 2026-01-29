@@ -76,17 +76,6 @@ export const arrayNature: IOptions[] = natureArray.map((item: string) => ({
   label: item
 }));
 
-export const arrayCurrency: IOptions[] = [
-  {
-    value: 'BRL',
-    label: 'REAL'
-  },
-  {
-    value: 'PYG',
-    label: 'GUARANY'
-  }
-];
-
 const demandArray = [
   'Casa',
   'Sítio',

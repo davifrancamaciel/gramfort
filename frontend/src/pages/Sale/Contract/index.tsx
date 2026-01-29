@@ -18,10 +18,11 @@ import Table from './Table';
 import { Button, Card } from 'antd';
 import GoBack from 'components/GoBack';
 import WhatsApp from 'components/WhatsApp';
-import { createMessageShare } from '../utils';
+import { createMessageShare, getFileName } from '../utils';
 import Copy from 'components/Copy';
 import { createLinkShare } from '../utils';
 import { formatPrice } from 'utils/formatPrice';
+import { currency } from 'utils';
 
 const Contract: React.FC = (props: any) => {
   const query = useQuery();
@@ -75,11 +76,19 @@ const Contract: React.FC = (props: any) => {
       Number(sale?.visit?.value || 0) -
       Number(sale?.discountValue || 0);
 
-    const sendPhone = '24992516721';
-    const name = 'Maria Fernanda';
+    const sendPhone = sale?.company?.financePhone
+      ? sale?.company?.financePhone
+      : sale?.company?.phone;
+    const name = sale?.company?.financeName
+      ? sale?.company?.financeName
+      : sale?.company?.fantasyName;
+    const contryCode = sale?.company?.currency === currency.PYG ? '595' : '55';
+
     const message = `
 Olá ${name},%0A%0A
-venho por meio deste contato, confirmar a contratação do *serviço de Hidrossemeadura da empresa Gramfort*.%0A%0A
+venho por meio deste contato, confirmar a contratação do *serviço de Hidrossemeadura da empresa ${
+      sale?.company?.fantasyName
+    }*.%0A%0A
 ✅ *Informações*:%0A%0A
 - Contrato número: *${sale?.id}*%0A
 - Cliente: *${sale?.client?.name}*%0A
@@ -88,7 +97,7 @@ venho por meio deste contato, confirmar a contratação do *serviço de Hidrosse
 - ⁠Forma de Pagamento: *${sale?.paymentMethod}*%0A%0A
 Aguado instruções para avançarmos…`;
 
-    window.location.href = `https://api.whatsapp.com/send?phone=55${sendPhone}&text=${message}`;
+    window.location.href = `https://api.whatsapp.com/send?phone=${contryCode}${sendPhone}&text=${message}`;
   };
 
   const btnWhatapp = () => {
@@ -131,7 +140,12 @@ Aguado instruções para avançarmos…`;
 
   const actions = () => {
     let array: React.ReactNode[] = [
-      <PrintContainer show={true} key={'print'} title="Imprimir">
+      <PrintContainer
+        show={true}
+        key={'print'}
+        title="Imprimir"
+        filename={getFileName(sale)}
+      >
         <Table sale={state} />
       </PrintContainer>
     ];

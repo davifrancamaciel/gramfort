@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Col, notification, UploadFile } from 'antd';
+import { Col, notification, Row, UploadFile } from 'antd';
 import { Input, Select, Switch } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import { apiRoutes, appRoutes } from 'utils/defaultValues';
@@ -9,7 +9,7 @@ import { initialStateForm } from '../interfaces';
 import api from 'services/api-aws-amplify';
 import AccessType from 'pages/User/CreateEdit/AccessType';
 import UploadImages from 'components/UploadImages';
-import { arrayCurrency } from 'pages/User/utils';
+import { arrayCurrency } from 'utils';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
@@ -135,7 +135,7 @@ const CreateEdit: React.FC = (props: any) => {
       </Col>
       <Col lg={6} md={6} sm={12} xs={24}>
         <Input
-          label={'Instagran'}
+          label={'Instagram'}
           maxLength={100}
           value={state.instagran}
           onChange={(e) => dispatch({ instagran: e.target.value })}
@@ -218,12 +218,47 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(e) => dispatch({ manager: e.target.value })}
         />
       </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
+          label={'Contato finaceiro'}
+          value={state.financeName}
+          placeholder={'Maria'}
+          onChange={(e) => dispatch({ financeName: e.target.value })}
+        />
+      </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
+          label={'Telefone finaceiro'}
+          type={'tel'}
+          placeholder={'24992516721'}
+          value={state.financePhone}
+          onChange={(e) => dispatch({ financePhone: e.target.value })}
+        />
+      </Col>
+      <Col lg={6} md={6} sm={12} xs={24}>
+        <Input
+          label={'Tamanho do tanque'}
+          type={'number'}
+          value={state.sizeTank}
+          onChange={(e) => dispatch({ sizeTank: e.target.value })}
+        />
+      </Col>
       <Col lg={6} md={8} sm={12} xs={24}>
         <Select
           label={'Moeda'}
           options={arrayCurrency}
           value={state?.currency}
           onChange={(currency) => dispatch({ currency })}
+        />
+      </Col>
+      <Col lg={6} md={8} sm={12} xs={24}>
+        <Switch
+          label={'Ativa'}
+          title="Não / Sim"
+          checked={state.active}
+          checkedChildren="Sim"
+          unCheckedChildren="Não"
+          onChange={() => dispatch({ active: !state.active })}
         />
       </Col>
       <Col
@@ -257,16 +292,6 @@ const CreateEdit: React.FC = (props: any) => {
         <UploadImages
           setFileList={setImageFooterContractList}
           fileList={imageFooterContractList}
-        />
-      </Col>
-      <Col lg={3} md={4} sm={24} xs={24}>
-        <Switch
-          label={'Ativa'}
-          title="Não / Sim"
-          checked={state.active}
-          checkedChildren="Sim"
-          unCheckedChildren="Não"
-          onChange={() => dispatch({ active: !state.active })}
         />
       </Col>
 

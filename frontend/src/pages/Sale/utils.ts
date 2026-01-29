@@ -1,6 +1,8 @@
+import { currency } from 'utils/index';
 import { formatPrice } from 'utils/formatPrice';
 import { appRoutes } from 'utils/defaultValues';
 import { Sale } from './interfaces';
+import { language } from 'utils/languages';
 
 export const getType = () => {
   if (window.location.pathname.includes(appRoutes.contracts))
@@ -80,4 +82,11 @@ const getImages = (index: number, image?: string) => {
       url: image
     };
   }
+};
+
+export const getFileName = (sale?: Sale) => {
+  const currencySelected = sale?.company?.currency;
+  const { id } =
+    language.contracts[currencySelected ? currencySelected : currency.BRL];
+  return `${sale?.company?.name} - ${id} ${sale?.id} ${sale?.client?.name}`;
 };
