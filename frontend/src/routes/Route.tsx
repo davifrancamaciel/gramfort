@@ -56,8 +56,10 @@ const Route: React.FC<IRouteProps> = ({
         'custom:company_id'
       ];
     setUserCompanyId(companyId);
-    const company = companies.find((c: Company) => c.id === companyId);
-    setCompanySelected(company);
+    if (companies && companies.length) {
+      const company = companies.find((c: Company) => c.id === companyId);
+      setCompanySelected(company);
+    }
   }, [userAuthenticated, companies]);
 
   if (!isAuthenticating && !isAuthenticated && isPrivate) {

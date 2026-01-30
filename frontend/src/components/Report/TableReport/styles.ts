@@ -17,9 +17,7 @@ export const Container = styled.div`
       max-width: 1000px;
       header {
         color: #968d8d;
-        display: flex;
-        /* justify-content: center; */
-        /* justify-content: space-between; */
+        display: flex;        
         align-items: center;
         border-bottom: #eee solid 1px;
         padding-bottom: 10px;
@@ -37,16 +35,11 @@ export const Container = styled.div`
         padding: 5px 5px;
         text-align: initial;
       }
-      /* thead tr:first-child th {
-        border: none !important;
-        padding: 25px 0px;
-      } */
+    
       tbody tr {
         transition: background-color 0.2s;
       }
-      tbody tr:hover {
-        background-color: #eee;
-      }
+  
       td {
         padding: 5px;
         border-bottom: #eee solid 1px;

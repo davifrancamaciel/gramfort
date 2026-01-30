@@ -28,6 +28,8 @@ export interface ContractLabels {
   textRealization: string;
   textDir: string;
   textAmountInput: string;
+
+  titleVisit: string;
 }
 const BRL: ContractLabels = {
   id: 'Proposta Comercial nº',
@@ -60,7 +62,8 @@ const BRL: ContractLabels = {
   textDefinition: 'a definir',
   textRealization: 'Realizada por {user} em',
   textDir: 'Diretor Comercial GramFort',
-  textAmountInput: 'litros de insumos'
+  textAmountInput: 'litros de insumos',
+  titleVisit: 'RECIBO DE PAGAMENTO DE VISITA TÉCNICA'
 };
 const PYG: ContractLabels = {
   ...BRL,
@@ -90,9 +93,11 @@ const PYG: ContractLabels = {
   textDefinition: 'por definir',
   textRealization: 'Interpretado por {user} en',
   textDir: 'Director comercial de GramFort',
-  textAmountInput:'litros de suministros'
+  textAmountInput: 'litros de suministros',
+  titleVisit: 'RECIBO DE PAGO DE VISITA TÉCNICA'
 };
 
 export const language: any = {
-  contracts: { BRL, PYG }
+  contracts: { BRL, PYG },
+  visits: { BRL, PYG },
 };

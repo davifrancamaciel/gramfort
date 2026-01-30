@@ -29,6 +29,11 @@ export interface Company {
   financeName?: string;
   financePhone?: string;
   sizeTank?: number;
+
+  textclauseContract2?: string;
+  textclauseContract3?: string;
+  textclauseContract4?: string;
+  textVisit?: string;
 }
 
 export const initialStateForm: Company = {

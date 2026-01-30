@@ -7,18 +7,25 @@ import { Visit } from '../../interfaces';
 import { formatPrice } from 'utils/formatPrice';
 import assinatura from 'assets/assinatura.png';
 import { formatDate, formatDateText } from 'utils/formatDate';
-
+import { language } from 'utils/languages';
+import { currency } from 'utils';
 interface PropTypes {
   item: Visit;
 }
 
 const Print: React.FC<PropTypes> = ({ item }) => {
+  const currencySelectted = item.company?.currency
+    ? item?.company?.currency
+    : currency.BRL;
   return (
-    <PrintContainer show={true} filename={`Visita ${item.id} ${item.client?.name}`}>
+    <PrintContainer
+      show={true}
+      filename={`Visita ${item.id} ${item.client?.name}`}
+    >
       <TableReport title={``} image={item?.company?.image || ''}>
         <div style={{ padding: '35px', fontSize: '15px' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <strong>RECIBO DE PAGAMENTO DE VISITA TÉCNICA</strong>
+            <strong>{language.visits[currencySelectted].titleVisit}</strong>
           </h2>
           <div
             style={{
@@ -27,30 +34,60 @@ const Print: React.FC<PropTypes> = ({ item }) => {
               textAlign: 'center'
             }}
           >
-            <p>
-              Eu, <strong>{item.user?.name}</strong>, na qualidade de Consultor
-              Técnico da empresa <strong>{item.company?.fantasyName}</strong>,
-              inscrita no CNPJ sob nº {item.company?.cnpj}, com sede na{' '}
-              {item.company?.address} – {item.company?.city}/
-              {item.company?.state}, declaro, para os devidos fins, que recebi
-              nesta data do(a) Sr(a). <strong>{item.client?.name}</strong> a
-              quantia de <strong>{formatPrice(Number(item.value))}</strong>,
-              referente ao pagamento de uma visita técnica.{' '}
-            </p>
-            <p>
-              A referida visita técnica será agendada e realizada no prazo de
-              até 15 (quinze) dias, no endereço {item.address} - {item.city}/
-              {item.state}.
-            </p>
-            <p>
-              Fica acordado entre as partes que o valor pago neste recibo será
-              integralmente deduzido do valor total, caso o cliente venha a
-              firmar contrato de prestação de serviços de hidrossemeadura com a
-              empresa. Por outro lado, caso não ocorra a formalização do
-              contrato de prestação de serviços – por qualquer motivo - entre as
-              partes, o valor pago não será reembolsado.
-            </p>
-            <p>Data para visita {formatDate(item.date)}</p>
+            {item?.company?.textVisit && (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: item?.company.textVisit
+                    .replace('{CONSULTOR}', `${item.user?.name}`)
+                    .replace('{NOMEFANTASIA}', `${item.company?.fantasyName}`)
+                    .replace('{CNPJ}', `${item.company?.cnpj}`)
+                    .replace('{ENDERECOEMPRESA}', `${item.company?.address}`)
+                    .replace('{CIDADEEMPRESA}', `${item.company?.city}`)                    
+                    .replace('{ESTADOEMPRESA}', `${item.company?.state}`)
+                    .replace('{NOMECLIENTE}', `${item.client?.name}`)
+                    .replace('{VALOR}', `${formatPrice(Number(item.value))}`)
+                    .replace('{ENDERECOCLIENTE}', `${item.address}`)
+                    .replace('{CIDADECLIENTE}', `${item.city}`)
+                    .replace('{ESTADOCLIENTE}', `${item.state}`)
+                    .replace('{DATA}', `${formatDate(item.date)}`)
+                    .replace(
+                      '{DATADECADASTRO}',
+                      `${formatDateText(item.createdAt!)}`
+                    )
+                }}
+              />
+            )}
+            {!item?.company?.textVisit && (
+              <>
+                <p>
+                  Eu, <strong>{item.user?.name}</strong>, na qualidade de
+                  Consultor Técnico da empresa{' '}
+                  <strong>{item.company?.fantasyName}</strong>, inscrita no CNPJ
+                  sob nº {item.company?.cnpj}, com sede na{' '}
+                  {item.company?.address} – {item.company?.city}/
+                  {item.company?.state}, declaro, para os devidos fins, que
+                  recebi nesta data do(a) Sr(a).{' '}
+                  <strong>{item.client?.name}</strong> a quantia de{' '}
+                  <strong>{formatPrice(Number(item.value))}</strong>, referente
+                  ao pagamento de uma visita técnica.{' '}
+                </p>
+                <p>
+                  A referida visita técnica será agendada e realizada no prazo
+                  de até 15 (quinze) dias, no endereço {item.address} -{' '}
+                  {item.city}/{item.state}.
+                </p>
+                <p>
+                  Fica acordado entre as partes que o valor pago neste recibo
+                  será integralmente deduzido do valor total, caso o cliente
+                  venha a firmar contrato de prestação de serviços de
+                  hidrossemeadura com a empresa. Por outro lado, caso não ocorra
+                  a formalização do contrato de prestação de serviços – por
+                  qualquer motivo - entre as partes, o valor pago não será
+                  reembolsado.
+                </p>
+                <p>Data para visita {formatDate(item.date)}</p>
+              </>
+            )}
           </div>
           <p
             style={{

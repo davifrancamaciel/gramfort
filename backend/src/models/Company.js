@@ -35,6 +35,11 @@ module.exports = function (sequelize, DataTypes) {
         financeName: { type: DataTypes.STRING(100), },
         financePhone: { type: DataTypes.STRING(20), },
         sizeTank: { type: DataTypes.INTEGER },
+
+        textclauseContract2: { type: DataTypes.INTEGER },
+        textclauseContract3: { type: DataTypes.INTEGER },
+        textclauseContract4: { type: DataTypes.INTEGER },
+        textVisit: { type: DataTypes.INTEGER },
     });
 
     Company.beforeCreate(c => c.id = uuid.v4());
