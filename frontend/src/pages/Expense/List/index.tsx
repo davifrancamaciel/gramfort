@@ -274,9 +274,9 @@ const List: React.FC = () => {
           { title: 'Paga', dataIndex: 'paidOut' }
         ]}
         dataSource={items}
-        onPagination={(pageNumber) => actionFilter(pageNumber)}
+        onPagination={(pageNumber) => actionFilter({ ...state, pageNumber })}
         onDelete={() => {
-          actionFilter(state.pageNumber);
+          actionFilter(state);
         }}
         propTexObjOndelete={'nameInfoDel'}
         totalRecords={totalRecords}

@@ -119,9 +119,9 @@ const CreateEdit: React.FC = (props: any) => {
                 <Row gutter={[16, 24]}>
                   <Col
                     lg={24}
-                    md={6}
-                    sm={12}
-                    xs={12}
+                    md={24}
+                    sm={24}
+                    xs={24}
                     style={{ display: 'flex', justifyContent: 'center' }}
                   >
                     <UploadImages
@@ -346,10 +346,13 @@ const CreateEdit: React.FC = (props: any) => {
 
             <Col lg={24}>
               <Row gutter={[24, 24]}>
-                <Col lg={12}>
+                <Col lg={12} md={24} sm={24} xs={24}>
                   <Divider>Logo cabeçalho</Divider>
                   <Col
                     lg={24}
+                    md={24}
+                    sm={24}
+                    xs={24}
                     style={{ display: 'flex', justifyContent: 'center' }}
                   >
                     <UploadImages
@@ -358,10 +361,13 @@ const CreateEdit: React.FC = (props: any) => {
                     />
                   </Col>
                 </Col>
-                <Col lg={12}>
+                <Col lg={12} md={24} sm={24} xs={24}>
                   <Divider>Imagem exibida em ultima páigina</Divider>
                   <Col
                     lg={24}
+                    md={24}
+                    sm={24}
+                    xs={24}
                     style={{ display: 'flex', justifyContent: 'center' }}
                   >
                     <UploadImages
