@@ -42,7 +42,7 @@ const Print: React.FC<PropTypes> = ({ item }) => {
                     .replace('{NOMEFANTASIA}', `${item.company?.fantasyName}`)
                     .replace('{CNPJ}', `${item.company?.cnpj}`)
                     .replace('{ENDERECOEMPRESA}', `${item.company?.address}`)
-                    .replace('{CIDADEEMPRESA}', `${item.company?.city}`)                    
+                    .replace('{CIDADEEMPRESA}', `${item.company?.city}`)
                     .replace('{ESTADOEMPRESA}', `${item.company?.state}`)
                     .replace('{NOMECLIENTE}', `${item.client?.name}`)
                     .replace('{VALOR}', `${formatPrice(Number(item.value))}`)
@@ -106,10 +106,18 @@ const Print: React.FC<PropTypes> = ({ item }) => {
               justifyContent: 'center'
             }}
           >
-            <img alt={''} src={assinatura} style={{ width: '200px' }} />
+            <img
+              alt={''}
+              src={
+                item.company?.imageSignature
+                  ? item.company?.imageSignature
+                  : assinatura
+              }
+              style={{ width: '200px', height: '85px' }}
+            />
 
             <p style={{ fontSize: '15px' }}>
-              <strong>Valter Rodrigo S Silva</strong>
+              <strong>{item.company?.directorName}</strong>
             </p>
             <p
               style={{

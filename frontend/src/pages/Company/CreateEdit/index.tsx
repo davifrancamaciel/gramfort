@@ -19,6 +19,9 @@ const CreateEdit: React.FC = (props: any) => {
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState<Array<UploadFile>>([]);
+  const [imageSignatureList, setImageSignatureList] = useState<
+    Array<UploadFile>
+  >([]);
   const [imageHeaderContractList, setImageHeaderContractList] = useState<
     Array<UploadFile>
   >([]);
@@ -72,6 +75,18 @@ const CreateEdit: React.FC = (props: any) => {
         ]);
       }
 
+      if (resp.data && resp.data.imageSignature) {
+        const imageArr = resp.data.imageSignature.split('/');
+        setImageSignatureList([
+          {
+            uid: '-1',
+            name: imageArr[imageArr.length - 1],
+            status: 'done',
+            url: resp.data.imageSignature
+          }
+        ]);
+      }
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -92,7 +107,8 @@ const CreateEdit: React.FC = (props: any) => {
         ...state,
         fileList,
         imageHeaderContractList,
-        imageFooterContractList
+        imageFooterContractList,
+        imageSignatureList
       });
 
       setLoading(false);
@@ -249,6 +265,13 @@ const CreateEdit: React.FC = (props: any) => {
               </Col>
               <Col lg={6} md={6} sm={12} xs={24}>
                 <Input
+                  label={'Diretor'}
+                  value={state.directorName}
+                  onChange={(e) => dispatch({ directorName: e.target.value })}
+                />
+              </Col>
+              <Col lg={6} md={6} sm={12} xs={24}>
+                <Input
                   label={'Contato finaceiro'}
                   value={state.financeName}
                   placeholder={'Maria'}
@@ -346,7 +369,7 @@ const CreateEdit: React.FC = (props: any) => {
 
             <Col lg={24}>
               <Row gutter={[24, 24]}>
-                <Col lg={12} md={24} sm={24} xs={24}>
+                <Col lg={8} md={24} sm={24} xs={24}>
                   <Divider>Logo cabeçalho</Divider>
                   <Col
                     lg={24}
@@ -361,7 +384,7 @@ const CreateEdit: React.FC = (props: any) => {
                     />
                   </Col>
                 </Col>
-                <Col lg={12} md={24} sm={24} xs={24}>
+                <Col lg={8} md={24} sm={24} xs={24}>
                   <Divider>Imagem exibida em ultima páigina</Divider>
                   <Col
                     lg={24}
@@ -373,6 +396,21 @@ const CreateEdit: React.FC = (props: any) => {
                     <UploadImages
                       setFileList={setImageFooterContractList}
                       fileList={imageFooterContractList}
+                    />
+                  </Col>
+                </Col>
+                <Col lg={8} md={24} sm={24} xs={24}>
+                  <Divider>Imagem de assinaturas</Divider>
+                  <Col
+                    lg={24}
+                    md={24}
+                    sm={24}
+                    xs={24}
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    <UploadImages
+                      setFileList={setImageSignatureList}
+                      fileList={imageSignatureList}
                     />
                   </Col>
                 </Col>

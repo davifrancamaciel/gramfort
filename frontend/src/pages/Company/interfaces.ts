@@ -21,11 +21,13 @@ export interface Company {
   fantasyName?: string;
   imageHeaderContract?: string;
   imageFooterContract?: string;
+  imageSignature?: string;
   agencyBank?: string;
   site?: string;
   instagran?: string;
   cnpj?: string;
   zipCode?: string;
+  directorName?: string;
   financeName?: string;
   financePhone?: string;
   sizeTank?: number;
@@ -34,6 +36,7 @@ export interface Company {
   textclauseContract3?: string;
   textclauseContract4?: string;
   textVisit?: string;
+  companiesIds?: string;
 }
 
 export const initialStateForm: Company = {

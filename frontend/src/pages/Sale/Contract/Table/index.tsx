@@ -451,7 +451,15 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   justifyContent: 'end'
                 }}
               >
-                <img alt={''} src={assinatura} style={{ width: '200px' }} />
+                <img
+                  alt={''}
+                  src={
+                    sale.company?.imageSignature
+                      ? sale.company?.imageSignature
+                      : assinatura
+                  }
+                  style={{ width: '200px', height: '85px' }}
+                />
               </span>
 
               <p
@@ -462,7 +470,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   justifyContent: 'end'
                 }}
               >
-                <strong>Valter Rodrigo S Silva</strong>
+                <strong>{sale?.company?.directorName}</strong>
               </p>
               <p
                 style={{

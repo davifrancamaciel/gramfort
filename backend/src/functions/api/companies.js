@@ -111,6 +111,7 @@ module.exports.create = async (event) => {
         await imageService.add('companies', result.dataValues, body.fileList);
         await imageService.add('companies', result.dataValues, body.imageHeaderContractList, 'imageHeaderContract');
         await imageService.add('companies', result.dataValues, body.imageFooterContractList, 'imageFooterContract');
+        await imageService.add('companies', result.dataValues, body.imageSignatureList, 'imageSignature');
         await createFile(result.dataValues);
 
         return handlerResponse(201, result, `${RESOURCE_NAME} criada com sucesso`)
@@ -147,6 +148,7 @@ module.exports.update = async (event) => {
         await imageService.add('companies', result.dataValues, body.fileList);
         await imageService.add('companies', result.dataValues, body.imageHeaderContractList, 'imageHeaderContract');
         await imageService.add('companies', result.dataValues, body.imageFooterContractList, 'imageFooterContract');
+        await imageService.add('companies', result.dataValues, body.imageSignatureList, 'imageSignature');
         await createFile(result.dataValues);
 
         return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso`)
@@ -173,6 +175,7 @@ module.exports.delete = async (event) => {
         await imageService.remove(item.image);
         await imageService.remove(item.imageHeaderContract);
         await imageService.remove(item.imageFooterContract);
+        await imageService.remove(item.imageSignatureList);
 
         await Company.destroy({ where: { id } });
 
