@@ -26,8 +26,8 @@ module.exports = {
           allowNull: false,
         },
         products: { type: Sequelize.TEXT, },
-        value: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
-        commission: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
+        value: { type: Sequelize.DECIMAL(15, 2), defaultValue: 0, },
+        commission: { type: Sequelize.DECIMAL(15, 2), defaultValue: 0, },
         note: { type: Sequelize.STRING(500), allowNull: true, },
         invoiceNumber: { type: Sequelize.STRING(50) },      
         createdAt: {

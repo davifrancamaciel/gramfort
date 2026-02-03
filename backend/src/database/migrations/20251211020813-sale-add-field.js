@@ -9,7 +9,7 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
 
-      await queryInterface.addColumn(TABLE_NAME, "valuePerMeter", { type: Sequelize.DECIMAL(10, 2), defaultValue: 0 }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "valuePerMeter", { type: Sequelize.DECIMAL(15, 2), defaultValue: 0 }, { transaction });
       await transaction.commit();
     } catch (err) {
       await transaction.rollback();

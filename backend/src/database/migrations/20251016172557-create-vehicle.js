@@ -24,7 +24,7 @@ module.exports = {
         year: { type: Sequelize.INTEGER, },
         kmInitial: { type: Sequelize.INTEGER, },
         kmCurrent: { type: Sequelize.INTEGER, },
-        value: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
+        value: { type: Sequelize.DECIMAL(15, 2), defaultValue: 0, },
         description: { type: Sequelize.STRING(1000), allowNull: true, },        
         image: { type: Sequelize.STRING(500), allowNull: true, },
         createdAt: { type: Sequelize.DATE, allowNull: false, },

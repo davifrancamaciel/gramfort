@@ -38,7 +38,7 @@ module.exports = {
           onUpdate: 'CASCADE',
           allowNull: true,
         },
-        value: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
+        value: { type: Sequelize.DECIMAL(15, 2), defaultValue: 0, },
         title: { type: Sequelize.STRING(256), allowNull: true, },
         description: { type: Sequelize.STRING(1000), allowNull: true, },
         paidOut: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true, },

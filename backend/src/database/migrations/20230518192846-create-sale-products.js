@@ -33,9 +33,9 @@ module.exports = {
           onUpdate: 'CASCADE',
           allowNull: false,
         },
-        value: { type: Sequelize.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
-        valueAmount: { type: Sequelize.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
-        amount: { type: Sequelize.DECIMAL(10, 2), allowNull: false, defaultValue: 1 },
+        value: { type: Sequelize.DECIMAL(15, 2), allowNull: false, defaultValue: 0 },
+        valueAmount: { type: Sequelize.DECIMAL(15, 2), allowNull: false, defaultValue: 0 },
+        amount: { type: Sequelize.DECIMAL(15, 2), allowNull: false, defaultValue: 1 },
         createdAt: { type: Sequelize.DATE, allowNull: false, },
         updatedAt: { type: Sequelize.DATE, allowNull: false, },
       });

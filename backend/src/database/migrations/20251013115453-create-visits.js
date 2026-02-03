@@ -31,7 +31,7 @@ module.exports = {
           onUpdate: 'CASCADE',
           allowNull: true,
         },
-        value: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
+        value: { type: Sequelize.DECIMAL(15, 2), defaultValue: 0, },
         state: { type: Sequelize.STRING(100), },
         city: { type: Sequelize.STRING(100), },
         address: { type: Sequelize.STRING(300), },      

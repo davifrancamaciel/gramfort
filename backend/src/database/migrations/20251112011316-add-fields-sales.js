@@ -22,7 +22,7 @@ module.exports = {
       await queryInterface.addColumn(TABLE_NAME, "daysExecution", { type: Sequelize.INTEGER, }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "expectedDateForApplication", { type: Sequelize.DATE, }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "discountDescription", { type: Sequelize.STRING(50) }, { transaction });
-      await queryInterface.addColumn(TABLE_NAME, "discountValue", { type: Sequelize.DECIMAL(10, 2), defaultValue: 0 }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "discountValue", { type: Sequelize.DECIMAL(15, 2), defaultValue: 0 }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "phSoil", { type: Sequelize.STRING(100) }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "sunOrientation", { type: Sequelize.STRING(100) }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "paymentMethod", { type: Sequelize.STRING(200) }, { transaction });

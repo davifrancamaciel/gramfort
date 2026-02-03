@@ -19,7 +19,7 @@ module.exports = {
         allowNull: false,
       },
       name: { type: Sequelize.STRING(255), },
-      price: { type: Sequelize.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
+      price: { type: Sequelize.DECIMAL(15, 2), allowNull: false, defaultValue: 0 },
       description: { type: Sequelize.STRING(500), allowNull: true, },
       inventoryCount: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 1 },
       size: { type: Sequelize.STRING(100), allowNull: true, },

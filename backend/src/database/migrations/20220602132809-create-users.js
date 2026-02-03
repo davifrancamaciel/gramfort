@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.STRING(30), allowNull: false,
         defaultValue: userType.USER
       },
-      commissionMonth: { type: Sequelize.DECIMAL(10, 2), defaultValue: 0, },
+      commissionMonth: { type: Sequelize.DECIMAL(15, 2), defaultValue: 0, },
       active: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true, },
       dateOfBirth: {
         type: Sequelize.DATE

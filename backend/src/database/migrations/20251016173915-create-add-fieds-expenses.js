@@ -16,7 +16,7 @@ module.exports = {
         onUpdate: 'CASCADE',
       }),
       queryInterface.addColumn('expenses', "paymentMethod", { type: Sequelize.STRING(50), }),
-      queryInterface.addColumn('expenses', "amount", { type: Sequelize.DECIMAL(10, 2), defaultValue: 0 }),
+      queryInterface.addColumn('expenses', "amount", { type: Sequelize.DECIMAL(15, 2), defaultValue: 0 }),
     ]);
   },
   async down(queryInterface, Sequelize) {

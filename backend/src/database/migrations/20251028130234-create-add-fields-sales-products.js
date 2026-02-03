@@ -7,7 +7,7 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
 
-      await queryInterface.addColumn('sales', "valueInput", { type: Sequelize.DECIMAL(10, 2), defaultValue: 0 }, { transaction });
+      await queryInterface.addColumn('sales', "valueInput", { type: Sequelize.DECIMAL(15, 2), defaultValue: 0 }, { transaction });
       await queryInterface.addColumn('sales', "contact", { type: Sequelize.STRING(100), }, { transaction });
       await queryInterface.addColumn('sales', "capture", { type: Sequelize.STRING(30), }, { transaction });
       await queryInterface.addColumn('sales', "nature", { type: Sequelize.STRING(30), }, { transaction });
