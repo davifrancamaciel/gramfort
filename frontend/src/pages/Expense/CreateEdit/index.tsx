@@ -27,6 +27,8 @@ import {
 import { getTitle, getType, paymentMethods } from '../utils';
 import { IOptions } from 'utils/commonInterfaces';
 import { useAppContext } from 'hooks/contextLib';
+import { Users } from 'pages/User/interfaces';
+import { Vehicle } from 'pages/Vehicle/interfaces';
 
 const CreateEdit: React.FC = (props: any) => {
   const history = useHistory();
@@ -36,8 +38,10 @@ const CreateEdit: React.FC = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [path, setPath] = useState('');
   const [users, setUsers] = useState<any[]>([]);
+  const [usersOptions, setUsersOptions] = useState<IOptions[]>();
   const [expenseTypes, setExpenseTypes] = useState<IOptions[]>([]);
-  const [vehicles, setVehicles] = useState<IOptions[]>([]);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [vehiclesOptions, setVehiclesOptions] = useState<IOptions[]>([]);
   const arrayTypeExpensesRequiredUser = [
     expensesTypesEnum.PAGAMENTO,
     expensesTypesEnum.COMB,
@@ -54,6 +58,19 @@ const CreateEdit: React.FC = (props: any) => {
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
   }, [props.match.params.id]); // eslint-disable-line
+
+  useEffect(() => {
+    const filtered = users?.filter(
+      (u: Users) => u.companyId === state.companyId
+    );
+    setUsersOptions(filtered);
+
+    const filteredVehicles = vehicles?.filter(
+      (u: Vehicle) => u.companyId === state.companyId
+    );
+    console.log(filteredVehicles)
+    setVehiclesOptions(filteredVehicles);
+  }, [state.companyId]);
 
   const get = async (id: string) => {
     try {
@@ -199,7 +216,9 @@ const CreateEdit: React.FC = (props: any) => {
           <Col lg={8} md={8} sm={24} xs={24}>
             <Select
               label={'Fornecedor'}
-              options={users}
+              options={usersOptions?.filter(
+                (u: any) => u.type === userType.SUPPLIER
+              )}
               value={state.supplierId}
               onChange={(supplierId) => dispatch({ supplierId })}
             />
@@ -241,7 +260,7 @@ const CreateEdit: React.FC = (props: any) => {
             <Col lg={8} md={8} sm={24} xs={24}>
               <Select
                 label={'Consultor'}
-                options={users}
+                options={usersOptions?.filter((u: any) => u.type === userType.USER)}
                 value={state.userId}
                 onChange={(userId) => dispatch({ userId })}
               />
@@ -251,7 +270,7 @@ const CreateEdit: React.FC = (props: any) => {
             <Col lg={8} md={8} sm={24} xs={24}>
               <Select
                 label={'Veiculo'}
-                options={vehicles}
+                options={vehiclesOptions}
                 value={state.vehicleId}
                 onChange={(vehicleId) => dispatch({ vehicleId })}
               />

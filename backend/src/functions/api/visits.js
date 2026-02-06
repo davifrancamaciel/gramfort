@@ -10,6 +10,7 @@ const { getUser, checkRouleProfileAccess } = require("../../services/UserService
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const imageService = require("../../services/ImageService");
+const { getCompaniesIds } = require("../../repositories/companiesRepository");
 
 const RESOURCE_NAME = 'Visita'
 
@@ -30,6 +31,11 @@ module.exports.list = async (event, context) => {
                 id, userName, paidOut, clientName, dateStart, dateEnd, companyId,
                 paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd,
             } = event.queryStringParameters
+
+            if (checkRouleProfileAccess(user.groups, roules.administrator)) {
+                const ids = await getCompaniesIds(user);
+                whereStatement.companyId = { [Op.in]: ids };
+            }
 
             if (companyId) whereStatement.companyId = companyId;
             if (id) whereStatement.id = id;

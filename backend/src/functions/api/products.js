@@ -11,6 +11,7 @@ const { getUser, checkRouleProfileAccess } = require("../../services/UserService
 const { executeSelect } = require("../../services/ExecuteQueryService");
 const formatPrice = require("../../utils/formatPrice");
 const { roules } = require("../../utils/defaultValues");
+const { getCompaniesIds } = require("../../repositories/companiesRepository");
 
 const RESOURCE_NAME = 'Produto'
 
@@ -31,6 +32,11 @@ module.exports.list = async (event, context) => {
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
         if (event.queryStringParameters) {
             const { id, name, active, priceMin, priceMax, inventoryCountMin, inventoryCountMax, userName, category, companyId } = event.queryStringParameters
+
+            if (checkRouleProfileAccess(user.groups, roules.administrator)) {
+                const ids = await getCompaniesIds(user);
+                whereStatement.companyId = { [Op.in]: ids };
+            }
 
             if (companyId) whereStatement.companyId = companyId;
 
@@ -89,7 +95,7 @@ module.exports.list = async (event, context) => {
             offset: (Number(pageNumber) - 1) * pageSize,
             order: [['id', 'DESC']],
             include: [
-                { model: Company, as: 'company', attributes: ['name'] },
+                { model: Company, as: 'company', attributes: ['name', 'currency'] },
                 { model: Category, as: 'category', attributes: ['name'] },
                 {
                     model: Category, as: 'category',
@@ -125,7 +131,7 @@ module.exports.listById = async (event) => {
 
         const result = await Product.findByPk(pathParameters.id, {
             include: [
-                { model: Company, as: 'company', attributes: ['name'] },
+                { model: Company, as: 'company', attributes: ['name', 'currency'] },
                 { model: Category, as: 'category', attributes: ['name'] },
                 { model: User, as: 'supplier', attributes: ['name'] },
             ]
@@ -235,6 +241,7 @@ module.exports.listAll = async (event, context) => {
             return handlerResponse(400, {}, 'Usuário não encontrado')
         if (!checkRouleProfileAccess(user.groups, roules.sales))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
+        
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             whereStatement.companyId = user.companyId
 

@@ -10,6 +10,7 @@ const { getUser, checkRouleProfileAccess } = require("../../services/UserService
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const imageService = require("../../services/ImageService");
+const { getCompaniesIds } = require("../../repositories/companiesRepository");
 
 const RESOURCE_NAME = 'Veiculo'
 
@@ -29,6 +30,11 @@ module.exports.list = async (event, context) => {
                 id, year, dateStart, dateEnd, model, category,
                 createdAtStart, createdAtEnd, companyId
             } = event.queryStringParameters
+
+            if (checkRouleProfileAccess(user.groups, roules.administrator)) {
+                const ids = await getCompaniesIds(user);
+                whereStatement.companyId = { [Op.in]: ids };
+            }
 
             if (companyId) whereStatement.companyId = companyId;
 
@@ -72,7 +78,7 @@ module.exports.list = async (event, context) => {
             order: [['id', 'DESC']],
             include: [
                 {
-                    model: Company, as: 'company', attributes: ['name']
+                    model: Company, as: 'company', attributes: ['name', 'currency']
                 }
             ]
         })
@@ -209,13 +215,14 @@ module.exports.listAll = async (event) => {
 
         const resp = await Vehicle.findAll({
             where: whereStatement,
-            attributes: ['id', 'model', 'year'],
+            attributes: ['id', 'model', 'year', 'companyId'],
             order: [['model', 'ASC']],
         })
 
         const respFormated = resp.map(item => ({
             value: item.id,
             label: `${item.model} ${item.year}`,
+            companyId: item.companyId,
         }));
         return handlerResponse(200, respFormated)
     } catch (err) {

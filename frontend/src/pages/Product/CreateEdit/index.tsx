@@ -17,6 +17,8 @@ import ShowByRoule from 'components/ShowByRoule';
 import { formatNumberWhithDecimalCaseOnChange } from 'utils/formatPrice';
 import { useAppContext } from 'hooks/contextLib';
 import { Company } from 'pages/Company/interfaces';
+import { IOptions } from 'utils/commonInterfaces';
+import { Users } from 'pages/User/interfaces';
 
 const CreateEdit: React.FC = (props: any) => {
   const { companies } = useAppContext();
@@ -24,6 +26,8 @@ const CreateEdit: React.FC = (props: any) => {
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
+  const [usersOptions, setUsersOptions] = useState<IOptions[]>();
 
   useEffect(() => {
     const product = { ...state, price: Number(state.price) };
@@ -37,6 +41,10 @@ const CreateEdit: React.FC = (props: any) => {
       const company = companies.find((c: Company) => c.id === state.companyId);
       dispatch({ m2PerTank: company.sizeTank });
     }
+    const filtered = users?.filter(
+      (u: Users) => u.companyId === state.companyId
+    );   
+    setUsersOptions(filtered);
   }, [state.companyId]);
 
   useEffect(() => {
@@ -47,7 +55,21 @@ const CreateEdit: React.FC = (props: any) => {
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
+    onLoad();
   }, [props.match.params.id]); // eslint-disable-line
+
+  const onLoad = async () => {
+    try {
+      setLoading(true);
+      const respUser = await api.get(`${apiRoutes.users}/all`, {
+        type: userType.SUPPLIER
+      });
+      setUsers(respUser.data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
 
   const get = async (id: string) => {
     try {
@@ -208,7 +230,7 @@ const CreateEdit: React.FC = (props: any) => {
               <Col lg={6} md={12} sm={24} xs={24}>
                 <Select
                   label={'Fornecedor'}
-                  url={`${apiRoutes.users}/all?type=${userType.SUPPLIER}`}
+                  options={usersOptions}
                   value={state.supplierId}
                   onChange={(supplierId) => dispatch({ supplierId })}
                 />

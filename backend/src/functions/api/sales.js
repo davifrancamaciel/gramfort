@@ -17,7 +17,9 @@ const { executeSelect, executeDelete, executeUpdate } = require("../../services/
 const { roules, path, productCategoriesEnum } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const imageService = require("../../services/ImageService");
+const { getCompaniesIds } = require("../../repositories/companiesRepository");
 const { sum } = require('../../utils');
+
 
 const RESOURCE_NAME = 'Venda'
 
@@ -38,6 +40,11 @@ module.exports.list = async (event, context) => {
         const isAdm = checkRouleProfileAccess(user.groups, roules.administrator)
         if (event.queryStringParameters) {
             const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId, path } = event.queryStringParameters
+
+            if (isAdm) {
+                const ids = await getCompaniesIds(user);
+                whereStatement.companyId = { [Op.in]: ids };
+            }
 
             if (companyId) whereStatement.companyId = companyId;
 
@@ -110,7 +117,7 @@ module.exports.list = async (event, context) => {
                 where: whereStatementClient,
                 required: whereStatementClient.name ? true : false
             }, {
-                model: Company, as: 'company', attributes: ['name', 'image', 'individualCommission'],
+                model: Company, as: 'company', attributes: ['name', 'image', 'individualCommission', 'currency'],
             }, {
                 model: Visit, as: 'visit', attributes: ['km', 'state', 'city', 'address', 'date', 'value', 'note'],
             }]
@@ -192,7 +199,7 @@ const listByIdResult = async (id) => {
             },
             {
                 model: Company,
-                as: 'company'                
+                as: 'company'
             },
             {
                 model: SaleProduct,

@@ -10,6 +10,7 @@ const { roules } = require("../../utils/defaultValues");
 const salesRepository = require('../../repositories/salesRepository')
 const expensesRepository = require('../../repositories/expensesRepository')
 const { formatDate } = require("../../utils/formatDate");
+const { getCompaniesIdsMap } = require("../../repositories/companiesRepository");
 
 module.exports.cards = async (event, context) => {
     try {
@@ -29,7 +30,10 @@ module.exports.cards = async (event, context) => {
         const { queryStringParameters } = event
         if (queryStringParameters && queryStringParameters.dateReference)
             date = new Date(queryStringParameters.dateReference)
-        const { companyId } = queryStringParameters;
+        let { companyId } = queryStringParameters;
+        if (isAdm && !companyId)
+            companyId = await getCompaniesIdsMap(user);
+
         if (checkRouleProfileAccess(user.groups, roules.sales)) {
             data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId)
             const query = `SELECT id FROM companies WHERE id = '${user.companyId}' AND individualCommission = true`;
@@ -60,10 +64,14 @@ module.exports.productGraphBar = async (event, context) => {
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
         let isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
+        let companyId = user.companyId
+        if (isAdm)
+            companyId = await getCompaniesIdsMap(user);
+
         let data = null;
 
         if (pathParameters.type === 'products')
-            data = await productsSalesTotal(isAdm, user);
+            data = await productsSalesTotal(companyId);
 
         return handlerResponse(200, data)
     } catch (err) {
@@ -82,6 +90,9 @@ module.exports.expenses = async (event, context) => {
         const { paidOut, paymentDate } = queryStringParameters
 
         let isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
+        let companyId = user.companyId
+        if (isAdm)
+            companyId = await getCompaniesIdsMap(user);
 
         const query = ` SELECT DATE(e.paymentDate) paymentDate, COUNT(e.id) amount, SUM(e.value) value, paidOut, 
                                GROUP_CONCAT(id ORDER BY id ASC SEPARATOR ', ') AS ids
@@ -89,7 +100,7 @@ module.exports.expenses = async (event, context) => {
                         WHERE DATE(e.paymentDate) >= DATE('${paymentDate}') AND 
                               DATE(e.paymentDate) <= DATE(DATE_ADD(NOW(), INTERVAL 30 DAY)) AND 
                               e.paidOut = ${paidOut} 
-                              ${isAdm ? '' : `AND e.companyId = '${user.companyId}'`}
+                              AND e.companyId IN ('${companyId}')
                         GROUP BY DATE(e.paymentDate) 
                         ORDER BY DATE(e.paymentDate) ASC 
                         LIMIT 30;`
@@ -140,11 +151,11 @@ module.exports.expensesUpdate = async (event, context) => {
     }
 };
 
-const productsSalesTotal = async (isAdm, user) => {
+const productsSalesTotal = async (companyId) => {
     const query = ` SELECT sp.productId id, p.name label, SUM(sp.amount) value
                     FROM saleProducts sp 
                     INNER JOIN products p ON p.id = sp.productId 
-                    ${isAdm ? '' : `WHERE sp.companyId = '${user.companyId}'`}
+                    WHERE sp.companyId IN ('${companyId}')
                     GROUP BY sp.productId
                     ORDER BY SUM(sp.amount) DESC LIMIT 100`;
     return await executeSelect(query);

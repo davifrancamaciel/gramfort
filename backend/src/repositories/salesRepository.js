@@ -71,7 +71,7 @@ const totalValueVisitsInSalesMonth = async (date, isAdm, user, companyId) => {
 }
 
 const andCompany = (companyId, alias = 's') =>
-    companyId ? `AND ${alias}.companyId = '${companyId}'` : ''
+    companyId ? `AND ${alias}.companyId IN ('${companyId}')` : ''
 
 
 const salesMonthExpenseCommission = async (date) => {

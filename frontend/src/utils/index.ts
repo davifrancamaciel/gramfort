@@ -76,3 +76,7 @@ export const arrayCurrency: IOptions[] = [
     label: 'GUARANY'
   }
 ];
+
+export const displayValue = (value: any) => {
+  return value ? value : '';
+};

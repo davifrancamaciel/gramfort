@@ -11,6 +11,7 @@ const { roules, cognito, userType } = require("../../utils/defaultValues");
 const User = require('../../models/User')(db.sequelize, db.Sequelize);
 const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const imageService = require("../../services/ImageService");
+const { getCompaniesIds } = require("../../repositories/companiesRepository");
 
 module.exports.list = async (event) => {
     const { queryStringParameters } = event
@@ -27,6 +28,11 @@ module.exports.list = async (event) => {
 
         if (queryStringParameters) {
             const { id, companyName, name, type, email, createdAtStart, createdAtEnd, companyId, nature, dateOfBirth } = queryStringParameters
+
+            if (checkRouleProfileAccess(user.groups, roules.administrator)) {
+                const ids = await getCompaniesIds(user);
+                whereStatement.companyId = { [Op.in]: ids };
+            }
 
             if (companyId) whereStatement.companyId = companyId;
 
@@ -340,6 +346,7 @@ module.exports.listAll = async (event) => {
 
         if (!user)
             return handlerResponse(400, {}, `Usuário não encontrado`)
+     
         if (!checkRouleProfileAccess(user.groups, roules.administrator))
             whereStatement.companyId = user.companyId
         if (type)

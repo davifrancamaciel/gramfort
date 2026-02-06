@@ -13,6 +13,7 @@ const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const expensesRepository = require('../../repositories/expensesRepository')
 const { executeDelete } = require("../../services/ExecuteQueryService");
+const { getCompaniesIds } = require("../../repositories/companiesRepository");
 
 const RESOURCE_NAME = 'Despesa'
 
@@ -29,12 +30,17 @@ module.exports.list = async (event, context) => {
         const whereStatementUsers = {};
         const whereStatementSuppiers = {};
         const whereStatementVehicles = {};
-
+        let ids = [];
 
         const {
             id, expenseTypeName, title, description, paidOut, expenseTypeId, vehicleModel, userName,
             paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision, companyId, field, order
         } = event.queryStringParameters
+
+        if (checkRouleProfileAccess(user.groups, roules.administrator)) {
+            ids = await getCompaniesIds(user);
+            whereStatement.companyId = { [Op.in]: ids };
+        }
 
         if (companyId) whereStatement.companyId = companyId;
 
@@ -101,8 +107,6 @@ module.exports.list = async (event, context) => {
         else
             whereStatement.expenseTypeId = { [Op.gt]: 1, }
 
-        if (!checkRouleProfileAccess(user.groups, roules.administrator))
-            whereStatement.companyId = user.companyId;
 
         if (!checkRouleProfileAccess(user.groups, roules.expenses))
             whereStatement.userId = user.userId;
@@ -120,7 +124,7 @@ module.exports.list = async (event, context) => {
             // order: [['expenseType', 'name', 'ASC'], ['paymentDate', 'ASC']],
             order: arrayOrder,
             include: [
-                { model: Company, as: 'company', attributes: ['name', 'image'] },
+                { model: Company, as: 'company', attributes: ['name', 'image', 'currency'] },
                 {
                     model: ExpenseType,
                     as: 'expenseType',
@@ -150,8 +154,9 @@ module.exports.list = async (event, context) => {
         let data;
         if (Number(pageNumber) == 1) {
             const isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
-            const pay = await expensesRepository.expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId);
-            const type = await expensesRepository.expensesMonthByType(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId);
+            const companyIdSearchQuery = companyId ? companyId : ids.map(x => x).join("','");
+            const pay = await expensesRepository.expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyIdSearchQuery);
+            const type = await expensesRepository.expensesMonthByType(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyIdSearchQuery);
             data = { pay, type }
         }
         return handlerResponse(200, { count, rows, data })

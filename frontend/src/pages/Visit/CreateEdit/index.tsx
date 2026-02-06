@@ -20,6 +20,8 @@ import {
 } from 'utils/formatPrice';
 import UploadImages from 'components/UploadImages';
 import { useAppContext } from 'hooks/contextLib';
+import { IOptions } from 'utils/commonInterfaces';
+import { Users } from 'pages/User/interfaces';
 
 const CreateEdit: React.FC = (props: any) => {
   const { companies } = useAppContext();
@@ -28,6 +30,7 @@ const CreateEdit: React.FC = (props: any) => {
   const [type, setType] = useState<'create' | 'update'>('create');
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
+  const [usersOptions, setUsersOptions] = useState<IOptions[]>();
   const [fileList, setFileList] = useState<Array<UploadFile>>([]);
 
   useEffect(() => {
@@ -35,6 +38,13 @@ const CreateEdit: React.FC = (props: any) => {
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
   }, [props.match.params.id]); // eslint-disable-line
+  
+  useEffect(() => {
+    const filtered = users?.filter(
+      (u: Users) => u.companyId === state.companyId
+    );
+    setUsersOptions(filtered);
+  }, [state.companyId]);
 
   const get = async (id: string) => {
     try {
@@ -119,7 +129,7 @@ const CreateEdit: React.FC = (props: any) => {
         <Select
           required={true}
           label={'Cliente'}
-          options={users.filter((u: any) => u.type === userType.CLIENT)}
+          options={usersOptions?.filter((u: any) => u.type === userType.CLIENT)}
           value={state.clientId}
           onChange={(clientId) => dispatch({ clientId })}
         />
@@ -128,7 +138,7 @@ const CreateEdit: React.FC = (props: any) => {
       <Col lg={8} md={8} sm={24} xs={24}>
         <Select
           label={'Consultor'}
-          options={users.filter((u: any) => u.type === userType.USER)}
+          options={usersOptions?.filter((u: any) => u.type === userType.USER)}
           value={state.userId}
           onChange={(userId) => dispatch({ userId })}
         />
@@ -198,14 +208,14 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(e) => dispatch({ address: e.target.value })}
         />
       </Col>
-      <Col lg={24} md={24} sm={24} xs={24}>
+      {/* <Col lg={24} md={24} sm={24} xs={24}>
         <Textarea
           label={'Observações'}
           placeholder=""
           value={state.note}
           onChange={(e) => dispatch({ note: e.target.value })}
         />
-      </Col>
+      </Col> */}
       <Col lg={3} md={4} sm={6} xs={24}>
         <Switch
           label={'Paga'}
@@ -238,7 +248,7 @@ const CreateEdit: React.FC = (props: any) => {
         />
       </Col>
 
-      <Col
+      {/* <Col
         lg={6}
         md={12}
         sm={24}
@@ -246,7 +256,7 @@ const CreateEdit: React.FC = (props: any) => {
         style={{ display: 'flex', justifyContent: 'center' }}
       >
         <UploadImages setFileList={setFileList} fileList={fileList} />
-      </Col>
+      </Col> */}
     </PanelCrud>
   );
 };

@@ -4,7 +4,7 @@ const { startOfMonth, endOfMonth } = require('date-fns');
 const { executeSelect } = require("../services/ExecuteQueryService");
 
 const andCompany = (alias, companyId) =>
-    companyId ? `AND ${alias}.companyId = '${companyId}'` : ''
+    companyId ? `AND ${alias}.companyId IN ('${companyId}')` : ''
 
 const where = (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId) => {
     if (expenseTypeId == 1)
