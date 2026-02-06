@@ -93,11 +93,26 @@ venho por meio deste contato, confirmar a contratação do *serviço de Hidrosse
 - Contrato número: *${sale?.id}*%0A
 - Cliente: *${sale?.client?.name}*%0A
 - ⁠Consultor técnico: *${sale?.user?.name}*%0A
-- ⁠Valor da proposta: *${formatPrice(value)}*%0A
+- ⁠Valor da proposta: *${formatPrice(value, sale?.company?.currency)}*%0A
 - ⁠Forma de Pagamento: *${sale?.paymentMethod}*%0A%0A
 Aguado instruções para avançarmos…`;
 
-    window.location.href = `https://api.whatsapp.com/send?phone=${contryCode}${sendPhone}&text=${message}`;
+    const messageEs = `
+Hola ${name},%0A%0A
+Me comunico con usted para confirmar la contratación de los *servicios de hidrosiembra con la empresa ${
+      sale?.company?.fantasyName
+    }*.%0A%0A
+✅ *Información*:%0A%0A
+- Número de contrato: *${sale?.id}*%0A
+- Cliente: *${sale?.client?.name}*%0A
+- ⁠Consultor técnico: *${sale?.user?.name}*%0A
+- ⁠Valor de la propuesta: *${formatPrice(value, sale?.company?.currency)}*%0A
+- Forma de pago: *${sale?.paymentMethod}*%0A%0A
+Esperando instrucciones para continuar…`;
+
+    window.location.href = `https://api.whatsapp.com/send?phone=${contryCode}${sendPhone}&text=${
+      sale?.company?.currency === currency.PYG ? messageEs : message
+    }`;
   };
 
   const btnWhatapp = () => {

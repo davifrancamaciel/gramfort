@@ -106,7 +106,7 @@ const List: React.FC = () => {
           }`,
           expenseTypeName: e.expenseType?.name,
           companyName: e.company?.name,
-          value: formatPrice(Number(e.value) || 0),
+          value: formatPrice(Number(e.value) || 0, e.company?.currency),
           paymentDate: formatDate(e.paymentDate),
           createdAt: formatDateHour(e.createdAt),
           updatedAt: formatDateHour(e.updatedAt),

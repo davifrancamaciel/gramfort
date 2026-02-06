@@ -48,7 +48,7 @@ const Actions: React.FC<PropTypes> = ({ state, title }) => {
         clientName: item.client?.name,
         companyName: item.company?.name,
         userName: item.user?.name,
-        valueFormatted: formatPrice(Number(item.value) || 0),
+        valueFormatted: formatPrice(Number(item.value) || 0, item.company?.currency),
 
         paymentDate: formatDate(item.paymentDate),
         createdAt: formatDateHour(item.createdAt),

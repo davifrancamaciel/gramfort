@@ -14,10 +14,17 @@ export interface PropTypes {
   sale: Sale;
   visits: Visit[];
   totals: TotalSale;
+  currency: string;
   setTotals: (totals: TotalSale) => void;
 }
 
-const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
+const Cards: React.FC<PropTypes> = ({
+  sale,
+  visits,
+  totals,
+  setTotals,
+  currency
+}) => {
   const typePath = getType();
   useEffect(() => {
     const visitSelected = visits?.find((v: Visit) => v.id === sale.visitId);
@@ -46,7 +53,7 @@ const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
     visits
   ]);
 
-  const sum = (items: SaleProduct[]) => {    
+  const sum = (items: SaleProduct[]) => {
     const value = items
       .filter((p: SaleProduct) => p.valueAmount)
       .reduce((acc: number, p: SaleProduct) => acc + Number(p.valueAmount), 0);
@@ -58,7 +65,7 @@ const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
       <Header>
         <Card
           loading={false}
-          value={formatPrice(totals.total || 0)}
+          value={formatPrice(totals.total || 0, currency)}
           color={systemColors.GREEN}
           text={`Total`}
           icon={<DollarOutlined />}
@@ -67,7 +74,7 @@ const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
         {!!totals.visit && (
           <Card
             loading={false}
-            value={`-${formatPrice(totals.visit || 0)}`}
+            value={`-${formatPrice(totals.visit || 0, currency)}`}
             color={systemColors.BLUE}
             text={`Desconto visita`}
             icon={<DollarOutlined />}
@@ -76,7 +83,7 @@ const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
         {sale.discountDescription && (
           <Card
             loading={false}
-            value={`-${formatPrice(totals.discount || 0)}`}
+            value={`-${formatPrice(totals.discount || 0, currency)}`}
             color={systemColors.BLUE}
             text={sale.discountDescription}
             icon={<DollarOutlined />}
@@ -85,7 +92,7 @@ const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
         {!!totals.cost && appRoutes.contracts && (
           <Card
             loading={false}
-            value={`-${formatPrice(totals.cost || 0)}`}
+            value={`-${formatPrice(totals.cost || 0, currency)}`}
             color={systemColors.BLUE}
             text={`Total de custos`}
             icon={<DollarOutlined />}
@@ -94,7 +101,7 @@ const Cards: React.FC<PropTypes> = ({ sale, visits, totals, setTotals }) => {
 
         <Card
           loading={false}
-          value={formatPrice(totals.balance || 0)}
+          value={formatPrice(totals.balance || 0, currency)}
           color={systemColors.GREEN}
           text={`Saldo`}
           icon={<DollarOutlined />}

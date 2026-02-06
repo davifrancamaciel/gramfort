@@ -40,7 +40,10 @@ import { Users } from 'pages/User/interfaces';
 import Cards from './Cards';
 import { initialState, TotalSale } from './Cards/interfaces';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
+import { language } from 'utils/languages';
 import ContractButton from '../Contract/Button';
+import { Company } from 'pages/Company/interfaces';
+import { currency, displayValue } from 'utils';
 
 const CreateEdit: React.FC = (props: any) => {
   const { companies, userAuthenticated } = useAppContext();
@@ -59,6 +62,7 @@ const CreateEdit: React.FC = (props: any) => {
   const [visits, setVisits] = useState<Visit[]>([]);
   const [visitsOptions, setVisitsOptions] = useState<IOptions[]>();
   const [groups, setGroups] = useState<string[]>([]);
+  const [currentCurrency, setCurrentCurrency] = useState(currency.BRL);
 
   useEffect(() => {
     const { signInUserSession } = userAuthenticated;
@@ -81,12 +85,19 @@ const CreateEdit: React.FC = (props: any) => {
   useEffect(() => {
     if (path === appRoutes.contracts && !state.approved) {
       const balance = totals.balance ? totals.balance : 0;
-      const balanceValue = formatPrice(balance / 2);
-      const paymentMethod = `${balanceValue} Sinal de 50% para reservar a data ${balanceValue} 50% restante no final da aplicação`;
+
+      const balanceValue = formatPrice(balance / 2, currentCurrency);
+
+      const paymentMethodText =
+        language.contracts[currentCurrency].paymentMethod;
+
+      const paymentMethod = paymentMethodText
+        .replace('{balanceValue}', balanceValue)
+        .replace('{balanceValue}', balanceValue);
       const distance = state.distance ? state.distance : totals?.km;
       dispatch({ paymentMethod, distance });
     }
-  }, [totals.balance]);
+  }, [totals.balance, currentCurrency]);
 
   useEffect(() => {
     // dispatch({ visitId: null });
@@ -98,6 +109,10 @@ const CreateEdit: React.FC = (props: any) => {
       (u: Users) => u.companyId === state.companyId
     );
     setUsersOptions(filtered);
+
+    const company = companies?.find((x: Company) => x.id === state.companyId);
+    const currentCurrency = company ? company.currency! : currency.BRL;
+    setCurrentCurrency(currentCurrency);
   }, [state.companyId]);
 
   const getVisitsByClient = async (clientId: number) => {
@@ -107,9 +122,12 @@ const CreateEdit: React.FC = (props: any) => {
       setVisits(resp.data);
       const respFormated = resp.data.map((item: Visit) => ({
         value: item.id,
-        label: `Dia ${formatDate(item.date)} ${formatPrice(item.value || 0)} ${
-          item.address
-        } ${item.city} ${item.state}`
+        label: `Dia ${formatDate(item.date)} ${formatPrice(
+          item.value || 0,
+          currentCurrency
+        )} ${displayValue(item.address)} ${displayValue(
+          item.city
+        )} ${displayValue(item.state)}`
       }));
 
       setVisitsOptions(respFormated);
@@ -235,6 +253,7 @@ const CreateEdit: React.FC = (props: any) => {
         visits={visits}
         totals={totals}
         setTotals={setTotals}
+        currency={currentCurrency}
       />
 
       <ShowByRoule roule={roules.administrator}>
@@ -300,6 +319,7 @@ const CreateEdit: React.FC = (props: any) => {
         setProducts={setProducts}
         isCost={false}
         companyId={state.companyId}
+        currency={currentCurrency}  
       />
 
       {path == appRoutes.sales && (
@@ -310,6 +330,7 @@ const CreateEdit: React.FC = (props: any) => {
             setProducts={setCosts}
             isCost={true}
             companyId={state.companyId}
+            currency={currentCurrency}
           />
 
           <Col lg={6} md={8} sm={12} xs={24}>

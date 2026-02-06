@@ -26,7 +26,8 @@ const Products: React.FC<PropTypes> = ({
   products,
   setProducts,
   isCost,
-  companyId
+  companyId,
+  currency
 }) => {
   const [loading, setLoading] = useState(false);
   const [productsOptions, setProductsOptions] = useState<Product[]>([]);
@@ -195,7 +196,7 @@ const Products: React.FC<PropTypes> = ({
           <Col lg={4} md={20} sm={20} xs={20}>
             <Input
               label={'Total'}
-              value={formatPrice(p.valueAmount || 0)}
+              value={formatPrice(p.valueAmount || 0, currency)}
               disabled
             />
           </Col>

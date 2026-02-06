@@ -45,7 +45,13 @@ const Print: React.FC<PropTypes> = ({ item }) => {
                     .replace('{CIDADEEMPRESA}', `${item.company?.city}`)
                     .replace('{ESTADOEMPRESA}', `${item.company?.state}`)
                     .replace('{NOMECLIENTE}', `${item.client?.name}`)
-                    .replace('{VALOR}', `${formatPrice(Number(item.value))}`)
+                    .replace(
+                      '{VALOR}',
+                      `${formatPrice(
+                        Number(item.value),
+                        item.company.currency
+                      )}`
+                    )
                     .replace('{ENDERECOCLIENTE}', `${item.address}`)
                     .replace('{CIDADECLIENTE}', `${item.city}`)
                     .replace('{ESTADOCLIENTE}', `${item.state}`)
@@ -68,8 +74,10 @@ const Print: React.FC<PropTypes> = ({ item }) => {
                   {item.company?.state}, declaro, para os devidos fins, que
                   recebi nesta data do(a) Sr(a).{' '}
                   <strong>{item.client?.name}</strong> a quantia de{' '}
-                  <strong>{formatPrice(Number(item.value))}</strong>, referente
-                  ao pagamento de uma visita técnica.{' '}
+                  <strong>
+                    {formatPrice(Number(item.value), item.company?.currency)}
+                  </strong>
+                  , referente ao pagamento de uma visita técnica.{' '}
                 </p>
                 <p>
                   A referida visita técnica será agendada e realizada no prazo

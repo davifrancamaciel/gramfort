@@ -10,8 +10,9 @@ export const { format: formatPricePyg } = new Intl.NumberFormat('es-PY', {
   currency: utils.currency.PYG
 });
 
-export const formatPrice = (value: number) => {
-  const currency = localStorage.getItem('currencySelected');
+export const formatPrice = (value: number, currency?: string) => {
+  const currencySelected = localStorage.getItem('currencySelected');
+  currency = currency ? currency : currencySelected!;
   switch (currency) {
     case utils.currency.PYG:
       return formatPricePyg(value);

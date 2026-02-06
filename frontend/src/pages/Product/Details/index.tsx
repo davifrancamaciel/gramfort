@@ -44,7 +44,7 @@ const Details: React.FC = (props: any) => {
       const item: Product = {
         ...data,
         cost: getCost(data),
-        price: formatPrice(Number(data.price) || 0),
+        price: formatPrice(Number(data.price) || 0, data.company?.currency),
         createdAt: formatDateHour(data.createdAt),
         updatedAt: formatDateHour(data.updatedAt),
         activeTag: <BooleanTag value={data.active} />,
@@ -79,7 +79,7 @@ const Details: React.FC = (props: any) => {
 
           <ShowByRoule roule={roules.administrator}>
             <Col lg={6} md={12} sm={24} xs={24}>
-              <ViewData label="Empresa" value={state.company.name} />
+              <ViewData label="Empresa" value={state.company?.name} />
             </Col>
           </ShowByRoule>
 

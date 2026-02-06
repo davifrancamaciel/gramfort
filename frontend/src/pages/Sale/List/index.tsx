@@ -103,10 +103,10 @@ const List: React.FC = () => {
               p.client?.name
             ),
           companyName: p.company?.name,
-          valueFormatted: formatPrice(Number(p.value!)),
-          valuePerMeterFormatted: formatPrice(Number(p.valuePerMeter) || 0),
+          valueFormatted: formatPrice(Number(p.value!), p.company?.currency),
+          valuePerMeterFormatted: formatPrice(Number(p.valuePerMeter) || 0, p.company?.currency),
           valueCostFormatted: formatPrice(
-            getCostValue(p, path === appRoutes.sales)
+            getCostValue(p, path === appRoutes.sales), p.company?.currency
           ),
           balanceFormatted: getBalance(p, path === appRoutes.sales),
           productsFormatted: formatProductName(p.productsSales),

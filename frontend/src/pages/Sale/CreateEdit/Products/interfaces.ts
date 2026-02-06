@@ -4,4 +4,5 @@ export interface PropTypes {
   setProducts: (products: SaleProduct[]) => void;
   isCost: boolean;
   companyId?: string;
+  currency: string;
 }

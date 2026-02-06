@@ -1,3 +1,4 @@
+import * as utils from 'utils';
 import {
   format,
   parseISO,
@@ -10,6 +11,7 @@ import {
   differenceInYears
 } from 'date-fns';
 import pt from 'date-fns/locale/pt';
+import es from 'date-fns/locale/es';
 import moment from 'moment';
 
 export const formatDate = (value?: string) =>
@@ -27,10 +29,15 @@ export const formatDateEn = (value?: string) =>
 export const extractHour = (value: string) =>
   !value ? '' : format(parseISO(value), 'HH:mm', { locale: pt });
 
-export const formatDateText = (value: string) =>
+export const formatDateText = (
+  value: string,
+  currency: string = utils.currency.BRL
+) =>
   !value
     ? ''
-    : format(parseISO(value), "dd 'de' MMMM 'de' yyyy", { locale: pt });
+    : format(parseISO(value), "dd 'de' MMMM 'de' yyyy", {
+        locale: currency === utils.currency.BRL ? pt : es
+      });
 
 export const formatDifferenceInYears = (value: string) =>
   !value ? '' : differenceInYears(new Date(), parseISO(value));

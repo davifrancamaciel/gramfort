@@ -41,7 +41,7 @@ const List: React.FC = () => {
           ...item,
           nameInfoDel: `Veiculo ${item.model} empresa ${item.company?.name}`,
           companyName: item.company?.name,
-          value: formatPrice(Number(item.value) || 0),
+          value: formatPrice(Number(item.value) || 0, item.company?.currency),
           createdAt: formatDateHour(item.createdAt),
           updatedAt: formatDateHour(item.updatedAt),
           image: (

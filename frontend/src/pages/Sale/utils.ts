@@ -31,7 +31,7 @@ export const createMessageShare = (sale?: Sale) => {
 
 export const getBalance = (sale: Sale, isSubCost: boolean = false) => {
   const value = getBalanceValue(sale, isSubCost);
-  return formatPrice(value);
+  return formatPrice(value, sale.company?.currency);
 };
 
 export const getBalanceValue = (sale: Sale, isSubCost: boolean = false) => {

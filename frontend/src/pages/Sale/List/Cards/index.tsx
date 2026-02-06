@@ -7,6 +7,7 @@ import Card from 'components/Card';
 import { appRoutes, systemColors } from 'utils/defaultValues';
 import { Header, Container } from 'components/Card/styles';
 import { getBalanceValue, getCostValue, getType } from '../../utils';
+import { useAppContext } from 'hooks/contextLib';
 
 export interface PropTypes {
   sales: Sale[];
@@ -29,6 +30,9 @@ const initialState: Totals = {
 const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
   const [total, setTotal] = useState<Totals>(initialState);
   const path = getType();
+
+  const { companySelected } = useAppContext();
+
   useEffect(() => {
     const _total = sales.reduce(
       (acc: number, p: Sale) => acc + Number(p.value),
@@ -56,7 +60,7 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
       <Header>
         <Card
           loading={loading}
-          value={formatPrice(total.total)}
+          value={formatPrice(total.total, companySelected?.currency)}
           color={systemColors.GREEN}
           text={`TOTAL`}
           icon={<DollarOutlined />}
@@ -65,7 +69,7 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
         {path === appRoutes.sales && (
           <Card
             loading={loading}
-            value={`-${formatPrice(total.cost)}`}
+            value={`-${formatPrice(total.cost, companySelected?.currency)}`}
             color={systemColors.LIGHT_PINK}
             text={`CUSTOS`}
             icon={<DollarOutlined />}
@@ -73,7 +77,7 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
         )}
         <Card
           loading={loading}
-          value={`-${formatPrice(total.discount)}`}
+          value={`-${formatPrice(total.discount, companySelected?.currency)}`}
           color={systemColors.BLUE}
           text={`DESCONTOS`}
           icon={<DollarOutlined />}
@@ -81,7 +85,7 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
 
         <Card
           loading={loading}
-          value={formatPrice(total.balance)}
+          value={formatPrice(total.balance, companySelected?.currency)}
           color={systemColors.GREEN}
           text={`SALDO`}
           icon={<DollarOutlined />}

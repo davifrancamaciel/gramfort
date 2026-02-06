@@ -77,7 +77,7 @@ const List: React.FC = () => {
           clientName: item.client?.name,
           companyName: item.company?.name,
           userName: item.user?.name,
-          value: formatPrice(Number(item.value) || 0),
+          value: formatPrice(Number(item.value) || 0, item.company?.currency),
           paymentDate: formatDate(item.paymentDate),
           createdAt: formatDateHour(item.createdAt),
           updatedAt: formatDateHour(item.updatedAt),

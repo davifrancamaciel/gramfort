@@ -43,7 +43,9 @@ const Cards: React.FC = () => {
   );
   const [investment, setInvestiment] = useState<CardValues>({} as CardValues);
   const [input, setInput] = useState<CardValues>({} as CardValues);
-  const [cashWithdrawal, setCashWithdrawal] = useState<CardValues>({} as CardValues);
+  const [cashWithdrawal, setCashWithdrawal] = useState<CardValues>(
+    {} as CardValues
+  );
   const [expenses, setExpenses] = useState<CardValues>({} as CardValues);
   const [faturamento, setFaturamento] = useState<number>(0);
   const [liquido, setLiquido] = useState<number>(0);
@@ -268,6 +270,10 @@ const Cards: React.FC = () => {
             <Card {...handleCardSaleMonth(cards)} />
             <Card {...handleCardSaleInputMonth(cards)} />
             <Card {...handleCardFaturamentotMonth(cards)} />
+          </>
+        )}{' '}
+        {Boolean(checkRouleProfileAccess(groups, roules.saleUserIdChange)) && (
+          <>
             <Card
               loading={loading}
               value={formatPrice(liquido)}
@@ -276,7 +282,7 @@ const Cards: React.FC = () => {
               subText={`Lucratividade ${getPercent(liquido, faturamento)}%`}
               icon={<DollarOutlined />}
               url={`${appRoutes.sales}?dateReference=${dateEn}`}
-            />
+            />{' '}
             <Card
               loading={loading}
               value={formatPrice(box)}
@@ -285,6 +291,10 @@ const Cards: React.FC = () => {
               icon={<DollarOutlined />}
               url={`${appRoutes.sales}?dateReference=${dateEn}`}
             />
+          </>
+        )}
+        {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
+          <>
             <Card
               loading={loading}
               value={`${getM2(cards?.sales.m2!)}`}

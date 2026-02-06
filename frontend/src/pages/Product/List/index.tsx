@@ -56,7 +56,7 @@ const List: React.FC = () => {
         inventoryCount:
           p.categoryId === productCategoriesEnum.INSUMO ? p.inventoryCount : '',
         categoryName: p.category?.name,
-        priceFormatted: formatPrice(Number(p.price) || 0),
+        priceFormatted: formatPrice(Number(p.price) || 0, p.company?.currency),
         cost: getCost(p),
         active: (
           <Action
