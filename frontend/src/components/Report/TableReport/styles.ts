@@ -4,6 +4,9 @@ export const Container = styled.div`
   min-width: 800px;
 
   .page {
+    p {
+      margin-bottom: -2px;
+    }
     font-size: 14px;
     background-color: #fff;
     padding: 0px 20px;
@@ -17,7 +20,7 @@ export const Container = styled.div`
       max-width: 1000px;
       header {
         color: #968d8d;
-        display: flex;        
+        display: flex;
         align-items: center;
         border-bottom: #eee solid 1px;
         padding-bottom: 10px;
@@ -35,11 +38,11 @@ export const Container = styled.div`
         padding: 5px 5px;
         text-align: initial;
       }
-    
+
       tbody tr {
         transition: background-color 0.2s;
       }
-  
+
       td {
         padding: 5px;
         border-bottom: #eee solid 1px;

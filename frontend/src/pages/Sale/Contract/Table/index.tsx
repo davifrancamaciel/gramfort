@@ -58,7 +58,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               <table
                 style={{
                   textAlign: 'center',
-                  marginBottom: '15px',
+                  marginBottom: '5px',
                   backgroundColor: systemColors.GREY_MEDIUM
                 }}
               >
@@ -104,14 +104,16 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               </div>
             </Header>
 
-            <p style={{ textAlign: 'center' }} id="contact">
+            <p
+              style={{ textAlign: 'center', marginBottom: '5px' }}
+              id="contact"
+            >
               {labels?.textClient
                 .replace('{contact}', `${sale.contact}`)
                 .replace('null', '')}
             </p>
             <table
               style={{
-                marginTop: '15px',
                 backgroundColor: systemColors.GREY_MEDIUM
               }}
             >
@@ -201,8 +203,18 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                         <td>{index + 1}</td>
                         <td>{sp.product.name}</td>
                         <td>{numberWithDots(Number(sp.amount))}</td>
-                        <td>{formatPrice(Number(sp.value!))}</td>
-                        <td>{formatPrice(Number(sp.valueAmount!))}</td>
+                        <td>
+                          {formatPrice(
+                            Number(sp.value!),
+                            sale.company?.currency
+                          )}
+                        </td>
+                        <td>
+                          {formatPrice(
+                            Number(sp.valueAmount!),
+                            sale.company?.currency
+                          )}
+                        </td>
                       </tr>
                       {sp.product.description && (
                         <tr key={index + 100}>
@@ -226,7 +238,9 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     }}
                   ></td>
                   <td>{labels?.totalService}</td>
-                  <td>{formatPrice(Number(sale.value))}</td>
+                  <td>
+                    {formatPrice(Number(sale.value), sale.company?.currency)}
+                  </td>
                 </tr>
                 {sale.discountDescription && sale.discountValue && (
                   <tr>
@@ -251,7 +265,11 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                         backgroundColor: systemColors.BLUE
                       }}
                     >
-                      -{formatPrice(Number(sale.discountValue))}
+                      -
+                      {formatPrice(
+                        Number(sale.discountValue),
+                        sale.company?.currency
+                      )}
                     </td>
                   </tr>
                 )}
@@ -278,7 +296,11 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                         backgroundColor: systemColors.BLUE
                       }}
                     >
-                      -{formatPrice(Number(sale.visit?.value))}
+                      -
+                      {formatPrice(
+                        Number(sale.visit?.value),
+                        sale.company?.currency
+                      )}
                     </td>
                   </tr>
                 )}
@@ -512,7 +534,8 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               </p>
               <p>{labels?.client}</p>
               <p>
-                {sale.company?.city}, {formatDateText(sale.createdAt!)}
+                {sale.company?.city},{' '}
+                {formatDateText(sale.createdAt!, sale.company?.currency)}
               </p>
             </div>
           </Footer>
@@ -593,7 +616,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     }}
                   >
                     <Image
-                      style={{ height: '200px', maxWidth: '350px' }}
+                      style={{ height: '180px', maxWidth: '350px' }}
                       src={sale.image1}
                     />
                   </Col>
@@ -608,7 +631,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                     }}
                   >
                     <Image
-                      style={{ height: '200px', maxWidth: '350px' }}
+                      style={{ height: '180px', maxWidth: '350px' }}
                       src={sale.image2}
                     />
                   </Col>

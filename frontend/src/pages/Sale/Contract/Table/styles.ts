@@ -18,7 +18,7 @@ export const Clause = styled.div`
 export const Footer = styled.div`
   display: flex;
   justify-content: space-around;
-  margin-bottom: 50px;
+  /* margin-bottom: 50px; */
   div {
     p {
       width: 320px;
