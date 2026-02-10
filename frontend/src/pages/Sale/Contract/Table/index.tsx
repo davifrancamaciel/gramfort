@@ -332,8 +332,6 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               <p>
                 {sale.company?.agencyBank} {sale.company?.fantasyName} Pix{' '}
                 {labels?.cpfCnpj} {sale.company?.pixKey}
-              </p>
-              <p>
                 {labels?.expectedDateForApplication}{' '}
                 <strong>
                   {sale.expectedDateForApplication
