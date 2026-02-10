@@ -46,10 +46,9 @@ import { Company } from 'pages/Company/interfaces';
 import { currency, displayValue } from 'utils';
 
 const CreateEdit: React.FC = (props: any) => {
-  const { companies, userAuthenticated } = useAppContext();
+  const {users, setUsers , companies, userAuthenticated } = useAppContext();
   const history = useHistory();
-  const [path, setPath] = useState('');
-  const { users, setUsers } = useAppContext();
+  const [path, setPath] = useState(''); 
   const [usersOptions, setUsersOptions] = useState<IOptions[]>();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');

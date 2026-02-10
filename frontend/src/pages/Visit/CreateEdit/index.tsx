@@ -22,9 +22,10 @@ import UploadImages from 'components/UploadImages';
 import { useAppContext } from 'hooks/contextLib';
 import { IOptions } from 'utils/commonInterfaces';
 import { Users } from 'pages/User/interfaces';
+import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 
 const CreateEdit: React.FC = (props: any) => {
-  const { companies } = useAppContext();
+  const { companies, userAuthenticated } = useAppContext();
   const history = useHistory();
   const { state, dispatch } = useFormState(initialStateForm);
   const [type, setType] = useState<'create' | 'update'>('create');
@@ -35,15 +36,19 @@ const CreateEdit: React.FC = (props: any) => {
 
   useEffect(() => {
     onLoadUser();
+  }, []);
+
+  useEffect(() => {
     props.match.params.id && get(props.match.params.id);
     props.match.params.id ? setType('update') : setType('create');
   }, [props.match.params.id]); // eslint-disable-line
-  
+
   useEffect(() => {
     const filtered = users?.filter(
       (u: Users) => u.companyId === state.companyId
     );
     setUsersOptions(filtered);
+    console.log(state);
   }, [state.companyId]);
 
   const get = async (id: string) => {
@@ -101,6 +106,14 @@ const CreateEdit: React.FC = (props: any) => {
       const resp = await api.get(`${apiRoutes.users}/all`);
 
       setUsers(resp.data);
+      const { signInUserSession } = userAuthenticated;
+      const groups = signInUserSession.accessToken.payload['cognito:groups'];
+      if (!checkRouleProfileAccess(groups, roules.administrator)) {
+        const companyId =
+          signInUserSession.idToken.payload['custom:company_id'];
+        dispatch({ companyId });
+      }
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
