@@ -75,6 +75,7 @@ export interface Sale {
   image5?: string;
   image6?: string;
   path?: string;
+  lineBreak?: string;
 }
 
 export const initialStateForm: Sale = {

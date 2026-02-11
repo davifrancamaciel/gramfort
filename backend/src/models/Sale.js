@@ -54,6 +54,7 @@ module.exports = function (sequelize, DataTypes) {
         image4: { type: DataTypes.STRING(500) },
         image5: { type: DataTypes.STRING(500) },
         image6: { type: DataTypes.STRING(500) },
+        lineBreak: { type: DataTypes.STRING(500) },
     });
 
     Sale.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
