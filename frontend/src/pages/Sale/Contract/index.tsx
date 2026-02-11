@@ -71,10 +71,7 @@ const Contract: React.FC = (props: any) => {
     };
     await api.putPublic(`${apiRoutes.sales}/contract`, objOnSave);
     setLoading(false);
-    const value =
-      Number(sale?.value || 0) -
-      Number(sale?.visit?.value || 0) -
-      Number(sale?.discountValue || 0);
+    const value = Number(sale?.value || 0);
 
     const sendPhone = sale?.company?.financePhone
       ? sale?.company?.financePhone

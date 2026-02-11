@@ -271,7 +271,7 @@ module.exports.update = async (event) => {
         if (body.action)
             return updateSimple(item, body);
 
-        const value = sum(body.productsSales, 'valueAmount');
+        const value = getTotalSale(body);
         const valueInput = sum(body.costsSales, 'valueAmount');
         const valuePerMeter = calcValueMeter(body);
         const objOnSave = {
@@ -419,7 +419,7 @@ const getCommission = async (userId) => {
 const createSale = async (objOnSave, body) => {
 
     objOnSave.commission = await getCommission(objOnSave.userId);
-    objOnSave.value = sum(body.productsSales, 'valueAmount');
+    objOnSave.value = getTotalSale(body);
     objOnSave.valuePerMeter = calcValueMeter(body);
 
     const valueInput = sum(body.costsSales, 'valueAmount');
@@ -468,4 +468,15 @@ const calcValueMeter = (body) => {
     const valuePerMeter = value / amount;
 
     return valuePerMeter;
+}
+
+const getTotalSale = (body) => {
+
+    let value = sum(body.productsSales, 'valueAmount');
+    if (discountValue)
+        value = value - discountValue;
+    if (visitId && visit)
+        value = value - Number(visit.value);
+
+    return value;
 }

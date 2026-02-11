@@ -189,7 +189,7 @@ const List: React.FC = () => {
       sorter: true
     });
     arrayCols.push({
-      title: 'Custos+descontos',
+      title: 'Custos',
       dataIndex: 'valueCostFormatted',
       sorter: true
     });
