@@ -6,7 +6,12 @@ import { Sale } from '../../interfaces';
 import Card from 'components/Card';
 import { appRoutes, systemColors } from 'utils/defaultValues';
 import { Header, Container } from 'components/Card/styles';
-import { getBalanceValue, getCostValue, getType } from '../../utils';
+import {
+  getBalanceValue,
+  getCostValue,
+  getDiscountValue,
+  getType
+} from '../../utils';
 import { useAppContext } from 'hooks/contextLib';
 
 export interface PropTypes {
@@ -43,7 +48,7 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
       0
     );
     const discount = sales.reduce(
-      (acc: number, s: Sale) => acc + getCostValue(s, false),
+      (acc: number, s: Sale) => acc + getDiscountValue(s),
       0
     );
     const balance = sales.reduce(
@@ -58,6 +63,16 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
   return (
     <Container>
       <Header>
+        {path === appRoutes.contracts && (
+          <Card
+            loading={loading}
+            value={`${formatPrice(total.discount, companySelected?.currency)}`}
+            color={systemColors.BLUE}
+            text={`DESCONTOS`}
+            icon={<DollarOutlined />}
+          />
+        )}
+
         <Card
           loading={loading}
           value={formatPrice(total.total, companySelected?.currency)}
@@ -67,29 +82,23 @@ const Cards: React.FC<PropTypes> = ({ sales, loading }) => {
         />
 
         {path === appRoutes.sales && (
-          <Card
-            loading={loading}
-            value={`-${formatPrice(total.cost, companySelected?.currency)}`}
-            color={systemColors.LIGHT_PINK}
-            text={`CUSTOS`}
-            icon={<DollarOutlined />}
-          />
+          <>
+            <Card
+              loading={loading}
+              value={`-${formatPrice(total.cost, companySelected?.currency)}`}
+              color={systemColors.LIGHT_PINK}
+              text={`CUSTOS`}
+              icon={<DollarOutlined />}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(total.balance, companySelected?.currency)}
+              color={systemColors.GREEN}
+              text={`SALDO`}
+              icon={<DollarOutlined />}
+            />
+          </>
         )}
-        <Card
-          loading={loading}
-          value={`-${formatPrice(total.discount, companySelected?.currency)}`}
-          color={systemColors.BLUE}
-          text={`DESCONTOS`}
-          icon={<DollarOutlined />}
-        />
-
-        <Card
-          loading={loading}
-          value={formatPrice(total.balance, companySelected?.currency)}
-          color={systemColors.GREEN}
-          text={`SALDO`}
-          icon={<DollarOutlined />}
-        />
       </Header>
     </Container>
   );

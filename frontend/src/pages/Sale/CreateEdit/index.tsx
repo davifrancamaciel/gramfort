@@ -44,6 +44,7 @@ import { language } from 'utils/languages';
 import ContractButton from '../Contract/Button';
 import { Company } from 'pages/Company/interfaces';
 import { currency, displayValue } from 'utils';
+import { Editor } from 'primereact/editor';
 
 const CreateEdit: React.FC = (props: any) => {
   const { users, setUsers, companies, userAuthenticated } = useAppContext();
@@ -231,8 +232,8 @@ const CreateEdit: React.FC = (props: any) => {
         type === 'update'
           ? 'Editar'
           : path === appRoutes.sales
-            ? 'Nova'
-            : 'Novo'
+          ? 'Nova'
+          : 'Novo'
       } ${getTitle(path).toLocaleLowerCase()}`}
       type={type}
       onClickActionButton={action}
@@ -537,12 +538,14 @@ const CreateEdit: React.FC = (props: any) => {
       </Col>
       {path == appRoutes.contracts && (
         <Col lg={24} md={24} sm={24} xs={24}>
-          <Textarea
-            label={'Quebra de linhas no contrato'}
-            placeholder="Para adicionar quebras de linhas no contrato bastar presionar enter"
+          <Divider>Quebra de linhas no contrato</Divider>
+          <Editor
             value={state.lineBreak}
-            onChange={(e) => dispatch({ lineBreak: e.target.value })}
-          />
+            onTextChange={(e: any) =>
+              dispatch({ lineBreak: e.htmlValue })
+            }
+            style={{ minHeight: '100px' }}
+          />         
         </Col>
       )}
       {path == appRoutes.contracts && (

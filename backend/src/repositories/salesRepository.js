@@ -17,8 +17,8 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
     const [result] = await executeSelect(query);
     const [m2] = await productsM2(date, isAdm, user, companyId);
     const [visits] = await visitsPaidOut(date, isAdm, user, companyId);
-    const [visitsInSales] = await totalValueVisitsInSalesMonth(date, isAdm, user, companyId);
-    return { ...result, ...m2, ...visits, ...visitsInSales }
+    // const [visitsInSales] = await totalValueVisitsInSalesMonth(date, isAdm, user, companyId);
+    return { ...result, ...m2, ...visits }
 }
 
 const productsM2 = async (date, isAdm, user, companyId) => {
@@ -55,20 +55,20 @@ const visitsPaidOutDre = async (date, isAdm, user, companyId) => {
     return result
 }
 
-const totalValueVisitsInSalesMonth = async (date, isAdm, user, companyId) => {
-    const start = startOfMonth(date).toISOString();
-    const end = endOfMonth(date).toISOString();
-    const query = ` SELECT SUM(v.value) totalValueVisitsInSalesMonth FROM visits v 
-                    INNER JOIN sales s ON s.visitId = v.id 
-                    WHERE v.paidOut = true AND 
-                          s.approved = true AND 
-                          v.paymentDate BETWEEN '${start}' AND '${end}' AND 
-                          s.saleDate    BETWEEN '${start}' AND '${end}' 
-                    ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
+// const totalValueVisitsInSalesMonth = async (date, isAdm, user, companyId) => {
+//     const start = startOfMonth(date).toISOString();
+//     const end = endOfMonth(date).toISOString();
+//     const query = ` SELECT SUM(v.value) totalValueVisitsInSalesMonth FROM visits v 
+//                     INNER JOIN sales s ON s.visitId = v.id 
+//                     WHERE v.paidOut = true AND 
+//                           s.approved = true AND 
+//                           v.paymentDate BETWEEN '${start}' AND '${end}' AND 
+//                           s.saleDate    BETWEEN '${start}' AND '${end}' 
+//                     ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
 
-    const result = await executeSelect(query);
-    return result
-}
+//     const result = await executeSelect(query);
+//     return result
+// }
 
 const andCompany = (companyId, alias = 's') =>
     companyId ? `AND ${alias}.companyId IN ('${companyId}')` : ''

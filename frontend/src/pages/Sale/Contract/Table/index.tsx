@@ -239,7 +239,12 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   ></td>
                   <td>{labels?.totalService}</td>
                   <td>
-                    {formatPrice(Number(sale.value), sale.company?.currency)}
+                    {formatPrice(
+                      Number(sale.value) +
+                        Number(sale.discountValue || 0) +
+                        Number(sale.visit?.value || 0),
+                      sale.company?.currency
+                    )}
                   </td>
                 </tr>
                 {sale.discountDescription && sale.discountValue && (
@@ -457,7 +462,14 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               )}
             </Clause>
           </div>
-          {sale?.lineBreak && sale.lineBreak}
+
+          {sale?.lineBreak && (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: sale?.lineBreak
+              }}
+            />
+          )}
           <Footer>
             <div
               style={{

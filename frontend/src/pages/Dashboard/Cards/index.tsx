@@ -100,14 +100,13 @@ const Cards: React.FC = () => {
       false
     );
     setExpenses(_expenses);
-    const valueVisits =
-      Number(cards?.sales.totalValueVisitsMonth!) -
-      Number(cards?.sales.totalValueVisitsInSalesMonth!);
+    const valueVisits = Number(cards?.sales.totalValueVisitsMonth!);
 
-    const _faturamento = Number(cards?.sales.totalValueMonth!) + valueVisits;
+    const _faturamento = Number(cards?.sales.totalValueMonth!);
     setFaturamento(_faturamento);
 
-    const _bruto = _faturamento - cards?.sales.totalValueInputMonth!;
+    const _bruto =
+      _faturamento + valueVisits - cards?.sales.totalValueInputMonth!;
     setBruto(_bruto);
 
     const _liquido = _bruto - _expenses.totalValueMonth;
@@ -144,11 +143,19 @@ const Cards: React.FC = () => {
       value: formatPrice(faturamento),
       color: systemColors.GREEN,
       text: `vendas (${cards?.sales.count!})`,
-      subText: `Visitas ${formatPrice(cards.sales.totalValueVisitsMonth)} (${
-        cards.sales.countVisis
-      })`,
       icon: <ArrowDownOutlined />,
       url: `${appRoutes.sales}?dateReference=${dateEn}`
+    } as CardPropTypes;
+  };
+
+  const handleCardVisitsMonth = (cards: CardsResult) => {
+    return {
+      loading,
+      value: formatPrice(cards.sales.totalValueVisitsMonth),
+      color: systemColors.GREEN,
+      text: `Visitas (${cards.sales.countVisis!})`,
+      icon: <ArrowDownOutlined />,
+      url: `${appRoutes.visits}`
     } as CardPropTypes;
   };
 
@@ -267,6 +274,7 @@ const Cards: React.FC = () => {
         )}
         {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
           <>
+            <Card {...handleCardVisitsMonth(cards)} />
             <Card {...handleCardSaleMonth(cards)} />
             <Card {...handleCardSaleInputMonth(cards)} />
             <Card {...handleCardFaturamentotMonth(cards)} />

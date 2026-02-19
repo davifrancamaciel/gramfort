@@ -40,6 +40,12 @@ export const getBalanceValue = (sale: Sale, isSubCost: boolean = false) => {
   return value;
 };
 
+export const getDiscountValue = (sale: Sale) => {
+  const value =
+    Number(sale.discountValue || 0) + Number(sale.visit?.value || 0);
+  return value;
+};
+
 export const getCostValue = (sale: Sale, isSumCost: boolean = false) => {
   const value = Number(isSumCost ? sale.valueInput : 0);
   return value;

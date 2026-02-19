@@ -104,7 +104,8 @@ const Print: React.FC<PropTypes> = ({ item }) => {
               justifyContent: 'center'
             }}
           >
-            {item.company?.city}, {formatDateText(item.createdAt!)}
+            {item.company?.city},{' '}
+            {formatDateText(item.createdAt!, item.company?.currency)}
           </p>
 
           <div

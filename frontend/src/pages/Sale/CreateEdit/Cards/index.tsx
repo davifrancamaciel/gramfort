@@ -67,7 +67,7 @@ const Cards: React.FC<PropTypes> = ({
           loading={false}
           value={formatPrice(totals.total || 0, currency)}
           color={systemColors.GREEN}
-          text={`Total`}
+          text={typePath === appRoutes.contracts ? 'BRUTO' : `TOTAL`}
           icon={<DollarOutlined />}
         />
 
@@ -76,7 +76,7 @@ const Cards: React.FC<PropTypes> = ({
             loading={false}
             value={`-${formatPrice(totals.visit || 0, currency)}`}
             color={systemColors.BLUE}
-            text={`Desconto visita`}
+            text={`DESCONTO VISITA`}
             icon={<DollarOutlined />}
           />
         )}
@@ -93,8 +93,8 @@ const Cards: React.FC<PropTypes> = ({
           <Card
             loading={false}
             value={`-${formatPrice(totals.cost || 0, currency)}`}
-            color={systemColors.BLUE}
-            text={`Total de custos`}
+            color={systemColors.LIGHT_PINK}
+            text={`CUSTOS`}
             icon={<DollarOutlined />}
           />
         )}
@@ -103,7 +103,7 @@ const Cards: React.FC<PropTypes> = ({
           loading={false}
           value={formatPrice(totals.balance || 0, currency)}
           color={systemColors.GREEN}
-          text={`Saldo`}
+          text={typePath === appRoutes.contracts ? 'TOTAL' :`SALDO`}
           icon={<DollarOutlined />}
         />
       </Header>

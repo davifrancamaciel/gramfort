@@ -28,6 +28,7 @@ import {
   createMessageShare,
   getBalance,
   getCostValue,
+  getDiscountValue,
   getTableColl,
   getTitle,
   getType
@@ -103,10 +104,22 @@ const List: React.FC = () => {
               p.client?.name
             ),
           companyName: p.company?.name,
+          originalValue: formatPrice(
+            Number(p.value!) + getDiscountValue(p),
+            p.company?.currency
+          ),
+          valueTotalDiscount: formatPrice(
+            getDiscountValue(p),
+            p.company?.currency
+          ),
           valueFormatted: formatPrice(Number(p.value!), p.company?.currency),
-          valuePerMeterFormatted: formatPrice(Number(p.valuePerMeter) || 0, p.company?.currency),
+          valuePerMeterFormatted: formatPrice(
+            Number(p.valuePerMeter) || 0,
+            p.company?.currency
+          ),
           valueCostFormatted: formatPrice(
-            getCostValue(p, path === appRoutes.sales), p.company?.currency
+            getCostValue(p, path === appRoutes.sales),
+            p.company?.currency
           ),
           balanceFormatted: getBalance(p, path === appRoutes.sales),
           productsFormatted: formatProductName(p.productsSales),
@@ -182,18 +195,28 @@ const List: React.FC = () => {
     arrayCols.push({ title: 'Código', dataIndex: 'id', sorter: true });
     arrayCols.push({ title: 'Data', dataIndex: 'saleDate', sorter: true });
     arrayCols.push({ title: 'Empresa', dataIndex: 'companyName' });
-    //  arrayCols.push({ title: 'Produtos', dataIndex: 'productsFormatted' });
+
+    if (path === appRoutes.contracts) {
+      arrayCols.push({
+        title: 'Valor orirginal',
+        dataIndex: 'originalValue'
+      });
+      arrayCols.push({ title: 'Descontos', dataIndex: 'valueTotalDiscount' });
+    }
+
     arrayCols.push({
       title: 'Valor',
       dataIndex: 'valueFormatted',
       sorter: true
     });
-    arrayCols.push({
-      title: 'Custos',
-      dataIndex: 'valueCostFormatted',
-      sorter: true
-    });
-    arrayCols.push({ title: 'Saldo', dataIndex: 'balanceFormatted' });
+    if (path === appRoutes.sales) {
+      arrayCols.push({
+        title: 'Custos',
+        dataIndex: 'valueCostFormatted',
+        sorter: true
+      });
+      arrayCols.push({ title: 'Saldo', dataIndex: 'balanceFormatted' });
+    }
     arrayCols.push({
       title: 'Valor med M2',
       dataIndex: 'valuePerMeterFormatted',

@@ -7,7 +7,9 @@ export const { format: formatPriceBrl } = new Intl.NumberFormat('pt-BR', {
 
 export const { format: formatPricePyg } = new Intl.NumberFormat('es-PY', {
   style: 'currency',
-  currency: utils.currency.PYG
+  currency: utils.currency.PYG,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
 });
 
 export const formatPrice = (value: number, currency?: string) => {

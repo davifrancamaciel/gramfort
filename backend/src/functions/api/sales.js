@@ -296,7 +296,7 @@ module.exports.update = async (event) => {
         objOnSave.commission = await getCommission(objOnSave.userId);
         const result = await item.update(objOnSave);
         await createProductsSales(body, result, true);
-        await addImage(result, body)
+
         console.log('PARA ', result.dataValues)
 
         await setSaleVisit(result);
@@ -354,6 +354,14 @@ module.exports.delete = async (event) => {
             return handlerResponse(403, {}, 'Usuário não tem permissão remover este cadastro');
 
         await Sale.destroy({ where: { id } });
+        
+        await imageService.remove(item.image1);
+        await imageService.remove(item.image2);
+        await imageService.remove(item.image3);
+        await imageService.remove(item.image4);
+        await imageService.remove(item.image5);
+        await imageService.remove(item.image6);
+
         return handlerResponse(200, {}, `${RESOURCE_NAME} código (${id}) removido com sucesso`)
     } catch (err) {
         return await handlerErrResponse(err, pathParameters)
@@ -473,10 +481,10 @@ const calcValueMeter = (body) => {
 const getTotalSale = (body) => {
 
     let value = sum(body.productsSales, 'valueAmount');
-    if (discountValue)
-        value = value - discountValue;
-    if (visitId && visit)
-        value = value - Number(visit.value);
+    if (body.discountValue)
+        value = value - body.discountValue;
+    if (body.visitId && body.visit)
+        value = value - Number(body.visit.value);
 
     return value;
 }
