@@ -3,7 +3,7 @@
   <img src="frontend/src/assets/favicon.png" style='height:40px'> O SISGRAM é um projeto desenvolvido para atender clientes que possuem empresas atividades voltadas para aplicação de <a href='https://www.google.com/search?q=o+que+%C3%A9+hidrossemeadura&oq=o+que+%C3%A9+hidroseme&gs_lcrp=EgZjaHJvbWUqCwgBEAAYChgLGIAEMgYIABBFGDkyCwgBEAAYChgLGIAEMgsIAhAAGAoYCxiABDIKCAMQABiABBiiBDIKCAQQABiABBiiBDIKCAUQABiABBiiBDIKCAYQABiABBiiBNIBCTE4OTQ1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8' target='_blank'>hidrosemeadura</a>.
 </h3>
 
-<img src="frontend/src/assets/favicon.png" style='width:1000px'> 
+<img src="frontend/src/assets/dashboard.png" style='width:1000px'> 
 
 ## **:rocket: OBJETIVO**
 
