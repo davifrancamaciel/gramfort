@@ -1,32 +1,16 @@
 
 <h3 align="center">
-  <img src="frontend/src/assets/favicon.png" style='height:40px'> O Integrador Vivino é um projeto desenvolvido integraçoes de vinhos com a plataforma de marketplace 
-  <a href='https://www.vivino.com/BR/pt-BR' target='_blank'>Vivino</a>.
+  <img src="frontend/src/assets/favicon.png" style='height:40px'> O SISGRAM é um projeto desenvolvido para atender clientes que possuem empresas atividades voltadas para aplicação de <a href='https://www.google.com/search?q=o+que+%C3%A9+hidrossemeadura&oq=o+que+%C3%A9+hidroseme&gs_lcrp=EgZjaHJvbWUqCwgBEAAYChgLGIAEMgYIABBFGDkyCwgBEAAYChgLGIAEMgsIAhAAGAoYCxiABDIKCAMQABiABBiiBDIKCAQQABiABBiiBDIKCAUQABiABBiiBDIKCAYQABiABBiiBNIBCTE4OTQ1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8' target='_blank'>hidrosemeadura</a>.
 </h3>
+
+<img src="frontend/src/assets/favicon.png" style='width:1000px'> 
 
 ## **:rocket: OBJETIVO**
 
-Projeto desenvolvido inicialmente para integração de Vinhos na plataforma Vivino, gerenciar usuários por perfis definidos e posteriormente adicionadas novas funcionalidades como vendas, despesas, roamenios de entregas utilizando [AWS Lambda][aws_lambda] com [Node Js][node] no backend e [React][react] + [TypeScript][typescript] no frontend
-
-Na segunda versão o projeto ganhou mais integrações com a Vivino sendo possível agora capturar as vendas na plataforma e atualizar o estoque gerando cadastro das vendas no app Vivino e gerando um histórico de vendas de cada vinho. Foi também desmembrado de forma que agora possam ser adicionados vários clientes que possuam o mesmo interesse de vender seus vinhos na Vivino desta forma cada empresa possuirá uma conta no integrador totalmente isolada.
-
-Visto a necessidade de desmembramento do sistema para que cada empresa possua a sua conta e um ambiente segmentado por perfis definidos agora também é possível ter varias contas de lojas que queiram controlar suas vendas, despesas, produtos, usuários de forma digital.
-
-Foi adicionado um dashboard para que todas as informações contidas no sistema sejam cruzadas e informadas ao usuário para que o mesmo possa ver a saúde de sua empresa.
+Projeto desenvolvido para gerenciar usuários, clientes, vendas, contratos, despesas, compras, veiculos visitas por perfis definidos  utilizando [AWS Lambda][aws_lambda] com [Node Js][node] no backend e [React][react] + [TypeScript][typescript] no frontend
 
 Para que tudo isso possa acontecer agora o sistema conta com mais tecnologias como SQS, S3 Amazon EventBridge e muito mais.
--  [Demo V1](http://vivino-integrator-dev.s3-website-us-east-1.amazonaws.com) 
-Credenciais
-```sh
-login integradorvivino
-senha 1234demo
-```
--  [Demo V2](http://gramfort-dev.s3-website-us-east-1.amazonaws.com) 
-Credenciais
-```sh
-login integradorvivino@gmail.com
-senha 1234demo
-```
+-  [Demo V1](https://appsisgram.web.app) 
 
 ## **:computer: TECNOLOGIAS**
 
