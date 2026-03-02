@@ -119,7 +119,7 @@ module.exports.list = async (event, context) => {
             }, {
                 model: Company, as: 'company', attributes: ['name', 'image', 'individualCommission', 'currency'],
             }, {
-                model: Visit, as: 'visit', attributes: ['km', 'state', 'city', 'address', 'date', 'value', 'note'],
+                model: Visit, as: 'visit', attributes: ['km', 'state', 'city', 'address', 'date', 'value'],
             }]
         })
         const salesIds = rows.map(x => x.id)
@@ -190,7 +190,7 @@ const listByIdResult = async (id) => {
             {
                 model: Visit,
                 as: 'visit',
-                attributes: ['km', 'state', 'city', 'address', 'date', 'value', 'note'],
+                attributes: ['km', 'state', 'city', 'address', 'date', 'value'],
                 include: [{
                     model: User,
                     as: 'user',

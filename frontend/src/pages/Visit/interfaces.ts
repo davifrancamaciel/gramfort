@@ -27,8 +27,7 @@ export interface Visit {
   companyId?: string;
   state?: string;
   city?: string;
-  address?: string;
-  note?: string;
+  address?: string;  
 }
 
 export const initialStateForm: Visit = {
@@ -44,8 +43,7 @@ export const initialStateForm: Visit = {
 export interface Filter {
   id?: string;
   clientName?: string;
-  title?: string;
-  description?: string;
+  title?: string;  
   createdAtStart?: string;
   createdAtEnd?: string;
   paymentDateStart?: string;
@@ -61,7 +59,6 @@ export const initialStateFilter: Filter = {
   id: '',
   clientName: '',
   title: '',
-  description: '',
   pageNumber: 1,
   pageSize: 100
 };

@@ -9,7 +9,6 @@ const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { roules } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
-const imageService = require("../../services/ImageService");
 const { getCompaniesIds } = require("../../repositories/companiesRepository");
 
 const RESOURCE_NAME = 'Visita'
@@ -189,9 +188,7 @@ module.exports.create = async (event) => {
             objOnSave.companyId = user.companyId
 
 
-        const result = await Visit.create(objOnSave);
-
-        await imageService.add('visits', result.dataValues, body.fileList);
+        const result = await Visit.create(objOnSave);        
 
         return handlerResponse(201, result, `${RESOURCE_NAME} criada com sucesso`)
     } catch (err) {
@@ -225,8 +222,6 @@ module.exports.update = async (event) => {
         const result = await item.update(body);
         console.log('PARA ', result.dataValues)
 
-        await imageService.add('visits', result.dataValues, body.fileList);
-
         return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso. ${message}`)
     } catch (err) {
         return await handlerErrResponse(err, body)
@@ -250,8 +245,6 @@ module.exports.delete = async (event) => {
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar este cadastro');
 
         await Visit.destroy({ where: { id } });
-
-        await imageService.remove(item.image);
 
         return handlerResponse(200, {}, `${RESOURCE_NAME} código (${id}) removida com sucesso`)
     } catch (err) {

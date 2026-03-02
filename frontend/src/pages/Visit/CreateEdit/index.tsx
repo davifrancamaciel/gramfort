@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Col, notification, UploadFile } from 'antd';
-import {
-  DatePicker,
-  Input,
-  Select,
-  Switch,
-  Textarea
-} from 'components/_inputs';
+import { Col, notification } from 'antd';
+import { DatePicker, Input, Select, Switch } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import ShowByRoule from 'components/ShowByRoule';
 import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
@@ -18,7 +12,6 @@ import {
   formatValueWhithDecimalCaseOnChange,
   priceToNumber
 } from 'utils/formatPrice';
-import UploadImages from 'components/UploadImages';
 import { useAppContext } from 'hooks/contextLib';
 import { IOptions } from 'utils/commonInterfaces';
 import { Users } from 'pages/User/interfaces';
@@ -32,7 +25,6 @@ const CreateEdit: React.FC = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [usersOptions, setUsersOptions] = useState<IOptions[]>();
-  const [fileList, setFileList] = useState<Array<UploadFile>>([]);
 
   useEffect(() => {
     onLoadUser();
@@ -59,17 +51,7 @@ const CreateEdit: React.FC = (props: any) => {
         ...resp.data,
         value: formatValueWhithDecimalCaseOnChange(resp.data?.value)
       });
-      if (resp.data && resp.data.image) {
-        const imageArr = resp.data.image.split('/');
-        setFileList([
-          {
-            uid: '-1',
-            name: imageArr[imageArr.length - 1],
-            status: 'done',
-            url: resp.data.image
-          }
-        ]);
-      }
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -88,8 +70,7 @@ const CreateEdit: React.FC = (props: any) => {
       const method = type === 'update' ? 'put' : 'post';
       const result = await api[method](apiRoutes.visits, {
         ...state,
-        value: priceToNumber(state.value),
-        fileList
+        value: priceToNumber(state.value)
       });
 
       setLoading(false);
@@ -221,14 +202,6 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={(e) => dispatch({ address: e.target.value })}
         />
       </Col>
-      {/* <Col lg={24} md={24} sm={24} xs={24}>
-        <Textarea
-          label={'Observações'}
-          placeholder=""
-          value={state.note}
-          onChange={(e) => dispatch({ note: e.target.value })}
-        />
-      </Col> */}
       <Col lg={3} md={4} sm={6} xs={24}>
         <Switch
           label={'Paga'}
@@ -260,16 +233,6 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={() => dispatch({ sale: !state.sale })}
         />
       </Col>
-
-      {/* <Col
-        lg={6}
-        md={12}
-        sm={24}
-        xs={24}
-        style={{ display: 'flex', justifyContent: 'center' }}
-      >
-        <UploadImages setFileList={setFileList} fileList={fileList} />
-      </Col> */}
     </PanelCrud>
   );
 };

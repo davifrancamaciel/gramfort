@@ -9,18 +9,15 @@ module.exports = function (sequelize, DataTypes) {
         clientId: { type: DataTypes.INTEGER },        
         userId: { type: DataTypes.INTEGER },
         value: { type: DataTypes.DECIMAL },     
-        km: { type: DataTypes.INTEGER },
-        description: { type: DataTypes.STRING(1000) },
+        km: { type: DataTypes.INTEGER },        
         state: { type: DataTypes.STRING(100), },
         city: { type: DataTypes.STRING(100), },
-        address: { type: DataTypes.STRING(300), },
-        image: { type: DataTypes.STRING(500) },
+        address: { type: DataTypes.STRING(300), },       
         date: { type: DataTypes.DATE },     
         paymentDate: { type: DataTypes.DATE },     
         paidOut: { type: DataTypes.BOOLEAN },
         proposal: { type: DataTypes.BOOLEAN },
-        sale: { type: DataTypes.BOOLEAN },
-        note: { type: DataTypes.STRING(500) },
+        sale: { type: DataTypes.BOOLEAN },    
     });
     
     Visit.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });   

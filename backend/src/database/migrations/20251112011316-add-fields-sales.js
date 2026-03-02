@@ -32,7 +32,7 @@ module.exports = {
       await queryInterface.addColumn(TABLE_NAME, "image4", { type: Sequelize.STRING(500) }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "image5", { type: Sequelize.STRING(500) }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "image6", { type: Sequelize.STRING(500) }, { transaction });
-      await queryInterface.addColumn('visits', "note", { type: Sequelize.STRING(500), }, { transaction });
+     
 
       await transaction.commit();
     } catch (err) {
@@ -61,8 +61,7 @@ module.exports = {
       await queryInterface.removeColumn(TABLE_NAME, "image3"),
       await queryInterface.removeColumn(TABLE_NAME, "image4"),
       await queryInterface.removeColumn(TABLE_NAME, "image5"),
-      await queryInterface.removeColumn(TABLE_NAME, "image6"),
-      await queryInterface.removeColumn('visits', "note"),
+      await queryInterface.removeColumn(TABLE_NAME, "image6"),      
     ]);
   },
 };
