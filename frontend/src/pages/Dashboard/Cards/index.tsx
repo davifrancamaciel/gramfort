@@ -22,12 +22,14 @@ import { apiRoutes, appRoutes, expensesTypesEnum } from 'utils/defaultValues';
 import { formatPrice } from 'utils/formatPrice';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import Card from './Card';
-import { Header } from './styles';
+import { Header, Shortcut } from './styles';
 import { formatDateEn } from 'utils/formatDate';
 import { getValueExpensesByTypes } from 'pages/Expense/utils';
 import { ExpenseResult } from 'pages/Expense/interfaces';
 import FastFilter from 'components/FastFilter';
 import { Filter, initialState } from './interfaces';
+import { Divider } from 'antd';
+import { LinkButton } from 'components/_inputs';
 
 const Cards: React.FC = () => {
   const { userAuthenticated } = useAppContext();
@@ -43,6 +45,7 @@ const Cards: React.FC = () => {
   );
   const [investment, setInvestiment] = useState<CardValues>({} as CardValues);
   const [input, setInput] = useState<CardValues>({} as CardValues);
+  const [marketing, setMarketing] = useState<CardValues>({} as CardValues);
   const [cashWithdrawal, setCashWithdrawal] = useState<CardValues>(
     {} as CardValues
   );
@@ -83,6 +86,13 @@ const Cards: React.FC = () => {
     );
     setInput(_input);
 
+    const _marketing = getValueExpensesByTypes(
+      cards?.expensesByType,
+      [expensesTypesEnum.MKT],
+      true
+    );
+    setMarketing(_marketing);
+
     const _cashWithdrawal = getValueExpensesByTypes(
       cards?.expensesByType,
       [expensesTypesEnum.RETIRADAS],
@@ -102,11 +112,10 @@ const Cards: React.FC = () => {
     setExpenses(_expenses);
     const valueVisits = Number(cards?.sales.totalValueVisitsMonth!);
 
-    const _faturamento = Number(cards?.sales.totalValueMonth!);
+    const _faturamento = Number(cards?.sales.totalValueMonth!) + valueVisits;
     setFaturamento(_faturamento);
 
-    const _bruto =
-      _faturamento + valueVisits - cards?.sales.totalValueInputMonth!;
+    const _bruto = _faturamento - cards?.sales.totalValueInputMonth!;
     setBruto(_bruto);
 
     const _liquido = _bruto - _expenses.totalValueMonth;
@@ -142,7 +151,8 @@ const Cards: React.FC = () => {
       loading,
       value: formatPrice(faturamento),
       color: systemColors.GREEN,
-      text: `vendas (${cards?.sales.count!})`,
+      text: `Faturamento (${cards?.sales.count!})`,
+      subText: `Vendas e visitas`,
       icon: <ArrowDownOutlined />,
       url: `${appRoutes.sales}?dateReference=${dateEn}`
     } as CardPropTypes;
@@ -264,6 +274,17 @@ const Cards: React.FC = () => {
             />
             <Card
               loading={loading}
+              value={formatPrice(marketing.totalValueMonth)}
+              color={systemColors.ORANGE}
+              text={`MARKETING (${marketing.count}) ${getPercent(
+                marketing.totalValueMonth,
+                faturamento
+              )}% do faturamento`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+            />
+            <Card
+              loading={loading}
               value={formatPrice(cashWithdrawal.totalValueMonth)}
               color={systemColors.LIGHT_GREY}
               text={`RETIRADAS (${cashWithdrawal.count})`}
@@ -314,6 +335,46 @@ const Cards: React.FC = () => {
           </>
         )}
       </Header>
+      <div>
+        <Divider>Atalhos</Divider>
+        <Shortcut>
+          {Boolean(checkRouleProfileAccess(groups, roules.expenses)) && (
+            <LinkButton
+              to={`${appRoutes.expenses}/create`}
+              title="Criar nova despesa"
+              text="Despesa"
+            />
+          )}
+          {Boolean(checkRouleProfileAccess(groups, roules.clients)) && (
+            <LinkButton
+              to={`${appRoutes.clients}/create`}
+              title="Criar novo cliente"
+              text="Cliente"
+            />
+          )}
+          {Boolean(checkRouleProfileAccess(groups, roules.visit)) && (
+            <LinkButton
+              to={`${appRoutes.visits}/create`}
+              title="Criar nova visita"
+              text="Visita"
+            />
+          )}
+          {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
+            <>
+              <LinkButton
+                to={`${appRoutes.contracts}/create`}
+                title="Criar novo contrato"
+                text="Contrato"
+              />
+              <LinkButton
+                to={`${appRoutes.sales}/create`}
+                title="Criar nova venda"
+                text="Venda"
+              />
+            </>
+          )}
+        </Shortcut>
+      </div>
     </>
   );
 };

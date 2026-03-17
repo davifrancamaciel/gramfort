@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { startOfMonth, endOfMonth } from 'date-fns';
 
 import moment from 'moment';
-import { Col, TableProps } from 'antd';
+import { Col, TableProps, Tooltip } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
@@ -104,7 +104,11 @@ const List: React.FC = () => {
           nameInfoDel: `${getTitle(path)} ${e.title} do tipo ${
             e.expenseType?.name
           }`,
-          expenseTypeName: e.expenseType?.name,
+          expenseTypeName: (
+            <Tooltip title={e.expenseType?.description}>
+              {e.expenseType?.name}
+            </Tooltip>
+          ),
           companyName: e.company?.name,
           value: formatPrice(Number(e.value) || 0, e.company?.currency),
           paymentDate: formatDate(e.paymentDate),

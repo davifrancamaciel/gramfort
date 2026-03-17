@@ -13,6 +13,7 @@ module.exports = {
         primaryKey: true,
       },
       name: { type: Sequelize.STRING(255), },
+      description: { type: Sequelize.STRING(255), },
 
       createdAt: {
         type: Sequelize.DATE,

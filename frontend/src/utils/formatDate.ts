@@ -39,8 +39,11 @@ export const formatDateText = (
         locale: currency === utils.currency.BRL ? pt : es
       });
 
-export const formatDifferenceInYears = (value: string) =>
-  !value ? '' : differenceInYears(new Date(), parseISO(value));
+export const formatDifferenceInYears = (value: any) => {
+  if (!value) return '';
+  const end = value._d ? value._d : parseISO(value);
+  return differenceInYears(new Date(), end);
+};
 
 export const setHour = (date: any, time: any) => {
   try {
@@ -73,11 +76,12 @@ export const duration = (s: number) =>
     locale: pt
   });
 
-export const getPeriod = (value: string) => {
+export const getPeriod = (value: any) => {
   if (!value) return '';
+  const end = value._d ? value._d : parseISO(value);
   const duration = intervalToDuration({
     start: new Date(),
-    end: parseISO(value)
+    end
   });
   let interval = '';
   if (duration.years! > 0)

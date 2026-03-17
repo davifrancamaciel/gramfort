@@ -18,3 +18,9 @@ export const Header = styled.section`
     grid-template-columns: repeat(1, 1fr);
   }
 `;
+
+export const Shortcut = styled.div`
+  justify-content: center;
+  display: flex;
+  align-items: baseline;
+`;

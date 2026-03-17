@@ -12,6 +12,7 @@ import TimePicker from './TimePicker';
 import RangePicker from './RangePicker';
 import InputPassword from './InputPassword';
 import ActionButton from './ActionButton';
+import LinkButton from './LinkButton';
 
 export {
   Label,
@@ -25,5 +26,6 @@ export {
   TimePicker,
   RangePicker,
   InputPassword,
-  ActionButton
+  ActionButton,
+  LinkButton
 };

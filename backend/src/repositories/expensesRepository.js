@@ -59,6 +59,17 @@ const expensesMonthByTypeDash = async (date, isAdm, user, companyId) => {
     return result
 }
 
+const expensesYearByTypeDash = async (date, isAdm, user, companyId) => {
+    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueYear, t.name, t.id FROM expenses e 
+                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
+                    WHERE YEAR(e.paymentDate) = YEAR('${endOfMonth(date).toISOString()}') 
+                    AND e.saleId IS NULL ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
+                    GROUP BY e.expenseTypeId`
+
+    const result = await executeSelect(query);
+    return result
+}
+
 
 const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const dateString = startOfMonth(date).toISOString()
@@ -73,4 +84,4 @@ const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const result = await executeSelect(query);
     return result
 }
-module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType, expensesMonthByTypeDre }
+module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType, expensesMonthByTypeDre, expensesYearByTypeDash }

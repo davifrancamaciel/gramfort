@@ -1,6 +1,7 @@
 import { Company } from '../Company/interfaces';
 export interface ExpenseType {
   name: string;
+  description?: string;
 }
 export interface Expense {
   id?: string;

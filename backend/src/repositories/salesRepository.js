@@ -17,8 +17,19 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
     const [result] = await executeSelect(query);
     const [m2] = await productsM2(date, isAdm, user, companyId);
     const [visits] = await visitsPaidOut(date, isAdm, user, companyId);
-   
+
     return { ...result, ...m2, ...visits }
+}
+
+const salesYearDashboard = async (date, isAdm, user, individualCommission, companyId) => {
+    const query = ` SELECT 
+                        SUM(s.value) totalValueYear                       
+                    FROM sales s 
+                    WHERE s.approved = true AND YEAR(s.saleDate) = YEAR('${date.toISOString()})}' 
+                    ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}
+                    ${individualCommission ? ` AND s.userId = ${user.userId}` : ''}`
+    const [result] = await executeSelect(query);
+    return result
 }
 
 const productsM2 = async (date, isAdm, user, companyId) => {
@@ -82,4 +93,4 @@ const salesMonthExpenseCommission = async (date) => {
     return result
 }
 
-module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre }
+module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre, salesYearDashboard }

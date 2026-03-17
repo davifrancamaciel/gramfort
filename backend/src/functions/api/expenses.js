@@ -128,7 +128,7 @@ module.exports.list = async (event, context) => {
                 {
                     model: ExpenseType,
                     as: 'expenseType',
-                    attributes: ['name'],
+                    attributes: ['name', 'description'],
                     where: whereExpenseTypes
                 },
                 {

@@ -9,13 +9,14 @@ module.exports.listAll = async (event, context) => {
         context.callbackWaitsForEmptyEventLoop = false;
 
         const resp = await ExpenseType.findAll({
-            attributes: ['id', 'name'],
+            attributes: ['id', 'name', 'description'],
             order: [['name', 'ASC']],
         })
 
         const respFormated = resp.filter(x => x.id != 1).map(item => ({
             value: item.id,
             label: item.name,
+            description: item.description
         }));
         return handlerResponse(200, respFormated)
     } catch (err) {
