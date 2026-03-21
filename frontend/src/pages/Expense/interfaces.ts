@@ -35,8 +35,8 @@ export const initialStateForm: Expense = {
 };
 
 export interface Filter {
-  id?: string;
-  expenseTypeName?: string;
+  id?: string;  
+  expenseTypeId?: any;
   userName?: string;
   vehicleModel?: string;
   title?: string;
@@ -51,8 +51,7 @@ export interface Filter {
 }
 
 export const initialStateFilter: Filter = {
-  id: '',
-  expenseTypeName: '',
+  id: '', 
   title: '',
   description: '',
   pageNumber: 1,

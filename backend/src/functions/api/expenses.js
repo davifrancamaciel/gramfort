@@ -33,9 +33,11 @@ module.exports.list = async (event, context) => {
         let ids = [];
 
         const {
-            id, expenseTypeName, title, description, paidOut, expenseTypeId, vehicleModel, userName,
+            id, title, description, paidOut, vehicleModel, userName,
             paymentDateStart, paymentDateEnd, createdAtStart, createdAtEnd, myCommision, companyId, field, order
         } = event.queryStringParameters
+
+        const { expenseTypeId } = event.multiValueQueryStringParameters
 
         if (checkRouleProfileAccess(user.groups, roules.administrator)) {
             ids = await getCompaniesIds(user);
@@ -48,9 +50,6 @@ module.exports.list = async (event, context) => {
             whereStatement.companyId = user.companyId
 
         if (id) whereStatement.id = id;
-
-        if (expenseTypeName)
-            whereExpenseTypes.name = { [Op.like]: `%${expenseTypeName}%` }
 
         if (paidOut !== undefined && paidOut !== '')
             whereStatement.paidOut = paidOut === 'true';
@@ -102,8 +101,9 @@ module.exports.list = async (event, context) => {
             };
         if (myCommision)
             whereStatement.userId = user.userId
+        
         if (expenseTypeId)
-            whereStatement.expenseTypeId = expenseTypeId
+            whereStatement.expenseTypeId = { [Op.in]: expenseTypeId }
         else
             whereStatement.expenseTypeId = { [Op.gt]: 1, }
 
@@ -155,8 +155,8 @@ module.exports.list = async (event, context) => {
         if (Number(pageNumber) == 1) {
             const isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
             const companyIdSearchQuery = companyId ? companyId : ids.map(x => x).join("','");
-            const pay = await expensesRepository.expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyIdSearchQuery);
-            const type = await expensesRepository.expensesMonthByType(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyIdSearchQuery);
+            const pay = await expensesRepository.expensesByPeriod(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyIdSearchQuery);
+            const type = await expensesRepository.expensesMonthByType(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyIdSearchQuery);
             data = { pay, type }
         }
         return handlerResponse(200, { count, rows, data })

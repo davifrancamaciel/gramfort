@@ -22,6 +22,7 @@ module.exports.cards = async (event, context) => {
 
         let data = {
             sales: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 },
+            salesAcc: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 },
             user: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 }
         }
 
@@ -35,7 +36,8 @@ module.exports.cards = async (event, context) => {
             companyId = await getCompaniesIdsMap(user);
 
         if (checkRouleProfileAccess(user.groups, roules.sales)) {
-            data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId)
+            data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId);
+            data.salesAcc = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId, true);
             const query = `SELECT id FROM companies WHERE id = '${user.companyId}' AND individualCommission = true`;
             const [individualCommission] = await executeSelect(query);
             if (individualCommission || isAdm)
@@ -47,6 +49,7 @@ module.exports.cards = async (event, context) => {
         if (checkRouleProfileAccess(user.groups, roules.expenses)) {
             data.expenses = await expensesRepository.expensesMonthDash(date, isAdm, user, companyId);
             data.expensesByType = await expensesRepository.expensesMonthByTypeDash(date, isAdm, user, companyId);
+            data.expensesByTypeAcc = await expensesRepository.expensesMonthByTypeDash(date, isAdm, user, companyId, true);
         }
 
         return handlerResponse(200, data)

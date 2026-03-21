@@ -20,6 +20,16 @@ export interface CardsResult {
     totalValueVisitsMonth: number;
     countVisis: number;
   };
+  salesAcc: {
+    count: number;
+    totalValueCommissionMonth: number;
+    totalValueMonth: number;
+    totalValueInputMonth: number;
+    users: number;
+    m2: number;
+    totalValueVisitsMonth: number;
+    countVisis: number;
+  };
   user: {
     count: number;
     totalValueCommissionMonth: number;
@@ -28,6 +38,7 @@ export interface CardsResult {
   };
   expenses: Array<ExpenseResult>;
   expensesByType: Array<ExpenseResult>;
+  expensesByTypeAcc: Array<ExpenseResult>;
 }
 export interface CardValues {
   count: number;
@@ -45,6 +56,16 @@ export const initialStateCards: CardsResult = {
     totalValueVisitsMonth: 0,
     countVisis: 0
   },
+  salesAcc: {
+    count: 0,
+    totalValueCommissionMonth: 0,
+    totalValueMonth: 0,
+    totalValueInputMonth: 0,
+    users: 0,
+    m2: 0,
+    totalValueVisitsMonth: 0,
+    countVisis: 0
+  },
   user: {
     count: 0,
     totalValueCommissionMonth: 0,
@@ -52,5 +73,6 @@ export const initialStateCards: CardsResult = {
     users: 0
   },
   expenses: [],
-  expensesByType: []
+  expensesByType: [],
+  expensesByTypeAcc: [],
 };

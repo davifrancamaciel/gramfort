@@ -1,9 +1,10 @@
 "use strict";
 
-const { startOfMonth, endOfMonth } = require('date-fns');
+const { startOfMonth, endOfMonth, startOfYear } = require('date-fns');
 const { executeSelect } = require("../services/ExecuteQueryService");
 
-const salesMonthDashboard = async (date, isAdm, user, individualCommission, companyId) => {
+const salesMonthDashboard = async (date, isAdm, user, individualCommission, companyId, acc = false) => {
+    const start = !acc ? startOfMonth(date).toISOString() : startOfYear(date).toISOString();
     const query = ` SELECT 
                         COUNT(s.id) count, 
                         COUNT(DISTINCT s.userId) users,                        
@@ -11,25 +12,14 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
                         SUM(s.valueInput) totalValueInputMonth, 
                         SUM(s.value * (s.commission / 100)) totalValueCommissionMonth
                     FROM sales s 
-                    WHERE s.approved = true AND s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                    WHERE s.approved = true AND s.saleDate BETWEEN '${start}' AND '${endOfMonth(date).toISOString()}' 
                     ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}
                     ${individualCommission ? ` AND s.userId = ${user.userId}` : ''}`
     const [result] = await executeSelect(query);
     const [m2] = await productsM2(date, isAdm, user, companyId);
-    const [visits] = await visitsPaidOut(date, isAdm, user, companyId);
+    const [visits] = await visitsPaidOut(date, isAdm, user, companyId, acc);
 
     return { ...result, ...m2, ...visits }
-}
-
-const salesYearDashboard = async (date, isAdm, user, individualCommission, companyId) => {
-    const query = ` SELECT 
-                        SUM(s.value) totalValueYear                       
-                    FROM sales s 
-                    WHERE s.approved = true AND YEAR(s.saleDate) = YEAR('${date.toISOString()})}' 
-                    ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}
-                    ${individualCommission ? ` AND s.userId = ${user.userId}` : ''}`
-    const [result] = await executeSelect(query);
-    return result
 }
 
 const productsM2 = async (date, isAdm, user, companyId) => {
@@ -44,10 +34,11 @@ const productsM2 = async (date, isAdm, user, companyId) => {
     return result
 }
 
-const visitsPaidOut = async (date, isAdm, user, companyId) => {
+const visitsPaidOut = async (date, isAdm, user, companyId, acc) => {
+    const start = !acc ? startOfMonth(date).toISOString() : startOfYear(date).toISOString();
     const query = ` SELECT COUNT(s.id) countVisis, SUM(s.value) totalValueVisitsMonth FROM visits s 
                     WHERE s.paidOut = true AND 
-                          s.paymentDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                          s.paymentDate BETWEEN '${start}' AND '${endOfMonth(date).toISOString()}' 
                     ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
 
     const result = await executeSelect(query);
@@ -93,4 +84,4 @@ const salesMonthExpenseCommission = async (date) => {
     return result
 }
 
-module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre, salesYearDashboard }
+module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre }

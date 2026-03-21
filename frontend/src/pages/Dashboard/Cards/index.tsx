@@ -14,7 +14,11 @@ import {
   CardValues,
   initialStateCards
 } from './Card/interfaces';
-import { roules, systemColors } from 'utils/defaultValues';
+import {
+  arrayExpensesTypesEnum,
+  roules,
+  systemColors
+} from 'utils/defaultValues';
 import { useAppContext } from 'hooks/contextLib';
 
 import api from 'services/api-aws-amplify';
@@ -31,6 +35,27 @@ import { Filter, initialState } from './interfaces';
 import { Divider } from 'antd';
 import { LinkButton } from 'components/_inputs';
 
+const arrayExpenses = [
+  expensesTypesEnum.INSUMOS,
+  expensesTypesEnum.INVESTIMENTOS,
+  expensesTypesEnum.RETIRADAS,
+  expensesTypesEnum.COMPRAS
+];
+const arrayFilter = arrayExpensesTypesEnum.filter(
+  (x: number) => !arrayExpenses.includes(x)
+);
+const arrayMarketing = [
+  expensesTypesEnum.MKT,
+  expensesTypesEnum.TPAGO,
+  expensesTypesEnum.MOFF,
+  expensesTypesEnum.EVENT,
+  expensesTypesEnum.MPUB
+];
+
+const arrayInput = [expensesTypesEnum.INSUMOS];
+const arrayInvestment = [expensesTypesEnum.INVESTIMENTOS];
+const arrayCashWithdrawal = [expensesTypesEnum.RETIRADAS];
+
 const Cards: React.FC = () => {
   const { userAuthenticated } = useAppContext();
   const [groups, setGroups] = useState<string[]>([]);
@@ -46,11 +71,15 @@ const Cards: React.FC = () => {
   const [investment, setInvestiment] = useState<CardValues>({} as CardValues);
   const [input, setInput] = useState<CardValues>({} as CardValues);
   const [marketing, setMarketing] = useState<CardValues>({} as CardValues);
+  const [marketingAcc, setMarketingAcc] = useState<CardValues>(
+    {} as CardValues
+  );
   const [cashWithdrawal, setCashWithdrawal] = useState<CardValues>(
     {} as CardValues
   );
   const [expenses, setExpenses] = useState<CardValues>({} as CardValues);
   const [faturamento, setFaturamento] = useState<number>(0);
+  const [faturamentoAcc, setFaturamentoAcc] = useState<number>(0);
   const [liquido, setLiquido] = useState<number>(0);
   const [box, setBox] = useState<number>(0);
   const [bruto, setBruto] = useState<number>(0);
@@ -74,39 +103,42 @@ const Cards: React.FC = () => {
 
     const _investment = getValueExpensesByTypes(
       cards?.expensesByType,
-      [expensesTypesEnum.INVESTIMENTOS],
+      arrayInvestment,
       true
     );
     setInvestiment(_investment);
 
     const _input = getValueExpensesByTypes(
       cards?.expensesByType,
-      [expensesTypesEnum.INSUMOS],
+      arrayInput,
       true
     );
     setInput(_input);
 
     const _marketing = getValueExpensesByTypes(
       cards?.expensesByType,
-      [expensesTypesEnum.MKT],
+      arrayMarketing,
       true
     );
     setMarketing(_marketing);
 
+    const _marketingAcc = getValueExpensesByTypes(
+      cards?.expensesByType,
+      arrayMarketing,
+      true
+    );
+    setMarketingAcc(_marketingAcc);
+
     const _cashWithdrawal = getValueExpensesByTypes(
       cards?.expensesByType,
-      [expensesTypesEnum.RETIRADAS],
+      arrayCashWithdrawal,
       true
     );
     setCashWithdrawal(_cashWithdrawal);
 
     const _expenses = getValueExpensesByTypes(
       cards?.expensesByType,
-      [
-        expensesTypesEnum.INSUMOS,
-        expensesTypesEnum.INVESTIMENTOS,
-        expensesTypesEnum.RETIRADAS
-      ],
+      arrayExpenses,
       false
     );
     setExpenses(_expenses);
@@ -114,6 +146,11 @@ const Cards: React.FC = () => {
 
     const _faturamento = Number(cards?.sales.totalValueMonth!) + valueVisits;
     setFaturamento(_faturamento);
+
+    const _faturamentoAcc =
+      Number(cards?.salesAcc.totalValueMonth!) +
+      Number(cards?.salesAcc.totalValueVisitsMonth!);
+    setFaturamentoAcc(_faturamentoAcc);
 
     const _bruto = _faturamento - cards?.sales.totalValueInputMonth!;
     setBruto(_bruto);
@@ -154,7 +191,7 @@ const Cards: React.FC = () => {
       text: `Faturamento (${cards?.sales.count!})`,
       subText: `Vendas e visitas`,
       icon: <ArrowDownOutlined />,
-      url: `${appRoutes.sales}?dateReference=${dateEn}`
+      url: `${appRoutes.sales}?_date=${dateEn}`
     } as CardPropTypes;
   };
 
@@ -165,7 +202,7 @@ const Cards: React.FC = () => {
       color: systemColors.GREEN,
       text: `Visitas (${cards.sales.countVisis!})`,
       icon: <ArrowDownOutlined />,
-      url: `${appRoutes.visits}`
+      url: `${appRoutes.visits}?_date=${dateEn}`
     } as CardPropTypes;
   };
 
@@ -176,7 +213,7 @@ const Cards: React.FC = () => {
       color: systemColors.LIGHT_PINK,
       text: `Custos em vendas`,
       icon: <ArrowUpOutlined />,
-      url: `${appRoutes.sales}?dateReference=${dateEn}`
+      url: `${appRoutes.sales}?_date=${dateEn}`
     } as CardPropTypes;
   };
 
@@ -187,7 +224,7 @@ const Cards: React.FC = () => {
       color: systemColors.BLUE,
       text: `Saldo bruto`,
       icon: <DollarOutlined />,
-      url: `${appRoutes.sales}?dateReference=${dateEn}`
+      url: `${appRoutes.sales}?_date=${dateEn}`
     } as CardPropTypes;
   };
 
@@ -213,6 +250,9 @@ const Cards: React.FC = () => {
     return parseFloat(m2.toString()).toFixed(0);
   };
 
+  const getParameter = (array: Array<number>) =>
+    array.map((x: number) => `&expenseTypeId=${x}`);
+
   return (
     <>
       <FastFilter state={state} setState={setState} />
@@ -225,7 +265,7 @@ const Cards: React.FC = () => {
               color={systemColors.GREEN}
               text={`PAGO (${expensePaidOutYes.count})`}
               icon={<CheckOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}&paidOut=true`}
             />
             <Card
               loading={loading}
@@ -233,7 +273,7 @@ const Cards: React.FC = () => {
               color={systemColors.RED}
               text={`A PAGAR (${expensePaidOutNo.count})`}
               icon={<WarningOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}&paidOut=false`}
             />
             <Card
               loading={loading}
@@ -246,15 +286,18 @@ const Cards: React.FC = () => {
                 expensePaidOutYes.count + expensePaidOutNo.count
               })`}
               icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}`}
             />
+
             <Card
               loading={loading}
               value={formatPrice(expenses.totalValueMonth)}
               color={systemColors.ORANGE}
               text={`DESPESAS (${expenses.count})`}
               icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+                arrayFilter
+              )}`}
             />
             <Card
               loading={loading}
@@ -262,7 +305,9 @@ const Cards: React.FC = () => {
               color={systemColors.ORANGE}
               text={`INVESTIMENTOS (${investment.count})`}
               icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+                arrayInvestment
+              )}`}
             />
             <Card
               loading={loading}
@@ -270,18 +315,26 @@ const Cards: React.FC = () => {
               color={systemColors.ORANGE}
               text={`INSUMOS (${input.count})`}
               icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+                arrayInput
+              )}`}
             />
             <Card
               loading={loading}
               value={formatPrice(marketing.totalValueMonth)}
               color={systemColors.ORANGE}
-              text={`MARKETING (${marketing.count}) ${getPercent(
+              text={`MARKETING (${marketing.count})`}
+              subText={`${getPercent(
                 marketing.totalValueMonth,
                 faturamento
-              )}% do faturamento`}
+              )}% Mês / ${getPercent(
+                marketingAcc.totalValueMonth,
+                faturamentoAcc
+              )}% Ano`}
               icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+                arrayMarketing
+              )}`}
             />
             <Card
               loading={loading}
@@ -289,7 +342,9 @@ const Cards: React.FC = () => {
               color={systemColors.LIGHT_GREY}
               text={`RETIRADAS (${cashWithdrawal.count})`}
               icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?dateReference=${dateEn}`}
+              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+                arrayCashWithdrawal
+              )}`}
             />
           </>
         )}
@@ -310,7 +365,7 @@ const Cards: React.FC = () => {
               text={`LUCRO LIQUIDO`}
               subText={`Lucratividade ${getPercent(liquido, faturamento)}%`}
               icon={<DollarOutlined />}
-              url={`${appRoutes.sales}?dateReference=${dateEn}`}
+              url={`${appRoutes.sales}?_date=${dateEn}`}
             />{' '}
             <Card
               loading={loading}
@@ -318,7 +373,7 @@ const Cards: React.FC = () => {
               color={systemColors.YELLOW}
               text={`SALDO CAIXA`}
               icon={<DollarOutlined />}
-              url={`${appRoutes.sales}?dateReference=${dateEn}`}
+              url={`${appRoutes.sales}?_date=${dateEn}`}
             />
           </>
         )}
@@ -330,7 +385,7 @@ const Cards: React.FC = () => {
               color={systemColors.BLUE}
               text={`M2 APLICADO`}
               icon={<MediumOutlined />}
-              url={`${appRoutes.sales}?dateReference=${dateEn}`}
+              url={`${appRoutes.sales}?_date=${dateEn}`}
             />
           </>
         )}

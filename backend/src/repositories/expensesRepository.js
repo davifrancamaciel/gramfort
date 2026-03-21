@@ -1,17 +1,15 @@
 "use strict";
 
-const { startOfMonth, endOfMonth } = require('date-fns');
+const { startOfYear, startOfMonth, endOfMonth } = require('date-fns');
 const { executeSelect } = require("../services/ExecuteQueryService");
 
 const andCompany = (alias, companyId) =>
     companyId ? `AND ${alias}.companyId IN ('${companyId}')` : ''
 
-const where = (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId) => {
-    if (expenseTypeId == 1)
-        expenseTypeName = 'COMPRAS'
+const where = (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyId) => {
 
     const queryDate = paymentDateStart && paymentDateEnd ? `AND e.paymentDate BETWEEN '${paymentDateStart}' AND '${paymentDateEnd}'` : '';
-    const queryType = expenseTypeName ? `AND t.name LIKE '%${expenseTypeName}%'` : '';
+    const queryType = expenseTypeId ? `AND e.expenseTypeId IN (${expenseTypeId})` : 'AND e.expenseTypeId <> 1';
     const queryCompany = isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId);
 
     const query = ` WHERE e.id > 0 ${queryDate} ${queryType} ${queryCompany} 
@@ -19,25 +17,26 @@ const where = (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseType
     return query;
 }
 
-const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId) => {
+const expensesByPeriod = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyId) => {
     const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
                     LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    ${where(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId)}  
+                    ${where(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyId)}  
                     GROUP BY e.paidOut`
     const result = await executeSelect(query);
     return result;
 }
 
-const expensesMonthByType = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId) => {
+const expensesMonthByType = async (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyId) => {
     const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, t.name, t.id FROM expenses e 
                     LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    ${where(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeName, expenseTypeId, companyId)}
+                    ${where(paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyId)}
                     GROUP BY e.expenseTypeId`;
     const result = await executeSelect(query);
     return result;
 }
 
 const expensesMonthDash = async (date, isAdm, user, companyId) => {
+
     const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, e.paidOut FROM expenses e 
                     LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
                     WHERE e.paymentDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
@@ -48,28 +47,17 @@ const expensesMonthDash = async (date, isAdm, user, companyId) => {
     return result
 }
 
-const expensesMonthByTypeDash = async (date, isAdm, user, companyId) => {
+const expensesMonthByTypeDash = async (date, isAdm, user, companyId, acc = false) => {
+    const start = !acc ? startOfMonth(date).toISOString() : startOfYear(date).toISOString();
     const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, t.name, t.id FROM expenses e 
                     LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    WHERE e.paymentDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                    WHERE e.paymentDate BETWEEN '${start}' AND '${endOfMonth(date).toISOString()}' 
                     AND e.saleId IS NULL ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
                     GROUP BY e.expenseTypeId`
 
     const result = await executeSelect(query);
     return result
 }
-
-const expensesYearByTypeDash = async (date, isAdm, user, companyId) => {
-    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueYear, t.name, t.id FROM expenses e 
-                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
-                    WHERE YEAR(e.paymentDate) = YEAR('${endOfMonth(date).toISOString()}') 
-                    AND e.saleId IS NULL ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
-                    GROUP BY e.expenseTypeId`
-
-    const result = await executeSelect(query);
-    return result
-}
-
 
 const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const dateString = startOfMonth(date).toISOString()
@@ -84,4 +72,4 @@ const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const result = await executeSelect(query);
     return result
 }
-module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType, expensesMonthByTypeDre, expensesYearByTypeDash }
+module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType, expensesMonthByTypeDre }

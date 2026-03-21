@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Col, TableProps, Tooltip } from 'antd';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
-import { Input, RangePicker, Select } from 'components/_inputs';
+import { Input, RangePicker, Select, SelectMultiple } from 'components/_inputs';
 import {
   apiRoutes,
   appRoutes,
@@ -61,9 +61,10 @@ const List: React.FC = () => {
       paidOut: query.get('paidOut') || state.paidOut,
       userName: query.get('userName') || state.userName,
       companyId: query.get('companyId') || state.companyId,
-      expenseTypeName: query.get('expenseTypeName') || state.expenseTypeName,
+      expenseTypeId: query.getAll('expenseTypeId') || state.expenseTypeId,
       setDate: 'false'
     };
+
     actionFilter(newState);
     setPath(getType());
   }, []);
@@ -84,14 +85,22 @@ const List: React.FC = () => {
 
   const actionFilter = async (state: any) => {
     try {
-      const type = getType();
-      let expenseTypeId: string = '';
+      const type = getType();      
+      let newState = {
+        ...state,
+        expenseTypeId: state.expenseTypeId.map((x: string) =>
+          Number(x.toString().replace(',', ''))
+        )
+      };
+
       if (type == appRoutes.shopping) {
-        expenseTypeId = expensesTypesEnum.COMPRAS.toString();
+        newState = {
+          ...state,
+          expenseTypeId: expensesTypesEnum.COMPRAS.toString()
+        };
       }
 
       setLoading(true);
-      const newState = { ...state, expenseTypeId };
       setHistoryPath(type, newState);
       dispatch(newState);
       const resp = await api.get(apiRoutes.expenses, newState);
@@ -203,11 +212,15 @@ const List: React.FC = () => {
           />
         </Col>
         {path == appRoutes.expenses && (
-          <Col lg={6} md={12} sm={12} xs={24}>
-            <Input
+          <Col lg={12} md={12} sm={12} xs={24}>
+            <SelectMultiple
               label={'Tipo'}
-              value={state.expenseTypeName}
-              onChange={(e) => dispatch({ expenseTypeName: e.target.value })}
+              url={apiRoutes.expenseTypes}
+              value={state.expenseTypeId}
+              onChange={(expenseTypeId) => {
+                dispatch({ expenseTypeId });
+                console.log(expenseTypeId);
+              }}
             />
           </Col>
         )}

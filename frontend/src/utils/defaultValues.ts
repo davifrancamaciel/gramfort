@@ -28,7 +28,7 @@ export const appRoutes = {
   shopping: 'shopping',
   visits: 'visits',
   vehicles: 'vehicles',
-  dre: 'dre',
+  dre: 'dre'
 };
 
 export const apiRoutes = {
@@ -123,8 +123,14 @@ export const expensesTypesEnum = {
   EQUIPAMENTOS: 16,
   INSUMOS: 17,
   IPVA: 18,
-  REAP: 19
+  REAP: 19,
+  TPAGO: 20,
+  MOFF: 21,
+  EVENT: 22
 };
+
+export const arrayExpensesTypesEnum: number[] =
+  Object.values(expensesTypesEnum);
 
 export const productCategoriesEnum = {
   SERVICO: 1,
@@ -139,4 +145,3 @@ export const categorIdsArrayProduct = [
 ];
 
 export const categorIdsArrayCost = [productCategoriesEnum.CUSTO];
-
