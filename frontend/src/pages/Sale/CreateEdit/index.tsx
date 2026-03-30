@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Col, Divider, notification, UploadFile } from 'antd';
+import { Col, Divider, notification, Row, Tabs, UploadFile } from 'antd';
 import {
   DatePicker,
   Input,
@@ -29,7 +29,12 @@ import {
 } from 'utils/formatPrice';
 import { useAppContext } from 'hooks/contextLib';
 import ShowByRoule from 'components/ShowByRoule';
-import { arrayCapture, arrayLevel, arrayNature } from 'pages/User/utils';
+import {
+  arrayCapture,
+  arrayLevel,
+  arrayNature,
+  arraySatisfactionArray
+} from 'pages/User/utils';
 import { arrayDemand } from '../../User/utils';
 import UploadImages from 'components/UploadImages';
 import { getTitle, getType, setImages } from '../utils';
@@ -45,6 +50,7 @@ import ContractButton from '../Contract/Button';
 import { Company } from 'pages/Company/interfaces';
 import { currency, displayValue } from 'utils';
 import { Editor } from 'primereact/editor';
+import ApplicationListBySale from 'pages/Application/ListBySale';
 
 const CreateEdit: React.FC = (props: any) => {
   const { users, setUsers, companies, userAuthenticated } = useAppContext();
@@ -59,6 +65,12 @@ const CreateEdit: React.FC = (props: any) => {
   const [totals, setTotals] = useState<TotalSale>(initialState);
 
   const [fileList, setFileList] = useState<Array<UploadFile>>([]);
+  const [imageSatisfaction1List, setImageSatisfaction1List] = useState<
+    Array<UploadFile>
+  >([]);
+  const [imageSatisfaction2List, setImageSatisfaction2List] = useState<
+    Array<UploadFile>
+  >([]);
   const [visits, setVisits] = useState<Visit[]>([]);
   const [visitsOptions, setVisitsOptions] = useState<IOptions[]>();
   const [groups, setGroups] = useState<string[]>([]);
@@ -66,7 +78,7 @@ const CreateEdit: React.FC = (props: any) => {
 
   useEffect(() => {
     const { signInUserSession } = userAuthenticated;
-    const groups = signInUserSession.accessToken.payload['cognito:groups'];
+    const groups = getGroups();
     setGroups(groups);
     if (!checkRouleProfileAccess(groups, roules.administrator)) {
       const companyId = signInUserSession.idToken.payload['custom:company_id'];
@@ -74,8 +86,14 @@ const CreateEdit: React.FC = (props: any) => {
     }
     const typePath = getType();
     setPath(typePath);
-    onLoadUsersSales(groups);
+    !props.match.params.id && onLoadUsersSales(groups);
   }, []);
+
+  const getGroups = () => {
+    const { signInUserSession } = userAuthenticated;
+    const groups = signInUserSession.accessToken.payload['cognito:groups'];
+    return groups;
+  };
 
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
@@ -137,7 +155,9 @@ const CreateEdit: React.FC = (props: any) => {
 
   const get = async (id: string) => {
     try {
+      const groups = getGroups();
       setLoading(true);
+      await onLoadUsersSales(groups, false);
       setLoadingEdit(true);
       const resp = await api.get(`${apiRoutes.sales}/${id}`);
       const productsList = resp.data?.productsSales as SaleProduct[];
@@ -156,6 +176,30 @@ const CreateEdit: React.FC = (props: any) => {
         )
       });
       if (resp.data) setFileList(setImages(resp.data));
+
+      if (resp.data && resp.data.imageSatisfaction1) {
+        const imageArr = resp.data.imageSatisfaction1.split('/');
+        setImageSatisfaction1List([
+          {
+            uid: '-1',
+            name: imageArr[imageArr.length - 1],
+            status: 'done',
+            url: resp.data.imageSatisfaction1
+          }
+        ]);
+      }
+
+      if (resp.data && resp.data.imageSatisfaction2) {
+        const imageArr = resp.data.imageSatisfaction2.split('/');
+        setImageSatisfaction2List([
+          {
+            uid: '-1',
+            name: imageArr[imageArr.length - 1],
+            status: 'done',
+            url: resp.data.imageSatisfaction2
+          }
+        ]);
+      }
 
       setLoading(false);
       setLoadingEdit(false);
@@ -182,7 +226,9 @@ const CreateEdit: React.FC = (props: any) => {
           ? priceToNumber(state.discountValue)
           : null,
         path,
-        fileList
+        fileList,
+        imageSatisfaction1List,
+        imageSatisfaction2List
       };
 
       if (!productsSales || !productsSales.length || !state.clientId) {
@@ -212,9 +258,12 @@ const CreateEdit: React.FC = (props: any) => {
     dispatch({ costsSales });
   };
 
-  const onLoadUsersSales = async (groups: any) => {
+  const onLoadUsersSales = async (
+    groups: any,
+    activeLoading: boolean = true
+  ) => {
     try {
-      setLoading(true);
+      activeLoading && setLoading(true);
       const resp = await api.get(`${apiRoutes.users}/all`);
       setUsers(resp.data);
       setLoading(false);
@@ -248,315 +297,420 @@ const CreateEdit: React.FC = (props: any) => {
         )
       }
     >
-      <Cards
-        sale={state}
-        visits={visits}
-        totals={totals}
-        setTotals={setTotals}
-        currency={currentCurrency}
-      />
+      <Col lg={24}>
+        <Tabs defaultActiveKey="1">
+          <Tabs.TabPane tab="Dados" key="1">
+            <Row gutter={[24, 24]}>
+              <Cards
+                sale={state}
+                visits={visits}
+                totals={totals}
+                setTotals={setTotals}
+                currency={currentCurrency}
+              />
 
-      <ShowByRoule roule={roules.administrator}>
-        <Col lg={3} md={6} sm={12} xs={24}>
-          <Select
-            label={'Empresa'}
-            options={companies}
-            value={state.companyId}
-            onChange={(companyId) => dispatch({ companyId })}
-          />
-        </Col>
-      </ShowByRoule>
-      <ShowByRoule roule={roules.saleUserIdChange}>
-        <Col
-          lg={!checkRouleProfileAccess(groups, roules.administrator) ? 6 : 4}
-          md={!checkRouleProfileAccess(groups, roules.administrator) ? 12 : 9}
-          sm={12}
-          xs={24}
-        >
-          <Select
-            label={'Consultor'}
-            options={usersOptions?.filter((u: any) => u.type === userType.USER)}
-            value={state?.userId}
-            onChange={(userId) => dispatch({ userId })}
-          />
-        </Col>
-      </ShowByRoule>
-      <ShowByRoule roule={roules.clients}>
-        <Col
-          lg={!checkRouleProfileAccess(groups, roules.administrator) ? 6 : 5}
-          md={!checkRouleProfileAccess(groups, roules.administrator) ? 12 : 9}
-          sm={12}
-          xs={24}
-        >
-          <Select
-            label={'Cliente'}
-            required={true}
-            options={usersOptions?.filter(
-              (u: any) => u.type === userType.CLIENT
-            )}
-            value={state?.clientId}
-            onChange={(clientId) => dispatch({ clientId })}
-          />
-        </Col>
-      </ShowByRoule>
+              <ShowByRoule roule={roules.administrator}>
+                <Col lg={3} md={6} sm={12} xs={24}>
+                  <Select
+                    label={'Empresa'}
+                    options={companies}
+                    value={state.companyId}
+                    onChange={(companyId) => dispatch({ companyId })}
+                  />
+                </Col>
+              </ShowByRoule>
+              <ShowByRoule roule={roules.saleUserIdChange}>
+                <Col
+                  lg={
+                    !checkRouleProfileAccess(groups, roules.administrator)
+                      ? 6
+                      : 4
+                  }
+                  md={
+                    !checkRouleProfileAccess(groups, roules.administrator)
+                      ? 12
+                      : 9
+                  }
+                  sm={12}
+                  xs={24}
+                >
+                  <Select
+                    label={'Consultor'}
+                    options={usersOptions?.filter(
+                      (u: any) => u.type === userType.USER
+                    )}
+                    value={state?.userId}
+                    onChange={(userId) => dispatch({ userId })}
+                  />
+                </Col>
+              </ShowByRoule>
+              <ShowByRoule roule={roules.clients}>
+                <Col
+                  lg={
+                    !checkRouleProfileAccess(groups, roules.administrator)
+                      ? 6
+                      : 5
+                  }
+                  md={
+                    !checkRouleProfileAccess(groups, roules.administrator)
+                      ? 12
+                      : 9
+                  }
+                  sm={12}
+                  xs={24}
+                >
+                  <Select
+                    label={'Cliente'}
+                    required={true}
+                    options={usersOptions?.filter(
+                      (u: any) => u.type === userType.CLIENT
+                    )}
+                    value={state?.clientId}
+                    onChange={(clientId) => dispatch({ clientId })}
+                  />
+                </Col>
+              </ShowByRoule>
 
-      <Col lg={12} md={24} sm={24} xs={24}>
-        <Select
-          loading={loadingVisit}
-          label={'Visita'}
-          options={visitsOptions}
-          value={state?.visitId}
-          onChange={(visitId) => dispatch({ visitId })}
-        />
+              <Col lg={12} md={24} sm={24} xs={24}>
+                <Select
+                  loading={loadingVisit}
+                  label={'Visita'}
+                  options={visitsOptions}
+                  value={state?.visitId}
+                  onChange={(visitId) => dispatch({ visitId })}
+                />
+              </Col>
+
+              <Divider>
+                Produtos d{path === appRoutes.sales ? 'a' : 'o'}{' '}
+                {getTitle(path).toLocaleLowerCase()}
+              </Divider>
+              <Products
+                products={state.productsSales}
+                setProducts={setProducts}
+                isCost={false}
+                companyId={state.companyId}
+                currency={currentCurrency}
+              />
+
+              {path == appRoutes.sales && (
+                <>
+                  <Divider>Relação de custos</Divider>
+                  <Products
+                    products={state.costsSales}
+                    setProducts={setCosts}
+                    isCost={true}
+                    companyId={state.companyId}
+                    currency={currentCurrency}
+                  />
+
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Select
+                      label={'Demanda'}
+                      options={arrayDemand}
+                      value={state?.demand}
+                      onChange={(demand) => dispatch({ demand })}
+                    />
+                  </Col>
+
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <DatePicker
+                      label={'Data aplicação'}
+                      value={state.saleDate}
+                      onChange={(saleDate) => dispatch({ saleDate })}
+                    />
+                  </Col>
+                </>
+              )}
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Select
+                  label={'Captação'}
+                  options={arrayCapture}
+                  value={state?.capture}
+                  onChange={(capture) => dispatch({ capture })}
+                />
+              </Col>
+
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Input
+                  label={'Distância'}
+                  type={'number'}
+                  placeholder=""
+                  value={state.distance}
+                  onChange={(e) => dispatch({ distance: e.target.value })}
+                />
+              </Col>
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Select
+                  label={'Natureza'}
+                  options={arrayNature}
+                  value={state?.nature}
+                  onChange={(nature) => dispatch({ nature })}
+                />
+              </Col>
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Input
+                  label={'Contato'}
+                  placeholder=""
+                  value={state.contact}
+                  onChange={(e) => dispatch({ contact: e.target.value })}
+                />
+              </Col>
+
+              {path == appRoutes.sales && (
+                <>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Switch
+                      label={'NF'}
+                      title="Sim / Não"
+                      checked={state.invoice}
+                      checkedChildren="Não"
+                      unCheckedChildren="Sim"
+                      onChange={() => dispatch({ invoice: !state.invoice })}
+                    />
+                  </Col>
+                </>
+              )}
+
+              {path == appRoutes.contracts && (
+                <>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Select
+                      label={'Acesso'}
+                      options={arrayLevel}
+                      value={state?.access}
+                      onChange={(access) => dispatch({ access })}
+                    />
+                  </Col>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Select
+                      label={'Nível de complexidade'}
+                      options={arrayLevel}
+                      value={state?.complexityLevel}
+                      onChange={(complexityLevel) =>
+                        dispatch({ complexityLevel })
+                      }
+                    />
+                  </Col>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <DatePicker
+                      label={'Data prevista para execução'}
+                      value={state.expectedDateForApplication}
+                      onChange={(expectedDateForApplication) =>
+                        dispatch({ expectedDateForApplication })
+                      }
+                    />
+                  </Col>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Input
+                      label={'Dias para execução'}
+                      type={'tel'}
+                      placeholder="15"
+                      value={state.daysExecution}
+                      onChange={(e) =>
+                        dispatch({
+                          daysExecution: Number(e.target.value)
+                        })
+                      }
+                    />
+                  </Col>
+
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Input
+                      label={'PH do solo'}
+                      placeholder=""
+                      value={state.phSoil}
+                      onChange={(e) => dispatch({ phSoil: e.target.value })}
+                    />
+                  </Col>
+
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Input
+                      label={'Orientação do sol'}
+                      placeholder=""
+                      value={state.sunOrientation}
+                      onChange={(e) =>
+                        dispatch({ sunOrientation: e.target.value })
+                      }
+                    />
+                  </Col>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Input
+                      label={'Descrição desconto'}
+                      placeholder=""
+                      value={state.discountDescription}
+                      onChange={(e) =>
+                        dispatch({ discountDescription: e.target.value })
+                      }
+                    />
+                  </Col>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Input
+                      label={'Valor de desconto'}
+                      type={'tel'}
+                      disabled={!state.discountDescription}
+                      placeholder="15,00"
+                      value={state.discountValue}
+                      onChange={(e) =>
+                        dispatch({
+                          discountValue: formatValueWhithDecimalCaseOnChange(
+                            e.target.value
+                          )
+                        })
+                      }
+                    />
+                  </Col>
+                  <Col lg={24} md={24} sm={24} xs={24}>
+                    <Input
+                      label={'Forma de pagamento'}
+                      placeholder=""
+                      value={state.paymentMethod}
+                      onChange={(e) =>
+                        dispatch({ paymentMethod: e.target.value })
+                      }
+                    />
+                  </Col>
+                  <Col lg={6} md={8} sm={12} xs={24}>
+                    <Switch
+                      label={'Proposta aprovada'}
+                      title="Sim / Não"
+                      checked={state.approved}
+                      checkedChildren="Não"
+                      unCheckedChildren="Sim"
+                      onChange={() => dispatch({ approved: !state.approved })}
+                    />
+                  </Col>
+                </>
+              )}
+              <Col lg={24} md={24} sm={24} xs={24}>
+                <Textarea
+                  label={'Observações'}
+                  placeholder=""
+                  value={state.note}
+                  onChange={(e) => dispatch({ note: e.target.value })}
+                />
+              </Col>
+              <Col lg={24} md={24} sm={24} xs={24}>
+                <Textarea
+                  label={'Observações internas'}
+                  placeholder=""
+                  value={state.internalNote}
+                  onChange={(e) => dispatch({ internalNote: e.target.value })}
+                />
+              </Col>
+              {path == appRoutes.contracts && (
+                <Col lg={24} md={24} sm={24} xs={24}>
+                  <Divider>Quebra de linhas no contrato</Divider>
+                  <Editor
+                    value={state.lineBreak}
+                    onTextChange={(e: any) =>
+                      dispatch({ lineBreak: e.htmlValue })
+                    }
+                    style={{ minHeight: '100px' }}
+                  />
+                </Col>
+              )}
+              {path == appRoutes.contracts && (
+                <Col lg={24} md={24} sm={24} xs={24}>
+                  <UploadImages
+                    setFileList={setFileList}
+                    fileList={fileList}
+                    maxCount={6}
+                  />
+                </Col>
+              )}
+            </Row>
+          </Tabs.TabPane>
+          {path == appRoutes.sales && props.match.params.id && (
+            <Tabs.TabPane tab="Registros de aplicação" key="2">
+              <ApplicationListBySale
+                saleId={props.match.params.id}
+                companyId={state.companyId}
+                clientId={state.clientId}
+              />
+            </Tabs.TabPane>
+          )}
+          {path == appRoutes.sales && props.match.params.id && (
+            <Tabs.TabPane tab="Pesquisa de satisfação" key="3">
+              <Row gutter={[24, 24]}>
+                <Col lg={6} md={8} sm={12} xs={24}>
+                  <Select
+                    label={'Responsável'}
+                    options={usersOptions?.filter(
+                      (u: any) => u.type === userType.USER
+                    )}
+                    value={state?.userSatisfactionId}
+                    onChange={(userSatisfactionId) =>
+                      dispatch({ userSatisfactionId })
+                    }
+                  />
+                </Col>
+                <Col lg={6} md={8} sm={12} xs={24}>
+                  <DatePicker
+                    label={'Data da pesquisa'}
+                    value={state.satisfactionSurveyDate}
+                    onChange={(satisfactionSurveyDate) =>
+                      dispatch({ satisfactionSurveyDate })
+                    }
+                  />
+                </Col>
+                <Col lg={6} md={8} sm={12} xs={24}>
+                  <Select
+                    label={'Germinação'}
+                    options={arrayLevel}
+                    value={state?.germinationLevel}
+                    onChange={(germinationLevel) =>
+                      dispatch({ germinationLevel })
+                    }
+                  />
+                </Col>
+                <Col lg={6} md={8} sm={12} xs={24}>
+                  <Select
+                    label={'Satisfação'}
+                    options={arraySatisfactionArray}
+                    value={state?.satisfaction}
+                    onChange={(satisfaction) => dispatch({ satisfaction })}
+                  />
+                </Col>
+                <Col lg={24} md={24} sm={24} xs={24}>
+                  <Row gutter={[24, 24]}>
+                    <Col lg={8} md={24} sm={24} xs={24}>
+                      <Divider>Registro da pesquisa</Divider>
+                      <Col
+                        lg={24}
+                        md={24}
+                        sm={24}
+                        xs={24}
+                        style={{ display: 'flex', justifyContent: 'center' }}
+                      >
+                        <UploadImages
+                          setFileList={setImageSatisfaction1List}
+                          fileList={imageSatisfaction1List}
+                        />
+                      </Col>
+                    </Col>
+                    <Col lg={8} md={24} sm={24} xs={24}>
+                      <Divider>Foto do local</Divider>
+                      <Col
+                        lg={24}
+                        md={24}
+                        sm={24}
+                        xs={24}
+                        style={{ display: 'flex', justifyContent: 'center' }}
+                      >
+                        <UploadImages
+                          setFileList={setImageSatisfaction2List}
+                          fileList={imageSatisfaction2List}
+                        />
+                      </Col>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Tabs.TabPane>
+          )}
+        </Tabs>
       </Col>
-
-      <Divider>
-        Produtos d{path === appRoutes.sales ? 'a' : 'o'}{' '}
-        {getTitle(path).toLocaleLowerCase()}
-      </Divider>
-      <Products
-        products={state.productsSales}
-        setProducts={setProducts}
-        isCost={false}
-        companyId={state.companyId}
-        currency={currentCurrency}
-      />
-
-      {path == appRoutes.sales && (
-        <>
-          <Divider>Relação de custos</Divider>
-          <Products
-            products={state.costsSales}
-            setProducts={setCosts}
-            isCost={true}
-            companyId={state.companyId}
-            currency={currentCurrency}
-          />
-
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Select
-              label={'Demanda'}
-              options={arrayDemand}
-              value={state?.demand}
-              onChange={(demand) => dispatch({ demand })}
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Select
-              label={'Germinação'}
-              options={arrayLevel}
-              value={state?.germinationLevel}
-              onChange={(germinationLevel) => dispatch({ germinationLevel })}
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Select
-              label={'Satisfação'}
-              options={arrayLevel}
-              value={state?.satisfaction}
-              onChange={(satisfaction) => dispatch({ satisfaction })}
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <DatePicker
-              label={'Data aplicação'}
-              value={state.saleDate}
-              onChange={(saleDate) => dispatch({ saleDate })}
-            />
-          </Col>
-        </>
-      )}
-      <Col lg={6} md={8} sm={12} xs={24}>
-        <Select
-          label={'Captação'}
-          options={arrayCapture}
-          value={state?.capture}
-          onChange={(capture) => dispatch({ capture })}
-        />
-      </Col>
-
-      <Col lg={6} md={8} sm={12} xs={24}>
-        <Input
-          label={'Distância'}
-          type={'number'}
-          placeholder=""
-          value={state.distance}
-          onChange={(e) => dispatch({ distance: e.target.value })}
-        />
-      </Col>
-      <Col lg={6} md={8} sm={12} xs={24}>
-        <Select
-          label={'Natureza'}
-          options={arrayNature}
-          value={state?.nature}
-          onChange={(nature) => dispatch({ nature })}
-        />
-      </Col>
-      <Col lg={6} md={8} sm={12} xs={24}>
-        <Input
-          label={'Contato'}
-          placeholder=""
-          value={state.contact}
-          onChange={(e) => dispatch({ contact: e.target.value })}
-        />
-      </Col>
-
-      {path == appRoutes.sales && (
-        <>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Switch
-              label={'NF'}
-              title="Sim / Não"
-              checked={state.invoice}
-              checkedChildren="Não"
-              unCheckedChildren="Sim"
-              onChange={() => dispatch({ invoice: !state.invoice })}
-            />
-          </Col>
-        </>
-      )}
-
-      {path == appRoutes.contracts && (
-        <>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Select
-              label={'Acesso'}
-              options={arrayLevel}
-              value={state?.access}
-              onChange={(access) => dispatch({ access })}
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Select
-              label={'Nível de complexidade'}
-              options={arrayLevel}
-              value={state?.complexityLevel}
-              onChange={(complexityLevel) => dispatch({ complexityLevel })}
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <DatePicker
-              label={'Data prevista para execução'}
-              value={state.expectedDateForApplication}
-              onChange={(expectedDateForApplication) =>
-                dispatch({ expectedDateForApplication })
-              }
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Dias para execução'}
-              type={'tel'}
-              placeholder="15"
-              value={state.daysExecution}
-              onChange={(e) =>
-                dispatch({
-                  daysExecution: Number(e.target.value)
-                })
-              }
-            />
-          </Col>
-
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'PH do solo'}
-              placeholder=""
-              value={state.phSoil}
-              onChange={(e) => dispatch({ phSoil: e.target.value })}
-            />
-          </Col>
-
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Orientação do sol'}
-              placeholder=""
-              value={state.sunOrientation}
-              onChange={(e) => dispatch({ sunOrientation: e.target.value })}
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Descrição desconto'}
-              placeholder=""
-              value={state.discountDescription}
-              onChange={(e) =>
-                dispatch({ discountDescription: e.target.value })
-              }
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Input
-              label={'Valor de desconto'}
-              type={'tel'}
-              disabled={!state.discountDescription}
-              placeholder="15,00"
-              value={state.discountValue}
-              onChange={(e) =>
-                dispatch({
-                  discountValue: formatValueWhithDecimalCaseOnChange(
-                    e.target.value
-                  )
-                })
-              }
-            />
-          </Col>
-          <Col lg={24} md={24} sm={24} xs={24}>
-            <Input
-              label={'Forma de pagamento'}
-              placeholder=""
-              value={state.paymentMethod}
-              onChange={(e) => dispatch({ paymentMethod: e.target.value })}
-            />
-          </Col>
-          <Col lg={6} md={8} sm={12} xs={24}>
-            <Switch
-              label={'Proposta aprovada'}
-              title="Sim / Não"
-              checked={state.approved}
-              checkedChildren="Não"
-              unCheckedChildren="Sim"
-              onChange={() => dispatch({ approved: !state.approved })}
-            />
-          </Col>
-        </>
-      )}
-      <Col lg={24} md={24} sm={24} xs={24}>
-        <Textarea
-          label={'Observações'}
-          placeholder=""
-          value={state.note}
-          onChange={(e) => dispatch({ note: e.target.value })}
-        />
-      </Col>
-      <Col lg={24} md={24} sm={24} xs={24}>
-        <Textarea
-          label={'Observações internas'}
-          placeholder=""
-          value={state.internalNote}
-          onChange={(e) => dispatch({ internalNote: e.target.value })}
-        />
-      </Col>
-      {path == appRoutes.contracts && (
-        <Col lg={24} md={24} sm={24} xs={24}>
-          <Divider>Quebra de linhas no contrato</Divider>
-          <Editor
-            value={state.lineBreak}
-            onTextChange={(e: any) =>
-              dispatch({ lineBreak: e.htmlValue })
-            }
-            style={{ minHeight: '100px' }}
-          />         
-        </Col>
-      )}
-      {path == appRoutes.contracts && (
-        <Col lg={24} md={24} sm={24} xs={24}>
-          <UploadImages
-            setFileList={setFileList}
-            fileList={fileList}
-            maxCount={6}
-          />
-        </Col>
-      )}
     </PanelCrud>
   );
 };

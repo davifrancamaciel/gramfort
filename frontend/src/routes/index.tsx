@@ -37,6 +37,8 @@ const VehicleCreateEdit = lazy(() => import('pages/Vehicle/CreateEdit'));
 const CompanyList = lazy(() => import('pages/Company/List'));
 const CompanyCreateEdit = lazy(() => import('pages/Company/CreateEdit'));
 const ServicesList = lazy(() => import('pages/Services/List'));
+const ApplicationList = lazy(() => import('pages/Application/List'));
+const ApplicationCreateEdit = lazy(() => import('pages/Application/CreateEdit'));
 
 const routesArray: IRouteProps[] = [
   { path: '/login', component: Login, isPrivate: false },
@@ -227,7 +229,22 @@ const routesArray: IRouteProps[] = [
     path: `/${appRoutes.services}`,
     component: ServicesList,
     roule: roules.administrator
-  }
+  },
+  {
+    path: `/${appRoutes.applications}`,
+    component: ApplicationList,
+    roule: roules.applications
+  },
+  {
+    path: `/${appRoutes.applications}/create`,
+    component: ApplicationCreateEdit,
+    roule: roules.applications
+  },
+  {
+    path: `/${appRoutes.applications}/edit/:id`,
+    component: ApplicationCreateEdit,
+    roule: roules.applications
+  },
 ];
 
 const Routes: React.FC = () => {

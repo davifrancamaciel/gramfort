@@ -28,7 +28,8 @@ export const appRoutes = {
   shopping: 'shopping',
   visits: 'visits',
   vehicles: 'vehicles',
-  dre: 'dre'
+  dre: 'dre',
+  applications: 'applications'
 };
 
 export const apiRoutes = {
@@ -42,6 +43,7 @@ export const apiRoutes = {
   services: appRoutes.services,
   expenses: appRoutes.expenses,
   visits: appRoutes.visits,
+  applications: appRoutes.applications,
   vehicles: appRoutes.vehicles,
   expenseTypes: 'expense-types',
   categories: 'categories'
@@ -60,7 +62,8 @@ export const apiRoutesArray = [
   apiRoutes.services,
   apiRoutes.visits,
   apiRoutes.vehicles,
-  apiRoutes.categories
+  apiRoutes.categories,
+  apiRoutes.applications
 ];
 
 export const roules = {
@@ -75,7 +78,8 @@ export const roules = {
   suppliers: 'fornecedores',
   shopping: 'compras',
   visit: 'visitas',
-  vehicles: 'veiculos'
+  vehicles: 'veiculos',
+  applications: 'aplicacoes'
 };
 
 export const enumStatusUserAws = {

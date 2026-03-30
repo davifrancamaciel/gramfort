@@ -10,8 +10,9 @@ const roules = {
     clients: 'clientes',
     supplier: 'fornecedores',
     visits: 'visitas',
+    applications: 'aplicacoes',
 };
-const path = {
+const pathRoutes = {
     sales: 'sales',
     contracts: 'contracts',
 };
@@ -48,4 +49,4 @@ const productCategoriesEnum = {
     SERVICO_M2: 4
 };
 
-module.exports = { roules, cognito, companyIdDefault, userType, linkServices, path, productCategoriesEnum }
+module.exports = { roules, cognito, companyIdDefault, userType, linkServices, pathRoutes, productCategoriesEnum }

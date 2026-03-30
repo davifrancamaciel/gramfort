@@ -84,3 +84,10 @@ Resources:
         GroupName: "Contratos"
         UserPoolId:
           Ref: UserPool  
+    CognitoUserPoolGroupsApplication:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão para usuário gerenciar Aplicações"
+        GroupName: "Aplicacoes"
+        UserPoolId:
+          Ref: UserPool  

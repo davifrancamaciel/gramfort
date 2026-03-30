@@ -6,10 +6,13 @@ import { PropTypes } from './interfaces';
 function getBase64(file: any) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.readAsDataURL(file);
-    // reader.onload = () => resolve(reader.result);
-    reader.onload = () => resize(file, resolve);
-    reader.onerror = (error) => reject(error);
+    console.log(file);
+    if (file) {
+      reader.readAsDataURL(file);
+      // reader.onload = () => resolve(reader.result);
+      reader.onload = () => resize(file, resolve);
+      reader.onerror = (error) => reject(error);
+    }
   });
 }
 
@@ -22,7 +25,6 @@ function resize(image: any, callback: any) {
 
   //criamos um reader que lerá a nossa imagem
   const reader = new FileReader();
-
 
   //vamos escrever o método do onload do reader
   //porque ele é chamado no momento em que é finalizado a carregamento da imagem
@@ -66,7 +68,7 @@ function resize(image: any, callback: any) {
       // primeiro convertemos a imagem desenhada pelo canvas para o formato Blob
       // o primeiro parametro é a função de callback que ele irá chamar após converte,
       // o segundo o type da imagem
-      // e o terceiro é a qualidade variando de 0 a 1   
+      // e o terceiro é a qualidade variando de 0 a 1
       callback(ctx?.canvas.toDataURL(image.type, 0.8));
     };
   };

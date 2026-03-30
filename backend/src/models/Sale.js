@@ -55,11 +55,16 @@ module.exports = function (sequelize, DataTypes) {
         image5: { type: DataTypes.STRING(500) },
         image6: { type: DataTypes.STRING(500) },
         lineBreak: { type: DataTypes.STRING(500) },
+        imageSatisfaction1: { type: DataTypes.STRING(500) },
+        imageSatisfaction2: { type: DataTypes.STRING(500) },
+        satisfactionSurveyDate: { type: DataTypes.DATE },
+        userSatisfactionId: { type: DataTypes.INTEGER },
     });
 
     Sale.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
     Sale.belongsTo(User, { foreignKey: 'userId', as: 'user' });
     Sale.belongsTo(User, { foreignKey: 'clientId', as: 'client' });
+    Sale.belongsTo(User, { foreignKey: 'userSatisfactionId', as: 'userSatisfaction' });
     Sale.belongsTo(Visit, { foreignKey: 'visitId', as: 'visit' })
     Sale.hasMany(SaleProduct, { foreignKey: 'saleId', as: 'productsSales' })
     return Sale;

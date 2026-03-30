@@ -14,7 +14,7 @@ const Visit = require('../../models/Visit')(db.sequelize, db.Sequelize);
 
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
 const { executeSelect, executeDelete, executeUpdate } = require("../../services/ExecuteQueryService");
-const { roules, path, productCategoriesEnum } = require("../../utils/defaultValues");
+const { roules, pathRoutes, productCategoriesEnum } = require("../../utils/defaultValues");
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const imageService = require("../../services/ImageService");
 const { getCompaniesIds } = require("../../repositories/companiesRepository");
@@ -35,11 +35,11 @@ module.exports.list = async (event, context) => {
 
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
-        if (!checkRouleProfileAccess(user.groups, roules.sales))
+        if (!checkRouleProfileAccess(user.groups, roules.sales) && !checkRouleProfileAccess(user.groups, roules.applications))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
         const isAdm = checkRouleProfileAccess(user.groups, roules.administrator)
         if (event.queryStringParameters) {
-            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId, path } = event.queryStringParameters
+            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId, path, clientId } = event.queryStringParameters
 
             if (isAdm) {
                 const ids = await getCompaniesIds(user);
@@ -48,15 +48,17 @@ module.exports.list = async (event, context) => {
 
             if (companyId) whereStatement.companyId = companyId;
 
+            if (clientId) whereStatement.clientId = Number(clientId);
+
             if (!isAdm)
                 whereStatement.companyId = user.companyId
 
             if (id) whereStatement.id = id;
 
-            if (path && path == 'sales')
+            if (path && path == pathRoutes.sales)
                 whereStatement.approved = true;
 
-            if (path && path == 'contracts')
+            if (path && path == pathRoutes.contracts)
                 whereStatement.hash = { [Op.ne]: null, }; // diferente
 
             if (product)
@@ -354,13 +356,15 @@ module.exports.delete = async (event) => {
             return handlerResponse(403, {}, 'Usuário não tem permissão remover este cadastro');
 
         await Sale.destroy({ where: { id } });
-        
+
         await imageService.remove(item.image1);
         await imageService.remove(item.image2);
         await imageService.remove(item.image3);
         await imageService.remove(item.image4);
         await imageService.remove(item.image5);
         await imageService.remove(item.image6);
+        await imageService.remove(item.imageSatisfaction1);
+        await imageService.remove(item.imageSatisfaction2);
 
         return handlerResponse(200, {}, `${RESOURCE_NAME} código (${id}) removido com sucesso`)
     } catch (err) {
@@ -397,6 +401,10 @@ const addImage = async (result, body) => {
         const element = body.fileList[i];
         await imageService.add('sales', result.dataValues, [element], `image${i + 1}`);
     }
+
+    await imageService.add('sales', result.dataValues, body.imageSatisfaction1List, 'imageSatisfaction1');
+    await imageService.add('sales', result.dataValues, body.imageSatisfaction2List, 'imageSatisfaction2');
+
 }
 
 const createSalesProduct = async (companyId, saleId, productsSales) => {
@@ -433,9 +441,9 @@ const createSale = async (objOnSave, body) => {
     const valueInput = sum(body.costsSales, 'valueAmount');
     objOnSave.valueInput = valueInput ? valueInput : 0
 
-    if (body.path === path.contracts)
+    if (body.path === pathRoutes.contracts)
         objOnSave.hash = uuid.v4();
-    if (body.path === path.sales)
+    if (body.path === pathRoutes.sales)
         objOnSave.approved = true;
 
     const result = await Sale.create(objOnSave);
@@ -460,7 +468,7 @@ const setSaleVisit = async (result) => {
 
 const getTitle = (type, isPlural = false) => {
     switch (type) {
-        case path.sales:
+        case pathRoutes.sales:
             return `Venda${isPlural ? 's' : ''}`;
 
         default:

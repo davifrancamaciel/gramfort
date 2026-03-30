@@ -77,6 +77,22 @@ export const arrayCurrency: IOptions[] = [
   }
 ];
 
+export const typeApplication = {
+  APPLICATION: 'APLICAÇÃO',
+  REAPPLICATION: 'REAPLICAÇÃO'
+};
+
+export const arrayTypeApplication: IOptions[] = [
+  {
+    value: typeApplication.APPLICATION,
+    label: typeApplication.APPLICATION
+  },
+  {
+    value: typeApplication.REAPPLICATION,
+    label: typeApplication.REAPPLICATION
+  }
+];
+
 export const displayValue = (value: any) => {
   return value ? value : '';
 };

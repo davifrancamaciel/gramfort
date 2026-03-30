@@ -76,6 +76,9 @@ export interface Sale {
   image6?: string;
   path?: string;
   lineBreak?: string;
+
+  userSatisfactionId?: number;
+  satisfactionSurveyDate?: string;
 }
 
 export const initialStateForm: Sale = {

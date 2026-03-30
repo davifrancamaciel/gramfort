@@ -27,7 +27,7 @@ const CreateEdit: React.FC = (props: any) => {
   const [usersOptions, setUsersOptions] = useState<IOptions[]>();
 
   useEffect(() => {
-    onLoadUser();
+    !props.match.params.id && onLoadUser();
   }, []);
 
   useEffect(() => {
@@ -46,6 +46,7 @@ const CreateEdit: React.FC = (props: any) => {
   const get = async (id: string) => {
     try {
       setLoading(true);
+      await onLoadUser();
       const resp = await api.get(`${apiRoutes.visits}/${id}`);
       dispatch({
         ...resp.data,

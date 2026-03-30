@@ -7,13 +7,15 @@ interface PropTypes {
   propName?: string;
   apiRoutes: string;
   item: any;
+  disabled?: boolean;
   setUpdate: (items: any) => void;
 }
 const Action: React.FC<PropTypes> = ({
   item,
   setUpdate,
   apiRoutes,
-  propName = 'active'
+  propName = 'active',
+  disabled
 }) => {
   const [loading, setLoading] = useState(false);
   const [cheked, setCheked] = useState<boolean>();
@@ -42,6 +44,7 @@ const Action: React.FC<PropTypes> = ({
   return (
     <Switch
       title="Não / Sim"
+      disabled={disabled}
       checked={cheked}
       loading={loading}
       checkedChildren="Sim"

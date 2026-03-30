@@ -64,11 +64,19 @@ export const arrayCapture: IOptions[] = array.map((item: string) => ({
   label: item
 }));
 
-const levelArray = [1, 2, 3, 4, 5];
+const levelArray = Array.from({ length: 5}, (_, index) => index+1);
 export const arrayLevel: IOptions[] = levelArray.map((item: number) => ({
   value: item.toString(),
   label: item.toString()
 }));
+
+const satisfactionArray = Array.from({ length: 11 }, (_, index) => index);
+export const arraySatisfactionArray: IOptions[] = satisfactionArray.map(
+  (item: number) => ({
+    value: item.toString(),
+    label: item.toString()
+  })
+);
 
 const natureArray = ['FISICA', 'JURÍDICA'];
 export const arrayNature: IOptions[] = natureArray.map((item: string) => ({

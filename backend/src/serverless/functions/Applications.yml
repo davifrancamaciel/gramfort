@@ -1,0 +1,40 @@
+applications:
+  handler: src/functions/api/applications.list
+  events:
+    - http:
+        path: applications
+        method: get
+        authorizer: verifyToken
+        cors: true 
+applicationsById:
+  handler: src/functions/api/applications.listById
+  events:
+    - http:
+        path: applications/{id}
+        method: get
+        authorizer: verifyToken
+        cors: true 
+applicationsCreate:
+  handler: src/functions/api/applications.create
+  events:
+    - http:
+        path: applications
+        method: post
+        authorizer: verifyToken
+        cors: true  
+applicationsUpdate:
+  handler: src/functions/api/applications.update
+  events:
+    - http:
+        path: applications
+        method: put
+        authorizer: verifyToken
+        cors: true 
+applicationsDelete:
+  handler: src/functions/api/applications.delete
+  events:
+    - http:
+        path: applications/{id}
+        method: delete
+        authorizer: verifyToken
+        cors: true
