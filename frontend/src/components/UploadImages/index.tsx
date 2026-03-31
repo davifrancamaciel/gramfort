@@ -16,8 +16,8 @@ function getBase64(file: any) {
   });
 }
 
-var MAX_WIDTH = 800;
-var MAX_HEIGHT = 600;
+var MAX_WIDTH = 1000;
+var MAX_HEIGHT = 800;
 
 function resize(image: any, callback: any) {
   //criamos img que será a nossa imagem nova

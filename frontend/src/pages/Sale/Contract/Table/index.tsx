@@ -44,6 +44,142 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
       : '';
   };
 
+  const renderImages = () => {
+    return sale.image1 &&
+      sale.image2 &&
+      sale.image3 &&
+      sale.image4 &&
+      !sale.image5 &&
+      !sale.image6 ? (
+      <>
+        <Row
+          gutter={[24, 24]}
+          style={{ marginBottom: '15px', marginTop: '15px' }}
+        >
+          {sale.image1 && (
+            <Col
+              lg={24}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Image
+                style={{ height: '570px', width: '100%' }}
+                src={sale.image1}
+              />
+            </Col>
+          )}
+        </Row>
+        <Row gutter={[16, 24]}>
+          <Col
+            lg={24}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              gap: '10px'
+            }}
+          >
+            {sale.image2 && (
+              <Image style={{ maxHeight: '500px' }} src={sale.image2} />
+            )}
+            {sale.image3 && (
+              <Image style={{ maxHeight: '500px' }} src={sale.image3} />
+            )}
+            {sale.image4 && (
+              <Image style={{ maxHeight: '500px' }} src={sale.image4} />
+            )}
+          </Col>
+        </Row>
+      </>
+    ) : (
+      <>
+        <Row
+          gutter={[24, 24]}
+          style={{ marginBottom: '15px', marginTop: '15px' }}
+        >
+          {sale.image1 && (
+            <Col
+              lg={12}
+              style={{
+                display: 'flex',
+                justifyContent: 'end',
+                width: '50%'
+              }}
+            >
+              <Image
+                style={{ height: '180px', maxWidth: '350px' }}
+                src={sale.image1}
+              />
+            </Col>
+          )}
+          {sale.image2 && (
+            <Col
+              lg={12}
+              style={{
+                display: 'flex',
+                justifyContent: 'start',
+                width: '50%'
+              }}
+            >
+              <Image
+                style={{ height: '180px', maxWidth: '350px' }}
+                src={sale.image2}
+              />
+            </Col>
+          )}
+        </Row>
+        <Row gutter={[16, 24]}>
+          <Col
+            lg={12}
+            style={{
+              display: 'flex',
+              justifyContent: 'end',
+              width: '50%'
+            }}
+          >
+            {sale.image3 && (
+              <Image
+                style={{ height: '500px', maxWidth: '350px' }}
+                src={sale.image3}
+              />
+            )}
+          </Col>
+          <Col
+            lg={12}
+            style={{
+              display: 'grid',
+              justifyContent: 'start  ',
+              width: '50%',
+              gap: '10px'
+            }}
+          >
+            {sale.image4 && (
+              <Image
+                style={{ height: '160px', maxWidth: '350px' }}
+                src={sale.image4}
+              />
+            )}
+            {sale.image5 && (
+              <Image
+                style={{ height: '160px', maxWidth: '350px' }}
+                src={sale.image5}
+              />
+            )}
+            {sale.image6 && (
+              <Image
+                style={{ height: '160px', maxWidth: '350px' }}
+                src={sale.image6}
+              />
+            )}
+          </Col>
+        </Row>
+      </>
+    );
+  };
+
   return (
     <TableReport
       title={``}
@@ -613,86 +749,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                   <img src={sale.company?.imageHeaderContract} alt="" />
                 </div>
               </Header>
-              <Row
-                gutter={[24, 24]}
-                style={{ marginBottom: '15px', marginTop: '15px' }}
-              >
-                {sale.image1 && (
-                  <Col
-                    lg={12}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'end',
-                      width: '50%'
-                    }}
-                  >
-                    <Image
-                      style={{ height: '180px', maxWidth: '350px' }}
-                      src={sale.image1}
-                    />
-                  </Col>
-                )}
-                {sale.image2 && (
-                  <Col
-                    lg={12}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'start',
-                      width: '50%'
-                    }}
-                  >
-                    <Image
-                      style={{ height: '180px', maxWidth: '350px' }}
-                      src={sale.image2}
-                    />
-                  </Col>
-                )}
-              </Row>
-              <Row gutter={[16, 24]}>
-                <Col
-                  lg={12}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'end',
-                    width: '50%'
-                  }}
-                >
-                  {sale.image3 && (
-                    <Image
-                      style={{ height: '500px', maxWidth: '350px' }}
-                      src={sale.image3}
-                    />
-                  )}
-                </Col>
-                <Col
-                  lg={12}
-                  style={{
-                    display: 'grid',
-                    justifyContent: 'start  ',
-                    width: '50%',
-                    gap: '10px'
-                  }}
-                >
-                  {sale.image4 && (
-                    <Image
-                      style={{ height: '160px', maxWidth: '350px' }}
-                      src={sale.image4}
-                    />
-                  )}
-                  {sale.image5 && (
-                    <Image
-                      style={{ height: '160px', maxWidth: '350px' }}
-                      src={sale.image5}
-                    />
-                  )}
-                  {sale.image6 && (
-                    <Image
-                      style={{ height: '160px', maxWidth: '350px' }}
-                      src={sale.image6}
-                    />
-                  )}
-                </Col>
-              </Row>
+              {renderImages()}
             </div>
           )}
         </td>

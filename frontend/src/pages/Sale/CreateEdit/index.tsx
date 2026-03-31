@@ -266,7 +266,7 @@ const CreateEdit: React.FC = (props: any) => {
       activeLoading && setLoading(true);
       const resp = await api.get(`${apiRoutes.users}/all`);
       setUsers(resp.data);
-      setLoading(false);
+      activeLoading && setLoading(false);
       if (!checkRouleProfileAccess(groups, roules.administrator)) {
         setUsersOptions(resp.data);
       }

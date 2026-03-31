@@ -67,7 +67,7 @@ const TableReport: React.FC<PropTypes> = ({
             justifyContent: 'center'
           }}
         >
-          <img src={imageFooterContract} alt="" style={{ maxWidth: '710px' }} />
+          <img src={imageFooterContract} alt="" style={{ width: '710px' }} />
         </div>
       )}
     </Container>
