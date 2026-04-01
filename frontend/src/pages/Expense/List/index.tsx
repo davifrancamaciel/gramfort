@@ -25,6 +25,8 @@ import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
 import { formatPrice } from 'utils/formatPrice';
 import Action from 'components/Action';
+import GridEditText from 'components/GridEditText';
+import GridEditSelect from 'components/GridEditSelect';
 import { getTitle, getType } from '../utils';
 import ShowByRoule from 'components/ShowByRoule';
 import { useAppContext } from 'hooks/contextLib';
@@ -34,6 +36,7 @@ import Actions from './Actions';
 import { createQueryString } from 'utils';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from 'hooks/queryString';
+import { IOptions } from 'utils/commonInterfaces';
 
 const List: React.FC = () => {
   const { companies } = useAppContext();
@@ -44,6 +47,7 @@ const List: React.FC = () => {
   const [dataTotal, setDataTotal] = useState<CardsResult>(initialStateCards);
   const [path, setPath] = useState(apiRoutes.expenses);
   const [selectedRowKeysLoad, setSelectedRowKeysLoad] = useState<number[]>([]);
+  const [expenseTypes, setExpenseTypes] = useState<IOptions[]>([]);
   const [selectedItems, setSelectedItems] = useState<Expense[]>([]);
   const history = useHistory();
   const query = useQuery();
@@ -85,7 +89,10 @@ const List: React.FC = () => {
 
   const actionFilter = async (state: any) => {
     try {
-      const type = getType();      
+      const type = getType();
+
+      let expenseTypes: IOptions[] = [];
+      if (state.setDate === 'false') expenseTypes = await onLoad(type);
       let newState = {
         ...state,
         expenseTypeId: state.expenseTypeId.map((x: string) =>
@@ -110,12 +117,28 @@ const List: React.FC = () => {
       const itemsFormatted = rows.map((e: Expense) => {
         const expense = {
           ...e,
+          title: (
+            <GridEditText
+              item={e}
+              setLoading={setLoading}
+              setUpdate={() => {}}
+              apiRoutes={apiRoutes.expenses}
+              propName="title"
+            />
+          ),
           nameInfoDel: `${getTitle(path)} ${e.title} do tipo ${
             e.expenseType?.name
           }`,
           expenseTypeName: (
             <Tooltip title={e.expenseType?.description}>
-              {e.expenseType?.name}
+              <GridEditSelect
+                item={e}
+                setLoading={setLoading}
+                setUpdate={() => {}}
+                apiRoutes={apiRoutes.expenses}
+                propName="expenseTypeId"
+                options={expenseTypes}
+              />
             </Tooltip>
           ),
           companyName: e.company?.name,
@@ -174,6 +197,14 @@ const List: React.FC = () => {
     });
   };
 
+  const onLoad = async (typePath: string) => {
+    if (typePath == appRoutes.expenses) {
+      const respEpensesTypes = await api.get(apiRoutes.expenseTypes);
+      setExpenseTypes(respEpensesTypes.data);
+      return respEpensesTypes.data;
+    }
+  };
+
   return (
     <div>
       <FastFilter state={state} setState={dispatch} />
@@ -215,7 +246,7 @@ const List: React.FC = () => {
           <Col lg={12} md={12} sm={12} xs={24}>
             <SelectMultiple
               label={'Tipo'}
-              url={apiRoutes.expenseTypes}
+              options={expenseTypes}
               value={state.expenseTypeId}
               onChange={(expenseTypeId) => {
                 dispatch({ expenseTypeId });
