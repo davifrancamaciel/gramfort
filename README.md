@@ -1,19 +1,26 @@
 
-<h3 align="center">
-  <img src="frontend/src/assets/favicon.png" style='height:40px'> O SISGRAM é um projeto desenvolvido para atender clientes que possuem empresas atividades voltadas para aplicação de <a href='https://www.google.com/search?q=o+que+%C3%A9+hidrossemeadura&oq=o+que+%C3%A9+hidroseme&gs_lcrp=EgZjaHJvbWUqCwgBEAAYChgLGIAEMgYIABBFGDkyCwgBEAAYChgLGIAEMgsIAhAAGAoYCxiABDIKCAMQABiABBiiBDIKCAQQABiABBiiBDIKCAUQABiABBiiBDIKCAYQABiABBiiBNIBCTE4OTQ1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8' target='_blank'>hidrosemeadura</a>.
+<h3 align="center">  
+  🌱 O SISGRAM é uma plataforma integrada desenvolvida para otimizar a gestão operacional, comercial e técnica de empresas de aplicação de <a href='https://www.google.com/search?q=o+que+%C3%A9+hidrossemeadura&oq=o+que+%C3%A9+hidroseme&gs_lcrp=EgZjaHJvbWUqCwgBEAAYChgLGIAEMgYIABBFGDkyCwgBEAAYChgLGIAEMgsIAhAAGAoYCxiABDIKCAMQABiABBiiBDIKCAQQABiABBiiBDIKCAUQABiABBiiBDIKCAYQABiABBiiBNIBCTE4OTQ1ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8' target='_blank'>Hidrosemeadura</a>. Ele oferece recursos que permitem acompanhar todo o ciclo de projetos de revegetação e controle de erosão, desde o planejamento até a execução e monitoramento dos resultados.    
 </h3>
 
 <img src="frontend/src/assets/dashboard.png" style='width:1000px'> 
 
 ## **:rocket: OBJETIVO**
 
-Projeto desenvolvido para gerenciar usuários, clientes, vendas, contratos, despesas, compras, veiculos visitas por perfis definidos  utilizando [AWS Lambda][aws_lambda] com [Node Js][node] no backend e [React][react] + [TypeScript][typescript] no frontend
+🔑 Principais funcionalidades:
+- **Gestão de Projetos:** cadastro e acompanhamento de obras de hidrossemeadura, com cronogramas, etapas e relatórios de progresso.
+- **Controle de Insumos:** gerenciamento de sementes, fertilizantes, fibras e demais materiais utilizados, com controle de estoque e custos.
+- **Módulo Técnico:** registro de especificações técnicas, áreas atendidas, mapas e imagens georreferenciadas para monitoramento ambiental.
+- **Gestão de Clientes:** cadastro de clientes, histórico de contratos e comunicação integrada.
+- **Relatórios e Indicadores:** geração de relatórios personalizados sobre produtividade, custos, eficiência e impacto ambiental.
+- **Acesso Online:** sistema responsivo, acessível em qualquer dispositivo, permitindo que equipes de campo atualizem informações em tempo real.
+- **Segurança e Conformidade:** proteção de dados e adequação às normas ambientais e regulatórias.
 
-Para que tudo isso possa acontecer agora o sistema conta com mais tecnologias como SQS, S3 Amazon EventBridge e muito mais.
 -  [Demo V1](https://appsisgram.web.app) 
 
-## **:computer: TECNOLOGIAS**
 
+## **:computer: Arquitetura e Tecnologias**
+<img src="frontend/src/assets/arquitetura.png" style='width:500px'>
 
 #### **Frontend** ([React][react] + [TypeScript][typescript])
 - **[Ant Design][ant]** 
@@ -21,7 +28,8 @@ Para que tudo isso possa acontecer agora o sistema conta com mais tecnologias co
 - **[AWS Amplify][aws_amplify]**
 #### **Backend** ([NodeJS][node] + [AWS][aws])
 
-- **[Serverless][serverless]** 
+- **[Serverless][serverless]**
+- **[AWS Lambda][aws_lambda]**
 - **[AWS sdk][aws_sdk]**
 - **[Sequelize][sequelize]**
 - **[Sequelize cli][sequelize_cli]**
