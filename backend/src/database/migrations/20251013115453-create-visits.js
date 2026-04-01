@@ -42,7 +42,7 @@ module.exports = {
         carriedOut: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false, },
         proposal: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false, },
         sale: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false, },  
-
+        note: { type: Sequelize.STRING(1000), allowNull: true, },
         createdAt: { type: Sequelize.DATE, allowNull: false, },
         updatedAt: { type: Sequelize.DATE, allowNull: false, },
       });

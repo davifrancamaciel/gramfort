@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Col, notification } from 'antd';
-import { DatePicker, Input, Select, Switch } from 'components/_inputs';
+import { DatePicker, Input, Select, Switch, Textarea } from 'components/_inputs';
 import PanelCrud from 'components/PanelCrud';
 import ShowByRoule from 'components/ShowByRoule';
 import { apiRoutes, appRoutes, roules, userType } from 'utils/defaultValues';
@@ -232,6 +232,14 @@ const CreateEdit: React.FC = (props: any) => {
           checkedChildren="Sim"
           unCheckedChildren="Não"
           onChange={() => dispatch({ sale: !state.sale })}
+        />
+      </Col>
+      <Col lg={24} md={24} sm={24} xs={24}>
+        <Textarea
+          label={'Observações'}
+          placeholder=""
+          value={state.note}
+          onChange={(e) => dispatch({ note: e.target.value })}
         />
       </Col>
     </PanelCrud>

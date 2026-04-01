@@ -19,6 +19,8 @@ export interface CardsResult {
     m2: number;
     totalValueVisitsMonth: number;
     countVisis: number;
+    satisfactionCount: number;
+    satisfactionValue: number;
   };
   salesAcc: {
     count: number;
@@ -54,7 +56,9 @@ export const initialStateCards: CardsResult = {
     users: 0,
     m2: 0,
     totalValueVisitsMonth: 0,
-    countVisis: 0
+    countVisis: 0,
+    satisfactionValue: 0,
+    satisfactionCount: 0
   },
   salesAcc: {
     count: 0,
@@ -74,5 +78,5 @@ export const initialStateCards: CardsResult = {
   },
   expenses: [],
   expensesByType: [],
-  expensesByTypeAcc: [],
+  expensesByTypeAcc: []
 };

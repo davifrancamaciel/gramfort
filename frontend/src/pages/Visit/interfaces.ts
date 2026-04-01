@@ -28,6 +28,7 @@ export interface Visit {
   state?: string;
   city?: string;
   address?: string;  
+  note?: string;
 }
 
 export const initialStateForm: Visit = {

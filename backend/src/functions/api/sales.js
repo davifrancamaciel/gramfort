@@ -39,7 +39,7 @@ module.exports.list = async (event, context) => {
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade')
         const isAdm = checkRouleProfileAccess(user.groups, roules.administrator)
         if (event.queryStringParameters) {
-            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId, path, clientId } = event.queryStringParameters
+            const { id, product, userName, clientName, valueMin, valueMax, createdAtStart, createdAtEnd, note, companyId, path, clientId, satisfaction } = event.queryStringParameters
 
             if (isAdm) {
                 const ids = await getCompaniesIds(user);
@@ -54,6 +54,9 @@ module.exports.list = async (event, context) => {
                 whereStatement.companyId = user.companyId
 
             if (id) whereStatement.id = id;
+
+            if (satisfaction !== undefined && satisfaction !== '')
+                whereStatement.satisfactionSurveyDate = satisfaction === 'true' ? { [Op.ne]: null, } : { [Op.eq]: null, };;
 
             if (path && path == pathRoutes.sales)
                 whereStatement.approved = true;

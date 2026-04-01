@@ -5,7 +5,8 @@ import {
   ArrowDownOutlined,
   ArrowUpOutlined,
   DollarOutlined,
-  MediumOutlined
+  MediumOutlined,
+  LikeOutlined
 } from '@ant-design/icons';
 
 import {
@@ -385,6 +386,18 @@ const Cards: React.FC = () => {
               color={systemColors.BLUE}
               text={`M2 APLICADO`}
               icon={<MediumOutlined />}
+              url={`${appRoutes.sales}?_date=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={`${getPercent(
+                cards.sales.satisfactionValue / 10,
+                cards.sales.satisfactionCount
+              )}%`}
+              color={systemColors.BLUE}
+              text={`ÍNDICE DE SATISFAÇÃO`}
+              subText={`${cards.sales.satisfactionCount} obras/clientes avaliados `}
+              icon={<LikeOutlined />}
               url={`${appRoutes.sales}?_date=${dateEn}`}
             />
           </>

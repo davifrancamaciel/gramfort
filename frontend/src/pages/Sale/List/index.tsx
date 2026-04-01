@@ -9,6 +9,7 @@ import { Input, RangePicker, Select } from 'components/_inputs';
 import {
   apiRoutes,
   appRoutes,
+  booleanFilter,
   categorIdsArrayProduct,
   roules
 } from 'utils/defaultValues';
@@ -135,6 +136,9 @@ const List: React.FC = () => {
             />
           ),
           approved: <BooleanTag value={p.approved!} />,
+          satisfactionSurveyDate: (
+            <BooleanTag value={!!p.satisfactionSurveyDate} />
+          ),
           print: p.hash ? <ContractButton id={p.id!} /> : undefined
         };
         return {
@@ -226,8 +230,13 @@ const List: React.FC = () => {
     arrayCols.push({ title: 'Contato', dataIndex: 'contact' });
     arrayCols.push({ title: 'Consultor', dataIndex: 'userName' });
     arrayCols.push({ title: 'Captação', dataIndex: 'capture' });
-    if (path === appRoutes.sales)
+    if (path === appRoutes.sales) {
+      arrayCols.push({
+        title: 'Pesquisa',
+        dataIndex: 'satisfactionSurveyDate'
+      });
       arrayCols.push({ title: 'NF', dataIndex: 'invoiceAction' });
+    }
     if (path === appRoutes.contracts)
       arrayCols.push({ title: 'Venda', dataIndex: 'approved' });
     //  arrayCols.push({ title: 'Criada em', dataIndex: 'createdAt' });
@@ -283,11 +292,11 @@ const List: React.FC = () => {
           />
         </Col>
         <Col lg={5} md={12} sm={24} xs={24}>
-          <Input
-            label={'Obs.'}
-            placeholder="Ex.: "
-            value={state.note}
-            onChange={(e) => dispatch({ note: e.target.value })}
+          <Select
+            label={'Pequisa realizada'}
+            options={booleanFilter}
+            value={state?.satisfaction}
+            onChange={(satisfaction) => dispatch({ satisfaction })}
           />
         </Col>
         <Col lg={9} md={12} sm={24} xs={24}>

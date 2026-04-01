@@ -18,8 +18,9 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
     const [result] = await executeSelect(query);
     const [m2] = await productsM2(date, isAdm, user, companyId);
     const [visits] = await visitsPaidOut(date, isAdm, user, companyId, acc);
+    const [satisfaction] = await salesSatisfaction(isAdm, user, companyId);
 
-    return { ...result, ...m2, ...visits }
+    return { ...result, ...m2, ...visits, ...satisfaction }
 }
 
 const productsM2 = async (date, isAdm, user, companyId) => {
@@ -39,6 +40,15 @@ const visitsPaidOut = async (date, isAdm, user, companyId, acc) => {
     const query = ` SELECT COUNT(s.id) countVisis, SUM(s.value) totalValueVisitsMonth FROM visits s 
                     WHERE s.paidOut = true AND 
                           s.paymentDate BETWEEN '${start}' AND '${endOfMonth(date).toISOString()}' 
+                    ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
+
+    const result = await executeSelect(query);
+    return result
+}
+
+const salesSatisfaction = async (isAdm, user, companyId) => {
+    const query = ` SELECT SUM(s.satisfaction) satisfactionValue, COUNT(s.id) satisfactionCount
+                    FROM sales s WHERE s.satisfactionSurveyDate IS NOT NULL
                     ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
 
     const result = await executeSelect(query);
