@@ -320,6 +320,17 @@ const Cards: React.FC = () => {
                 arrayInput
               )}`}
             />
+
+            <Card
+              loading={loading}
+              value={formatPrice(cashWithdrawal.totalValueMonth)}
+              color={systemColors.LIGHT_GREY}
+              text={`RETIRADAS (${cashWithdrawal.count})`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+                arrayCashWithdrawal
+              )}`}
+            />
             <Card
               loading={loading}
               value={formatPrice(marketing.totalValueMonth)}
@@ -335,16 +346,6 @@ const Cards: React.FC = () => {
               icon={<ArrowUpOutlined />}
               url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
                 arrayMarketing
-              )}`}
-            />
-            <Card
-              loading={loading}
-              value={formatPrice(cashWithdrawal.totalValueMonth)}
-              color={systemColors.LIGHT_GREY}
-              text={`RETIRADAS (${cashWithdrawal.count})`}
-              icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
-                arrayCashWithdrawal
               )}`}
             />
           </>
