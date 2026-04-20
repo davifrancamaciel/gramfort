@@ -62,11 +62,12 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
               style={{
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                width: '100%'
               }}
             >
               <Image
-                style={{ height: '570px', width: '100%' }}
+                style={{ height: '400px', width: '100%' }}
                 src={sale.image1}
               />
             </Col>
