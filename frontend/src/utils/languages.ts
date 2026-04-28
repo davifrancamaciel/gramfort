@@ -62,7 +62,7 @@ const BRL: ContractLabels = {
   clause4: 'CLÁUSULA QUARTA - INFORMAÇÕES/TERMOS ADCIONAIS',
   textDefinition: 'a definir',
   textRealization: 'Realizada por {user} em',
-  textDir: 'Diretor Comercial GramFort',
+  textDir: 'Diretor Comercial',
   textAmountInput: 'litros de insumos',
   titleVisit: 'RECIBO DE PAGAMENTO DE VISITA TÉCNICA',
   paymentMethod:
@@ -95,7 +95,7 @@ const PYG: ContractLabels = {
   expectedDateForApplication: 'Fecha estimada de inicio',
   textDefinition: 'por definir',
   textRealization: 'Interpretado por {user} en',
-  textDir: 'Director comercial de GramFort',
+  textDir: 'Director comercial',
   textAmountInput: 'litros de suministros',
   titleVisit: 'RECIBO DE PAGO DE VISITA TÉCNICA',
   paymentMethod:

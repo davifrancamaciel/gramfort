@@ -205,6 +205,24 @@ const List: React.FC = () => {
     }
   };
 
+  const getColls = () => {
+    const path = getType();
+    let colls: Array<any> = [];
+
+    colls.push({ title: 'Empresa', dataIndex: 'companyName' });
+    if (path == appRoutes.expenses)
+      colls.push({ title: 'Tipo', dataIndex: 'expenseTypeName', sorter: true });
+    colls.push({
+      title: 'Dia',
+      dataIndex: 'paymentDate',
+      sorter: true
+    });
+    colls.push({ title: 'Titulo', dataIndex: 'title', sorter: true });
+    colls.push({ title: 'Valor', dataIndex: 'value', sorter: true });
+    colls.push({ title: 'Paga', dataIndex: 'paidOut' });
+    return colls;
+  };
+
   return (
     <div>
       <FastFilter state={state} setState={dispatch} />
@@ -308,19 +326,7 @@ const List: React.FC = () => {
           type: 'checkbox',
           ...rowSelection
         }}
-        columns={[
-          // { title: 'Código', dataIndex: 'id' },
-          { title: 'Empresa', dataIndex: 'companyName' },
-          { title: 'Tipo', dataIndex: 'expenseTypeName', sorter: true },
-          {
-            title: 'Dia',
-            dataIndex: 'paymentDate',
-            sorter: true
-          },
-          { title: 'Titulo', dataIndex: 'title', sorter: true },
-          { title: 'Valor', dataIndex: 'value', sorter: true },
-          { title: 'Paga', dataIndex: 'paidOut' }
-        ]}
+        columns={getColls()}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter({ ...state, pageNumber })}
         onDelete={() => {

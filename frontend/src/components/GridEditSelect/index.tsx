@@ -59,7 +59,7 @@ const GridEditSelect: React.FC<PropTypes> = ({
     />
   ) : (
     <span onClick={() => setEnable(true)}>
-      {options.find((x: IOptions) => x.value === value)?.label} <EditOutlined />
+      {options && options.find((x: IOptions) => x.value === value)?.label} <EditOutlined />
     </span>
   );
 };
