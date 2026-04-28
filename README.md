@@ -17,6 +17,11 @@
 - **Segurança e Conformidade:** proteção de dados e adequação às normas ambientais e regulatórias.
 
 -  [Demo V1](https://appsisgram.web.app) 
+Credenciais
+```sh
+login demo@gmail.com
+senha 1234demo
+```
 
 
 ## **:computer: Arquitetura e Tecnologias**
