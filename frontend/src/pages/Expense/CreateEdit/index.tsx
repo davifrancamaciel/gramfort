@@ -156,7 +156,7 @@ const CreateEdit: React.FC = (props: any) => {
 
   return (
     <PanelCrud
-      title={`${type === 'update' ? 'Editar' : 'Nova'} ${getTitle(
+      title={`${type === 'update' ? 'Editar' : 'Novo'} ${getTitle(
         path
       ).toLocaleLowerCase()}`}
       type={type}

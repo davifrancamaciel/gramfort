@@ -18,7 +18,7 @@ import Table from './Table';
 import { Button, Card } from 'antd';
 import GoBack from 'components/GoBack';
 import WhatsApp from 'components/WhatsApp';
-import { createMessageShare, getFileName } from '../utils';
+import { createMessageShare, getFileName, getType } from '../utils';
 import Copy from 'components/Copy';
 import { createLinkShare } from '../utils';
 import { formatPrice } from 'utils/formatPrice';
@@ -30,6 +30,7 @@ const Contract: React.FC = (props: any) => {
   const { state, dispatch } = useFormState(initialStateForm);
   const [loading, setLoading] = useState(false);
   const [sale, setSale] = useState<Sale>();
+  const [path, setPath] = useState<string>();
 
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
@@ -37,6 +38,8 @@ const Contract: React.FC = (props: any) => {
 
   useEffect(() => {
     setSale(state);
+    const typePath = getType();
+    setPath(typePath);
   }, [state]);
 
   const get = async (id: string) => {
@@ -162,7 +165,12 @@ Esperando instrucciones para continuar…`;
       </PrintContainer>
     ];
     if (!query.get('hash')) array.push(btnEdit());
-    if (sale?.client?.phone && !query.get('hash')) array.push(btnWhatapp());
+    if (
+      sale?.client?.phone &&
+      !query.get('hash') &&
+      path === appRoutes.contracts
+    )
+      array.push(btnWhatapp());
     if (query.get('hash') && !sale?.approved) array.push(btnApprove());
 
     return array;
@@ -181,11 +189,15 @@ Esperando instrucciones para continuar…`;
           overflow: 'auto'
         }}
       >
-        {!query.get('hash') && <Copy text={createLinkShare(sale)} />}
+        {!query.get('hash') && path === appRoutes.contracts && (
+          <Copy text={createLinkShare(sale)} />
+        )}
         <div style={{ marginBottom: '15px', marginTop: '15px' }}>
           <Table sale={state} />
         </div>
-        {!query.get('hash') && <Copy text={createLinkShare(sale)} />}
+        {!query.get('hash') && path === appRoutes.contracts && (
+          <Copy text={createLinkShare(sale)} />
+        )}
       </div>
     </Card>
   );

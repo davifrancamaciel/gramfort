@@ -11,6 +11,7 @@ import { formatDateHour } from 'utils/formatDate';
 import Action from 'components/Action';
 
 const List: React.FC = () => {
+  
   const { state, dispatch } = useFormState(initialStateFilter);
   const [items, setItems] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,7 +75,19 @@ const List: React.FC = () => {
       ));
     } else return <Tag color={systemColors.LIGHT_BLUE}>{accessType}</Tag>;
   };
+  const getColls = () => {
+    let colls: Array<any> = [];
 
+    colls.push({ title: 'Logo', dataIndex: 'image' });
+    colls.push({ title: 'Empresa', dataIndex: 'name' });
+    colls.push({ title: 'Permissões', dataIndex: 'accessTypeText' });
+    colls.push({ title: 'Criada em', dataIndex: 'createdAt' });
+    colls.push({ title: 'Alterada em', dataIndex: 'updatedAt' });
+    // if (path == appRoutes.expenses)
+    colls.push({ title: 'Ativa', dataIndex: 'active' });
+    
+    return colls;
+  };
   return (
     <div>
       <PanelFilter
@@ -101,14 +114,7 @@ const List: React.FC = () => {
       </PanelFilter>
       <GridList
         scroll={{ x: 840 }}
-        columns={[
-          { title: 'Logo', dataIndex: 'image' },
-          { title: 'Empresa', dataIndex: 'name' },
-          { title: 'Permissões', dataIndex: 'accessTypeText' },
-          { title: 'Criada em', dataIndex: 'createdAt' },
-          { title: 'Alterada em', dataIndex: 'updatedAt' },
-          { title: 'Ativa', dataIndex: 'active' }
-        ]}
+        columns={getColls()}
         dataSource={items}
         onPagination={(pageNumber) => actionFilter(pageNumber)}
         onDelete={() => {

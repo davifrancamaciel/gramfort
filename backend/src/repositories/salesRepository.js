@@ -10,8 +10,8 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
                         COUNT(DISTINCT s.userId) users,                        
                         SUM(s.value) totalValueMonth, 
                         SUM(s.valueInput) totalValueInputMonth, 
-                        SUM(s.value * (s.commission / 100)) totalValueCommissionMonth
-                    FROM sales s 
+                        SUM(s.value * (s.commission / 100)) totalValueCommissionMonth                        
+                    FROM sales s                     
                     WHERE s.approved = true AND s.saleDate BETWEEN '${start}' AND '${endOfMonth(date).toISOString()}' 
                     ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}
                     ${individualCommission ? ` AND s.userId = ${user.userId}` : ''}`
@@ -19,14 +19,53 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
     const [m2] = await productsM2(date, isAdm, user, companyId);
     const [visits] = await visitsPaidOut(date, isAdm, user, companyId, acc);
     const [satisfaction] = await salesSatisfaction(isAdm, user, companyId);
+    const [applications] = await tanksApplied(date, isAdm, user, companyId);
 
-    return { ...result, ...m2, ...visits, ...satisfaction }
+    return { ...result, ...m2, ...visits, ...satisfaction, ...applications };
+}
+
+const salesDre = async (date, isAdm, user, companyId) => {
+    const dateString = startOfMonth(date).toISOString()
+    const query = ` SELECT 	'Fat Bruto' name, 
+                            SUM(s.value) total, 
+                            SUM(s.valueInput) totalCost, 
+                            MONTH(s.saleDate) month, YEAR(s.saleDate) year 
+                    FROM sales s 
+                    WHERE s.approved = true AND YEAR(s.saleDate) = YEAR('${dateString}')
+                    ${isAdm ? andCompany(companyId, 's') : andCompany(user.companyId, 's')}
+                    GROUP BY MONTH (s.saleDate), YEAR(s.saleDate)
+                    ORDER BY YEAR(s.saleDate) DESC, MONTH (s.saleDate) DESC`
+
+    const result = await executeSelect(query);
+    return result
+}
+
+const m2Dre = async (date, isAdm, user, companyId) => {
+    const dateString = startOfMonth(date).toISOString()
+    const query = ` SELECT 	'M2 aplicados' name, 
+                            SUM(sp.amount) total, 
+                            MONTH(s.saleDate) month, YEAR(s.saleDate) year
+                    FROM saleProducts sp 
+                    INNER JOIN sales s ON s.id = sp.saleId 
+                    INNER JOIN products p ON p.id = sp.productId 
+                    INNER JOIN companies c ON c.id = s.companyId 
+                    WHERE s.approved = true AND 
+                        YEAR(s.saleDate) = YEAR('${dateString}') AND 
+                        p.categoryId = 4
+                    ${isAdm ? andCompany(companyId, 's') : andCompany(user.companyId, 's')}
+                    GROUP BY MONTH (s.saleDate), YEAR(s.saleDate)
+                    ORDER BY YEAR(s.saleDate) DESC, MONTH (s.saleDate) DESC`
+
+    const result = await executeSelect(query);
+    return result
 }
 
 const productsM2 = async (date, isAdm, user, companyId) => {
-    const query = ` SELECT SUM(sp.amount) m2 FROM saleProducts sp 
+    const query = ` SELECT SUM(sp.amount) m2 
+                    FROM saleProducts sp 
                     INNER JOIN sales s ON s.id = sp.saleId 
                     INNER JOIN products p ON p.id = sp.productId 
+                    INNER JOIN companies c ON c.id = s.companyId 
                     WHERE s.approved = true AND 
                           s.saleDate BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' AND 
                           p.categoryId = 4 ${isAdm ? andCompany(companyId) : andCompany(user.companyId)}`
@@ -46,6 +85,18 @@ const visitsPaidOut = async (date, isAdm, user, companyId, acc) => {
     return result
 }
 
+const visitsPaidOutDre = async (date, isAdm, user, companyId) => {
+    const dateString = startOfMonth(date).toISOString()
+    const query = ` SELECT 'Fat Bruto' name, SUM(v.value) total, MONTH(v.paymentDate) month, YEAR(v.paymentDate) year FROM visits v
+                    WHERE v.paidOut = true AND YEAR(v.paymentDate) = YEAR('${dateString}')
+                    ${isAdm ? andCompany(companyId, 'v') : andCompany(user.companyId, 'v')}
+                    GROUP BY MONTH (v.paymentDate), YEAR(v.paymentDate)
+                    ORDER BY YEAR(v.paymentDate) DESC, MONTH (v.paymentDate) DESC`
+
+    const result = await executeSelect(query);
+    return result
+}
+
 const salesSatisfaction = async (isAdm, user, companyId) => {
     const query = ` SELECT SUM(s.satisfaction) satisfactionValue, COUNT(s.id) satisfactionCount
                     FROM sales s WHERE s.satisfactionSurveyDate IS NOT NULL
@@ -55,14 +106,26 @@ const salesSatisfaction = async (isAdm, user, companyId) => {
     return result
 }
 
-const visitsPaidOutDre = async (date, isAdm, user, companyId) => {
+const applicationDre = async (date, isAdm, user, companyId) => {
     const dateString = startOfMonth(date).toISOString()
-    const query = ` SELECT 'VISITAS' name, SUM(v.value) total, MONTH(v.paymentDate) month, YEAR(v.paymentDate) year FROM visits v
-                    WHERE v.paidOut = true AND YEAR(v.paymentDate) = YEAR('${dateString}')
-                    ${isAdm ? andCompany(companyId, 'v') : andCompany(user.companyId, 'v')}
-                    GROUP BY MONTH (v.paymentDate), YEAR(v.paymentDate)
-                    ORDER BY YEAR(v.paymentDate) DESC, MONTH (v.paymentDate) DESC`
+    const query = ` SELECT 	'Tanques' name, 
+                            SUM(a.amount) total, 
+                            MONTH(a.date) month, YEAR(a.date) year 
+                    FROM applications a 
+                    WHERE YEAR(a.date) = YEAR('${dateString}')
+                    ${isAdm ? andCompany(companyId, 'a') : andCompany(user.companyId, 'a')}
+                    GROUP BY MONTH (a.date), YEAR(a.date)
+                    ORDER BY YEAR(a.date) DESC, MONTH (a.date) DESC`
 
+    const result = await executeSelect(query);
+    return result
+}
+
+const tanksApplied = async (date, isAdm, user, companyId) => {
+    const query = ` SELECT 	SUM(a.amount) tanksApplied                           
+                    FROM applications a 
+                    WHERE a.date BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
+                    ${isAdm ? andCompany(companyId, 'a') : andCompany(user.companyId, 'a')}`
     const result = await executeSelect(query);
     return result
 }
@@ -94,4 +157,4 @@ const salesMonthExpenseCommission = async (date) => {
     return result
 }
 
-module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre }
+module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre, salesDre, m2Dre, applicationDre }

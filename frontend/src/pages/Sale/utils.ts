@@ -1,8 +1,10 @@
-import { currency } from 'utils/index';
+import { currency, displayValue } from 'utils/index';
 import { formatPrice } from 'utils/formatPrice';
 import { appRoutes } from 'utils/defaultValues';
 import { Sale } from './interfaces';
 import { language } from 'utils/languages';
+import { Visit } from '../Visit/interfaces';
+import { formatDate } from 'utils/formatDate';
 
 export const getType = () => {
   if (window.location.pathname.includes(appRoutes.contracts))
@@ -89,4 +91,13 @@ export const getFileName = (sale?: Sale) => {
   const { id } =
     language.contracts[currencySelected ? currencySelected : currency.BRL];
   return `${sale?.company?.name} - ${id} ${sale?.id} ${sale?.client?.name}`;
+};
+
+export const createTextVisit = (item: Visit, currentCurrency: string) => {
+  return `Dia ${formatDate(item.date)} ${formatPrice(
+    item.value || 0,
+    currentCurrency
+  )} ${displayValue(item.address)} ${displayValue(
+    item.city
+  )} ${displayValue(item.state)}`;
 };

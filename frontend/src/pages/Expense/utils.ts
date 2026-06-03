@@ -13,7 +13,7 @@ export const getTitle = (path: string, isPlural: boolean = false) => {
     case appRoutes.shopping:
       return `Compra${isPlural ? 's' : ''}`;
     default:
-      return `Despesa${isPlural ? 's' : ''}`;
+      return `Pagamento${isPlural ? 's' : ''}`;
   }
 };
 

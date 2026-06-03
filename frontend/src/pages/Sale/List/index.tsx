@@ -23,7 +23,6 @@ import moment from 'moment';
 import ShowByRoule from 'components/ShowByRoule';
 import BooleanTag from 'components/BooleanTag';
 import { useAppContext } from 'hooks/contextLib';
-import { Link } from 'react-router-dom';
 import WhatsApp from 'components/WhatsApp';
 import {
   createMessageShare,
@@ -141,19 +140,7 @@ const List: React.FC = () => {
           ),
           print: p.hash ? <ContractButton id={p.id!} /> : undefined
         };
-        return {
-          ...sale,
-          contract: sale.hash ? (
-            <Link to={`${appRoutes.contracts}/details/${sale.id}`}>
-              <BooleanTag
-                value={true}
-                yes={path === appRoutes.contracts ? 'VER' : 'SIM/VER'}
-              />
-            </Link>
-          ) : (
-            <BooleanTag value={false} />
-          )
-        };
+        return sale;
       });
       setItems(itemsFormatted);
       console.log(itemsFormatted);
@@ -238,10 +225,7 @@ const List: React.FC = () => {
       arrayCols.push({ title: 'NF', dataIndex: 'invoiceAction' });
     }
     if (path === appRoutes.contracts)
-      arrayCols.push({ title: 'Venda', dataIndex: 'approved' });
-    //  arrayCols.push({ title: 'Criada em', dataIndex: 'createdAt' });
-    //  arrayCols.push({ title: 'Alterada em', dataIndex: 'updatedAt' });
-    arrayCols.push({ title: 'Contrato', dataIndex: 'contract' });
+      arrayCols.push({ title: 'Venda', dataIndex: 'approved' });   
     arrayCols.push({ title: 'Imprimir', dataIndex: 'print' });
 
     return arrayCols;
@@ -344,17 +328,7 @@ const List: React.FC = () => {
               onChange={(companyId) => dispatch({ companyId })}
             />
           </Col>
-        </ShowByRoule>
-        {/* <Col lg={5} md={8} sm={12} xs={24}>
-          <Switch
-            label={'Exibir comissão'}
-            title="Sim / Não"
-            checked={state.showCommission}
-            checkedChildren="Sim"
-            unCheckedChildren="Não"
-            onChange={() => dispatch({ showCommission: !state.showCommission })}
-          />
-        </Col> */}
+        </ShowByRoule>       
       </PanelFilter>
       <GridList
         headerChildren={
@@ -374,7 +348,7 @@ const List: React.FC = () => {
         routes={{
           routeCreate: `/${path}/create`,
           routeUpdate: `/${path}/edit`,
-          // routeView: `/${path}/details`,
+          routeView: `/${path}/details`,
           routeDelete: `/${appRoutes.sales}`
         }}
         onChange={handleTableChange}

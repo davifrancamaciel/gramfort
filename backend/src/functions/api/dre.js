@@ -2,11 +2,10 @@
 
 const { handlerResponse, handlerErrResponse } = require("../../utils/handleResponse");
 const { getUser, checkRouleProfileAccess } = require("../../services/UserService");
-const { executeSelect } = require("../../services/ExecuteQueryService");
 const { roules } = require("../../utils/defaultValues");
 const salesRepository = require('../../repositories/salesRepository')
 const expensesRepository = require('../../repositories/expensesRepository')
-const { formatDate } = require("../../utils/formatDate");
+const { getCompaniesIdsMap } = require("../../repositories/companiesRepository");
 
 module.exports.handler = async (event, context) => {
     try {
@@ -26,11 +25,16 @@ module.exports.handler = async (event, context) => {
         if (queryStringParameters && queryStringParameters.dateReference)
             date = new Date(queryStringParameters.dateReference)
 
-        const { companyId } = queryStringParameters;
+        let { companyId } = queryStringParameters;
+         if (isAdm && !companyId)
+            companyId = await getCompaniesIdsMap(user);
+
         if (checkRouleProfileAccess(user.groups, roules.sales)) {
-            // data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId)
-            data.visits = await salesRepository.visitsPaidOutDre(date, isAdm, user, companyId)
+            data.sales = await salesRepository.salesDre(date, isAdm, user, companyId)
+            data.visits = await salesRepository.visitsPaidOutDre(date, isAdm, user, companyId);
             data.expenses = await expensesRepository.expensesMonthByTypeDre(date, isAdm, user, companyId);
+            data.m2 = await salesRepository.m2Dre(date, isAdm, user, companyId);
+            data.applications = await salesRepository.applicationDre(date, isAdm, user, companyId); 
         }
 
         return handlerResponse(200, data)

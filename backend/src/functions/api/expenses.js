@@ -318,6 +318,6 @@ const getTitle = (type, isPlural = false) => {
             return `Compra${isPlural ? 's' : ''}`;
 
         default:
-            return `Despesa${isPlural ? 's' : ''}`;
+            return `Pagamento${isPlural ? 's' : ''}`;
     }
 };

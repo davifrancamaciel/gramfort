@@ -3,8 +3,10 @@ import styled from 'styled-components';
 export const Header = styled.section`
   margin: 10px 0 25px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 18px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
   @media (max-width: 1200px) {
     grid-template-columns: repeat(4, 1fr);
   }

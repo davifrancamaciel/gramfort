@@ -15,7 +15,7 @@ import { formatDate, formatDateText } from 'utils/formatDate';
 import assinatura from 'assets/assinatura.png';
 import logoGota from 'assets/logo-gota.png';
 import { Clause, Footer, Header } from './styles';
-import { getBalance } from '../../utils';
+import { getBalance, getType } from '../../utils';
 import { numberWithDots, currency } from 'utils';
 import { ContractLabels, language } from 'utils/languages';
 
@@ -25,6 +25,7 @@ interface PropTypes {
 
 const Table: React.FC<PropTypes> = ({ sale }) => {
   const [labels, setLabels] = useState<ContractLabels>();
+  const [path, setPath] = useState<string>();
 
   useEffect(() => {
     const currencyCompany = sale.company?.currency
@@ -34,6 +35,9 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
       currencyCompany
     ] as ContractLabels;
     setLabels(label);
+
+    const typePath = getType();
+    setPath(typePath);
   }, [sale]);
 
   const getPrefixProductDescription = (sp: SaleProduct) => {
@@ -186,7 +190,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
       title={``}
       image={sale?.company?.image || ''}
       imageFooterContract={sale?.company?.imageFooterContract || ''}
-      showImageLastPage={true}
+      showImageLastPage={path === appRoutes.contracts}
     >
       <tr style={{ border: '0', fontSize: '10px' }}>
         <td style={{ border: '0' }}>
@@ -467,137 +471,145 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 </tr>
               </tbody>
             </table>
-
-            <Clause>
-              <h3>{labels?.clause1}</h3>
-              {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
-              <p>
-                {sale.company?.agencyBank} {sale.company?.fantasyName} Pix{' '}
-                {labels?.cpfCnpj} {sale.company?.pixKey}{' '}
-                {labels?.expectedDateForApplication}{' '}
-                <strong>
-                  {sale.expectedDateForApplication
-                    ? formatDate(sale.expectedDateForApplication)
-                    : labels?.textDefinition}
-                </strong>
-              </p>
-            </Clause>
-            <Clause>
-              <h3>{labels?.clause2}</h3>
-              {!sale.company?.textclauseContract2 && (
-                <>
+            {path === appRoutes.contracts && (
+              <>
+                <Clause>
+                  <h3>{labels?.clause1}</h3>
+                  {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
                   <p>
-                    Equipe, equipamento e insumos serão de responsabilidade da
-                    contratada assim como entrega da aplicação.
-                  </p>
-                  <p>
-                    O Contratante autoriza a contratada registra e postar nas
-                    redes sociais, fotos e vídeos antes e depois.
-                  </p>
-                  <p>
-                    Prazo de execução{' '}
-                    <strong>{sale.daysExecution} dias.</strong>
-                    Proposta válida por 15 dias. Efetivação mediante pagamento
-                    do Sinal.
-                  </p>
-                </>
-              )}
-              {sale.company?.textclauseContract2 && (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: sale.company?.textclauseContract2.replace(
-                      '{PRAZO}',
-                      `${sale.daysExecution}`
-                    )
-                  }}
-                />
-              )}
-            </Clause>
-            <Clause>
-              <h3>{labels?.clause3}</h3>
-              {!sale.company?.textclauseContract3 && (
-                <>
-                  <p>
-                    <strong>1. Isolar a área</strong> aplicada para evitar
-                    pisoteamento de pessoas e animais, pois compromete a
-                    germinação uniforme das sementes.
-                  </p>
-                  <p>
-                    <strong>2. Fazer irrigação</strong> 2x ao dia nos 30
-                    primeiros dias (principalmente as 7h da manhã e final da
-                    tarde após o por do sol).
-                  </p>
-                  <p>
-                    <strong>3.</strong> Observar{' '}
-                    <strong>acumulo de passáros,</strong> pois podem comer as
-                    sementes. Sugerimos alimentá-los na parte baixa com coxos
-                  </p>
-                  <p>
-                    <strong>4.</strong> Efetuar a{' '}
+                    {sale.company?.agencyBank} {sale.company?.fantasyName} Pix{' '}
+                    {labels?.cpfCnpj} {sale.company?.pixKey}{' '}
+                    {labels?.expectedDateForApplication}{' '}
                     <strong>
-                      drenagem eficiente na parte superior dos taludes.
-                    </strong>{' '}
-                    Não reaplicamos caso a água lave devido a falta de drenagem.
+                      {sale.expectedDateForApplication
+                        ? formatDate(sale.expectedDateForApplication)
+                        : labels?.textDefinition}
+                    </strong>
                   </p>
-                  <p>
-                    <strong>5.</strong> Observar a existência de{' '}
-                    <strong>formigueiro próximos e eliminá-los,</strong> pois
-                    podem comprometer o resultado.
-                  </p>
-                </>
-              )}
-              {sale.company?.textclauseContract3 && (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: sale.company?.textclauseContract3
-                  }}
-                />
-              )}
-            </Clause>
-            <Clause>
-              <h3>{labels?.clause4}</h3>
-              {!sale.company?.textclauseContract4 && (
-                <>
-                  <p>
-                    A técnica garante a cobertura vegetal do solo, e apesar de
-                    contribuir para sua estabilidade, não elimina os riscos
-                  </p>
-                  <p>
-                    de ocorrer deslizamentos, barreiras ou movimento de solo que
-                    afete os resultados. Nesses casos não fazemos reaplicações.
-                  </p>
-                  <p>
-                    Áreas rochosas ou compactadas podem apresentar falhas assim
-                    como taludes acima de 80º de inclinação.
-                  </p>
-                  <p>
-                    <strong>IMPORTANTE:</strong> Após aplicação, caso ocorra
-                    chuvas extremas/temporais/tromba d'agua - isto é, que foge a
-                    normalidade - pode ocasionar
-                  </p>
-                  <p>
-                    a lavagem do material aplicado, neste caso nos comprometemos
-                    a realizar a reaplicação pelo valor de 30% do valor cobrado.
-                  </p>
-                  <p>
-                    Caso o cliente respeite e siga as orientação e ainda sim no
-                    período de 90 (noventa) dias não ocorrer a
-                  </p>
-                  <p>
-                    germinação de 90% da área, a {sale.company?.fantasyName} se
-                    compromete a refazer o plantio.
-                  </p>
-                </>
-              )}
+                </Clause>
+                <Clause>
+                  <h3>{labels?.clause2}</h3>
+                  {!sale.company?.textclauseContract2 && (
+                    <>
+                      <p>
+                        Equipe, equipamento e insumos serão de responsabilidade
+                        da contratada assim como entrega da aplicação.
+                      </p>
+                      <p>
+                        O Contratante autoriza a contratada registra e postar
+                        nas redes sociais, fotos e vídeos antes e depois.
+                      </p>
+                      <p>
+                        Prazo de execução{' '}
+                        <strong>{sale.daysExecution} dias.</strong>
+                        Proposta válida por 15 dias. Efetivação mediante
+                        pagamento do Sinal.
+                      </p>
+                    </>
+                  )}
+                  {sale.company?.textclauseContract2 && (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: sale.company?.textclauseContract2.replace(
+                          '{PRAZO}',
+                          `${sale.daysExecution}`
+                        )
+                      }}
+                    />
+                  )}
+                </Clause>
+                <Clause>
+                  <h3>{labels?.clause3}</h3>
+                  {!sale.company?.textclauseContract3 && (
+                    <>
+                      <p>
+                        <strong>1. Isolar a área</strong> aplicada para evitar
+                        pisoteamento de pessoas e animais, pois compromete a
+                        germinação uniforme das sementes.
+                      </p>
+                      <p>
+                        <strong>2. Fazer irrigação</strong> 2x ao dia nos 30
+                        primeiros dias (principalmente as 7h da manhã e final da
+                        tarde após o por do sol).
+                      </p>
+                      <p>
+                        <strong>3.</strong> Observar{' '}
+                        <strong>acumulo de passáros,</strong> pois podem comer
+                        as sementes. Sugerimos alimentá-los na parte baixa com
+                        coxos
+                      </p>
+                      <p>
+                        <strong>4.</strong> Efetuar a{' '}
+                        <strong>
+                          drenagem eficiente na parte superior dos taludes.
+                        </strong>{' '}
+                        Não reaplicamos caso a água lave devido a falta de
+                        drenagem.
+                      </p>
+                      <p>
+                        <strong>5.</strong> Observar a existência de{' '}
+                        <strong>formigueiro próximos e eliminá-los,</strong>{' '}
+                        pois podem comprometer o resultado.
+                      </p>
+                    </>
+                  )}
+                  {sale.company?.textclauseContract3 && (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: sale.company?.textclauseContract3
+                      }}
+                    />
+                  )}
+                </Clause>
+                <Clause>
+                  <h3>{labels?.clause4}</h3>
+                  {!sale.company?.textclauseContract4 && (
+                    <>
+                      <p>
+                        A técnica garante a cobertura vegetal do solo, e apesar
+                        de contribuir para sua estabilidade, não elimina os
+                        riscos
+                      </p>
+                      <p>
+                        de ocorrer deslizamentos, barreiras ou movimento de solo
+                        que afete os resultados. Nesses casos não fazemos
+                        reaplicações.
+                      </p>
+                      <p>
+                        Áreas rochosas ou compactadas podem apresentar falhas
+                        assim como taludes acima de 80º de inclinação.
+                      </p>
+                      <p>
+                        <strong>IMPORTANTE:</strong> Após aplicação, caso ocorra
+                        chuvas extremas/temporais/tromba d'agua - isto é, que
+                        foge a normalidade - pode ocasionar
+                      </p>
+                      <p>
+                        a lavagem do material aplicado, neste caso nos
+                        comprometemos a realizar a reaplicação pelo valor de 30%
+                        do valor cobrado.
+                      </p>
+                      <p>
+                        Caso o cliente respeite e siga as orientação e ainda sim
+                        no período de 90 (noventa) dias não ocorrer a
+                      </p>
+                      <p>
+                        germinação de 90% da área, a {sale.company?.fantasyName}{' '}
+                        se compromete a refazer o plantio.
+                      </p>
+                    </>
+                  )}
 
-              {sale.company?.textclauseContract4 && (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: sale.company?.textclauseContract4
-                  }}
-                />
-              )}
-            </Clause>
+                  {sale.company?.textclauseContract4 && (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: sale.company?.textclauseContract4
+                      }}
+                    />
+                  )}
+                </Clause>
+              </>
+            )}
           </div>
 
           {sale?.lineBreak && (

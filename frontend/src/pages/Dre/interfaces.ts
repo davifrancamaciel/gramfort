@@ -9,6 +9,8 @@ export interface DreTotalsResult {
   expenses: Array<DreTotals>;
   sales: Array<DreTotals>;
   visits: Array<DreTotals>;
+  applications: Array<DreTotals>;
+  m2: Array<DreTotals>;
 }
 
 export interface DreGrigResult {
@@ -26,4 +28,5 @@ export interface DreGrigResult {
   month10?: string;
   month11?: string;
   month12?: string;
+  className?: string;
 }

@@ -6,7 +6,8 @@ import {
   ArrowUpOutlined,
   DollarOutlined,
   MediumOutlined,
-  LikeOutlined
+  LikeOutlined,
+  RiseOutlined
 } from '@ant-design/icons';
 
 import {
@@ -33,7 +34,7 @@ import { getValueExpensesByTypes } from 'pages/Expense/utils';
 import { ExpenseResult } from 'pages/Expense/interfaces';
 import FastFilter from 'components/FastFilter';
 import { Filter, initialState } from './interfaces';
-import { Divider } from 'antd';
+import { Col, Divider, Row } from 'antd';
 import { LinkButton } from 'components/_inputs';
 
 const arrayExpenses = [
@@ -51,6 +52,16 @@ const arrayMarketing = [
   expensesTypesEnum.MOFF,
   expensesTypesEnum.EVENT,
   expensesTypesEnum.MPUB
+];
+
+const arrayImpostos = [
+  expensesTypesEnum.IMPOSTOS,
+  expensesTypesEnum.SIMPL,
+  expensesTypesEnum.MOFF,
+  expensesTypesEnum.FGTS,
+  expensesTypesEnum.DARF,
+  expensesTypesEnum.iOUTR,
+  expensesTypesEnum.ISS
 ];
 
 const arrayInput = [expensesTypesEnum.INSUMOS];
@@ -75,6 +86,7 @@ const Cards: React.FC = () => {
   const [marketingAcc, setMarketingAcc] = useState<CardValues>(
     {} as CardValues
   );
+  const [impostos, setImpostos] = useState<CardValues>({} as CardValues);
   const [cashWithdrawal, setCashWithdrawal] = useState<CardValues>(
     {} as CardValues
   );
@@ -123,6 +135,13 @@ const Cards: React.FC = () => {
     );
     setMarketing(_marketing);
 
+    const _impostos = getValueExpensesByTypes(
+      cards?.expensesByType,
+      arrayImpostos,
+      true
+    );
+    setImpostos(_impostos);
+
     const _marketingAcc = getValueExpensesByTypes(
       cards?.expensesByType,
       arrayMarketing,
@@ -164,7 +183,7 @@ const Cards: React.FC = () => {
         _expenses.totalValueMonth -
         _input.totalValueMonth -
         _investment.totalValueMonth
-    );
+    );    
   }, [cards]);
 
   const action = async (date: Date, companyId?: string) => {
@@ -188,7 +207,7 @@ const Cards: React.FC = () => {
     return {
       loading,
       value: formatPrice(faturamento),
-      color: systemColors.GREEN,
+      color: systemColors.BLUE,
       text: `Faturamento (${cards?.sales.count!})`,
       subText: `Vendas e visitas`,
       icon: <ArrowDownOutlined />,
@@ -214,7 +233,11 @@ const Cards: React.FC = () => {
       color: systemColors.LIGHT_PINK,
       text: `Custos em vendas`,
       icon: <ArrowUpOutlined />,
-      url: `${appRoutes.sales}?_date=${dateEn}`
+      url: `${appRoutes.sales}?_date=${dateEn}`,
+      subText: `(${getPercent(
+        cards?.sales.totalValueInputMonth!,
+        faturamento
+      )}% da venda)`
     } as CardPropTypes;
   };
 
@@ -258,8 +281,65 @@ const Cards: React.FC = () => {
     <>
       <FastFilter state={state} setState={setState} />
       <Header>
+        {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
+          <>
+            {/* <Card {...handleCardVisitsMonth(cards)} /> */}
+            <Card {...handleCardSaleMonth(cards)} />
+            <Card {...handleCardSaleInputMonth(cards)} />
+            <Card {...handleCardFaturamentotMonth(cards)} />
+          </>
+        )}
+        {Boolean(checkRouleProfileAccess(groups, roules.expenses)) && (
+          <Card
+            loading={loading}
+            value={formatPrice(expenses.totalValueMonth)}
+            color={systemColors.ORANGE}
+            text={`DESPESAS (${expenses.count})`}
+            icon={<ArrowUpOutlined />}
+            url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+              arrayFilter
+            )}`}
+          />
+        )}
+        {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
+          <>
+            <Card
+              loading={loading}
+              value={formatPrice(liquido)}
+              color={systemColors.GREEN}
+              text={`LUCRO LIQUIDO`}
+              subText={`Lucratividade ${getPercent(liquido, faturamento)}%`}
+              icon={<DollarOutlined />}
+              url={`${appRoutes.sales}?_date=${dateEn}`}
+            />
+            <Card
+              loading={loading}
+              value={`${formatPrice(liquido + impostos.totalValueMonth)}`}
+              color={systemColors.YELLOW}
+              text={`Ebitda (${getPercent(liquido + impostos.totalValueMonth, faturamento)}% FAT)`}
+              icon={<RiseOutlined />}
+              subText={`impostos (${formatPrice(impostos.totalValueMonth)})`}
+              url={`${appRoutes.sales}?_date=${dateEn}`}
+            />
+          </>
+        )}
+      </Header>
+      <Header>
         {Boolean(checkRouleProfileAccess(groups, roules.expenses)) && (
           <>
+            <Card
+              loading={loading}
+              value={formatPrice(
+                expensePaidOutYes.totalValueMonth +
+                  expensePaidOutNo.totalValueMonth
+              )}
+              color={systemColors.BLUE}
+              text={`TOTAL DE PGTOS (${
+                expensePaidOutYes.count + expensePaidOutNo.count
+              })`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?_date=${dateEn}`}
+            />
             <Card
               loading={loading}
               value={formatPrice(expensePaidOutYes.totalValueMonth)}
@@ -276,34 +356,38 @@ const Cards: React.FC = () => {
               icon={<WarningOutlined />}
               url={`${appRoutes.expenses}?_date=${dateEn}&paidOut=false`}
             />
-            <Card
-              loading={loading}
-              value={formatPrice(
-                expensePaidOutYes.totalValueMonth +
-                  expensePaidOutNo.totalValueMonth
-              )}
-              color={systemColors.LIGHT_BLUE}
-              text={`TOTAL DE PGTOS (${
-                expensePaidOutYes.count + expensePaidOutNo.count
-              })`}
-              icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?_date=${dateEn}`}
-            />
 
             <Card
               loading={loading}
-              value={formatPrice(expenses.totalValueMonth)}
-              color={systemColors.ORANGE}
-              text={`DESPESAS (${expenses.count})`}
+              value={formatPrice(marketing.totalValueMonth)}
+              color={systemColors.LIGHT_GREY}
+              text={`MARKETING (${marketing.count})`}
+              subText={`${getPercent(
+                marketing.totalValueMonth,
+                faturamento
+              )}% Mês / ${getPercent(
+                marketingAcc.totalValueMonth,
+                faturamentoAcc
+              )}% Ano`}
               icon={<ArrowUpOutlined />}
               url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
-                arrayFilter
+                arrayMarketing
+              )}`}
+            />
+            <Card
+              loading={loading}
+              value={formatPrice(impostos.totalValueMonth)}
+              color={systemColors.LIGHT_GREY}
+              text={`IMPOSTOS (${impostos.count})`}
+              icon={<ArrowUpOutlined />}
+              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+                arrayImpostos
               )}`}
             />
             <Card
               loading={loading}
               value={formatPrice(investment.totalValueMonth)}
-              color={systemColors.ORANGE}
+              color={systemColors.LIGHT_GREY}
               text={`INVESTIMENTOS (${investment.count})`}
               icon={<ArrowUpOutlined />}
               url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
@@ -313,7 +397,7 @@ const Cards: React.FC = () => {
             <Card
               loading={loading}
               value={formatPrice(input.totalValueMonth)}
-              color={systemColors.ORANGE}
+              color={systemColors.LIGHT_GREY}
               text={`INSUMOS (${input.count})`}
               icon={<ArrowUpOutlined />}
               url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
@@ -331,54 +415,21 @@ const Cards: React.FC = () => {
                 arrayCashWithdrawal
               )}`}
             />
-            <Card
-              loading={loading}
-              value={formatPrice(marketing.totalValueMonth)}
-              color={systemColors.ORANGE}
-              text={`MARKETING (${marketing.count})`}
-              subText={`${getPercent(
-                marketing.totalValueMonth,
-                faturamento
-              )}% Mês / ${getPercent(
-                marketingAcc.totalValueMonth,
-                faturamentoAcc
-              )}% Ano`}
-              icon={<ArrowUpOutlined />}
-              url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
-                arrayMarketing
-              )}`}
-            />
           </>
         )}
-        {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
-          <>
-            <Card {...handleCardVisitsMonth(cards)} />
-            <Card {...handleCardSaleMonth(cards)} />
-            <Card {...handleCardSaleInputMonth(cards)} />
-            <Card {...handleCardFaturamentotMonth(cards)} />
-          </>
-        )}{' '}
+
         {Boolean(checkRouleProfileAccess(groups, roules.saleUserIdChange)) && (
-          <>
-            <Card
-              loading={loading}
-              value={formatPrice(liquido)}
-              color={systemColors.YELLOW}
-              text={`LUCRO LIQUIDO`}
-              subText={`Lucratividade ${getPercent(liquido, faturamento)}%`}
-              icon={<DollarOutlined />}
-              url={`${appRoutes.sales}?_date=${dateEn}`}
-            />{' '}
-            <Card
-              loading={loading}
-              value={formatPrice(box)}
-              color={systemColors.YELLOW}
-              text={`SALDO CAIXA`}
-              icon={<DollarOutlined />}
-              url={`${appRoutes.sales}?_date=${dateEn}`}
-            />
-          </>
+          <Card
+            loading={loading}
+            value={formatPrice(box)}
+            color={systemColors.BLUE}
+            text={`SALDO CAIXA`}
+            icon={<DollarOutlined />}
+            url={`${appRoutes.sales}?_date=${dateEn}`}
+          />
         )}
+      </Header>
+      <Header>
         {Boolean(checkRouleProfileAccess(groups, roules.sales)) && (
           <>
             <Card
@@ -387,6 +438,7 @@ const Cards: React.FC = () => {
               color={systemColors.BLUE}
               text={`M2 APLICADO`}
               icon={<MediumOutlined />}
+              subText={`(${cards?.sales.tanksApplied!} tanques)`}
               url={`${appRoutes.sales}?_date=${dateEn}`}
             />
             <Card
@@ -397,7 +449,7 @@ const Cards: React.FC = () => {
               )}%`}
               color={systemColors.BLUE}
               text={`ÍNDICE DE SATISFAÇÃO`}
-              subText={`${cards.sales.satisfactionCount} obras/clientes avaliados `}
+              subText={`${cards.sales.satisfactionCount} avaliações`}
               icon={<LikeOutlined />}
               url={`${appRoutes.sales}?_date=${dateEn}`}
             />

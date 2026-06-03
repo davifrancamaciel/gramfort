@@ -89,14 +89,14 @@ const SliderMenu: React.FC = (props: any) => {
         {checkRouleProfileAccess(groupsUser, roules.expenses) && (
           <SubMenu
             key={`sub-/${appRoutes.expenses}`}
-            title={'Despesas'}
+            title={'Pagamentos'}
             icon={<ArrowDownOutlined />}
           >
             <Menu.Item key={`/${appRoutes.expenses}`}>
               <Link to={`/${appRoutes.expenses}`}>Lista</Link>
             </Menu.Item>
             <Menu.Item key={`/${appRoutes.expenses}/create`}>
-              <Link to={`/${appRoutes.expenses}/create`}>Nova</Link>
+              <Link to={`/${appRoutes.expenses}/create`}>Novo</Link>
             </Menu.Item>
           </SubMenu>
         )}

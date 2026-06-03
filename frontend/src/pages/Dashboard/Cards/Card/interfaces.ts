@@ -17,6 +17,7 @@ export interface CardsResult {
     totalValueInputMonth: number;
     users: number;
     m2: number;
+    tanksApplied: number;
     totalValueVisitsMonth: number;
     countVisis: number;
     satisfactionCount: number;
@@ -55,6 +56,7 @@ export const initialStateCards: CardsResult = {
     totalValueInputMonth: 0,
     users: 0,
     m2: 0,
+    tanksApplied: 0,
     totalValueVisitsMonth: 0,
     countVisis: 0,
     satisfactionValue: 0,

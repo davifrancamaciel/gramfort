@@ -130,7 +130,12 @@ export const expensesTypesEnum = {
   REAP: 19,
   TPAGO: 20,
   MOFF: 21,
-  EVENT: 22
+  EVENT: 22,
+  SIMPL: 23,
+  FGTS: 24,
+  DARF: 25,
+  iOUTR: 26,
+  ISS: 27
 };
 
 export const arrayExpensesTypesEnum: number[] =

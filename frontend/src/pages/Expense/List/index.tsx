@@ -53,7 +53,10 @@ const List: React.FC = () => {
   const query = useQuery();
 
   useEffect(() => {
-    const date = new Date();
+    let date = new Date();
+
+    if (query.get('_date')) date = new Date(query.get('_date') || new Date());
+
     const paymentDateStart = startOfMonth(date).toISOString();
     const paymentDateEnd = endOfMonth(date).toISOString();
 
@@ -89,16 +92,16 @@ const List: React.FC = () => {
 
   const actionFilter = async (state: any) => {
     try {
+      setLoading(true);
       const type = getType();
 
       let expenseTypes: IOptions[] = [];
       if (state.setDate === 'false') expenseTypes = await onLoad(type);
-      let newState = {
-        ...state,
-        expenseTypeId: state.expenseTypeId.map((x: string) =>
+      let newState = state;
+      if (state.expenseTypeId)
+        newState.expenseTypeId = state.expenseTypeId.map((x: string) =>
           Number(x.toString().replace(',', ''))
-        )
-      };
+        );
 
       if (type == appRoutes.shopping) {
         newState = {
@@ -107,7 +110,6 @@ const List: React.FC = () => {
         };
       }
 
-      setLoading(true);
       setHistoryPath(type, newState);
       dispatch(newState);
       const resp = await api.get(apiRoutes.expenses, newState);
@@ -172,12 +174,12 @@ const List: React.FC = () => {
     sorter
   ) => {
     const sortOrder = Array.isArray(sorter) ? undefined : sorter.order;
-    const sortField = Array.isArray(sorter) ? undefined : sorter.field;
+    const field = Array.isArray(sorter) ? undefined : sorter.field;
     const order = sortOrder === 'ascend' ? 'asc' : 'desc';
     const newState = {
       ...state,
       pageNumber: 1,
-      sortField: sortField?.toString(),
+      field: field?.toString(),
       order
     };
     actionFilter(newState);
@@ -231,7 +233,7 @@ const List: React.FC = () => {
       </div>
 
       <PanelFilter
-        title={`${getTitle(path, true)} cadastradas`}
+        title={`${getTitle(path, true)} cadastrados`}
         actionButton={() => actionFilter(state)}
         loading={loading}
       >

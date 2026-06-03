@@ -24,6 +24,7 @@ const UserCreateEdit = lazy(() => import('pages/User/CreateEdit'));
 const SaleList = lazy(() => import('pages/Sale/List'));
 const SaleCreateEdit = lazy(() => import('pages/Sale/CreateEdit'));
 const SaleContract = lazy(() => import('pages/Sale/Contract'));
+const SaleDetails = lazy(() => import('pages/Sale/Details'));
 const ProductList = lazy(() => import('pages/Product/List'));
 const ProductCreateEdit = lazy(() => import('pages/Product/CreateEdit'));
 const ProductDetails = lazy(() => import('pages/Product/Details'));
@@ -38,7 +39,9 @@ const CompanyList = lazy(() => import('pages/Company/List'));
 const CompanyCreateEdit = lazy(() => import('pages/Company/CreateEdit'));
 const ServicesList = lazy(() => import('pages/Services/List'));
 const ApplicationList = lazy(() => import('pages/Application/List'));
-const ApplicationCreateEdit = lazy(() => import('pages/Application/CreateEdit'));
+const ApplicationCreateEdit = lazy(
+  () => import('pages/Application/CreateEdit')
+);
 
 const routesArray: IRouteProps[] = [
   { path: '/login', component: Login, isPrivate: false },
@@ -97,6 +100,11 @@ const routesArray: IRouteProps[] = [
   {
     path: `/${appRoutes.sales}/edit/:id`,
     component: SaleCreateEdit,
+    roule: roules.sales
+  },
+  {
+    path: `/${appRoutes.sales}/details/:id`,
+    component: SaleContract,
     roule: roules.sales
   },
   {
@@ -244,7 +252,7 @@ const routesArray: IRouteProps[] = [
     path: `/${appRoutes.applications}/edit/:id`,
     component: ApplicationCreateEdit,
     roule: roules.applications
-  },
+  }
 ];
 
 const Routes: React.FC = () => {

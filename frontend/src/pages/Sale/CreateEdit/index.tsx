@@ -37,10 +37,9 @@ import {
 } from 'pages/User/utils';
 import { arrayDemand } from '../../User/utils';
 import UploadImages from 'components/UploadImages';
-import { getTitle, getType, setImages } from '../utils';
+import { getTitle, getType, setImages, createTextVisit } from '../utils';
 import { IOptions } from 'utils/commonInterfaces';
 import { Visit } from 'pages/Visit/interfaces';
-import { formatDate } from 'utils/formatDate';
 import { Users } from 'pages/User/interfaces';
 import Cards from './Cards';
 import { initialState, TotalSale } from './Cards/interfaces';
@@ -48,7 +47,7 @@ import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import { language } from 'utils/languages';
 import ContractButton from '../Contract/Button';
 import { Company } from 'pages/Company/interfaces';
-import { currency, displayValue } from 'utils';
+import { currency } from 'utils';
 import { Editor } from 'primereact/editor';
 import ApplicationListBySale from 'pages/Application/ListBySale';
 
@@ -140,12 +139,7 @@ const CreateEdit: React.FC = (props: any) => {
       setVisits(resp.data);
       const respFormated = resp.data.map((item: Visit) => ({
         value: item.id,
-        label: `Dia ${formatDate(item.date)} ${formatPrice(
-          item.value || 0,
-          currentCurrency
-        )} ${displayValue(item.address)} ${displayValue(
-          item.city
-        )} ${displayValue(item.state)}`
+        label: createTextVisit(item, currentCurrency)
       }));
 
       setVisitsOptions(respFormated);
@@ -281,8 +275,8 @@ const CreateEdit: React.FC = (props: any) => {
         type === 'update'
           ? 'Editar'
           : path === appRoutes.sales
-          ? 'Nova'
-          : 'Novo'
+            ? 'Nova'
+            : 'Novo'
       } ${getTitle(path).toLocaleLowerCase()}`}
       type={type}
       onClickActionButton={action}
