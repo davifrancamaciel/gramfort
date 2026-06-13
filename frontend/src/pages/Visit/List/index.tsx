@@ -33,13 +33,6 @@ const List: React.FC = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   useEffect(() => {
-    const date = new Date();
-    const dateStart = startOfMonth(date).toISOString();
-    const dateEnd = endOfMonth(date).toISOString();
-    actionFilter(1, dateStart, dateEnd);
-  }, []);
-
-  useEffect(() => {
     if (state.date) {
       const dateStart = startOfMonth(state.date).toISOString();
       const dateEnd = endOfMonth(state.date).toISOString();

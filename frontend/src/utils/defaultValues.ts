@@ -141,6 +141,38 @@ export const expensesTypesEnum = {
 export const arrayExpensesTypesEnum: number[] =
   Object.values(expensesTypesEnum);
 
+
+
+export const arrayMarketing = [
+  expensesTypesEnum.MKT,
+  expensesTypesEnum.TPAGO,
+  expensesTypesEnum.MOFF,
+  expensesTypesEnum.EVENT,
+  expensesTypesEnum.MPUB
+];
+
+export const arrayImpostos = [
+  expensesTypesEnum.IMPOSTOS,
+  expensesTypesEnum.SIMPL,
+  expensesTypesEnum.MOFF,
+  expensesTypesEnum.FGTS,
+  expensesTypesEnum.DARF,
+  expensesTypesEnum.iOUTR,
+  expensesTypesEnum.ISS
+];
+
+export const arrayExpenses = [  
+  expensesTypesEnum.INSUMOS,
+  expensesTypesEnum.INVESTIMENTOS,
+  expensesTypesEnum.RETIRADAS,
+  expensesTypesEnum.COMPRAS
+];
+
+export const arrayInput = [expensesTypesEnum.INSUMOS];
+export const arrayInvestment = [expensesTypesEnum.INVESTIMENTOS];
+export const arrayCashWithdrawal = [expensesTypesEnum.RETIRADAS];
+
+
 export const productCategoriesEnum = {
   SERVICO: 1,
   INSUMO: 2,

@@ -21,9 +21,10 @@ import { ContractLabels, language } from 'utils/languages';
 
 interface PropTypes {
   sale: Sale;
+  isContract?: boolean;
 }
 
-const Table: React.FC<PropTypes> = ({ sale }) => {
+const Table: React.FC<PropTypes> = ({ sale, isContract = true }) => {
   const [labels, setLabels] = useState<ContractLabels>();
   const [path, setPath] = useState<string>();
 
@@ -190,7 +191,7 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
       title={``}
       image={sale?.company?.image || ''}
       imageFooterContract={sale?.company?.imageFooterContract || ''}
-      showImageLastPage={path === appRoutes.contracts}
+      showImageLastPage={isContract}
     >
       <tr style={{ border: '0', fontSize: '10px' }}>
         <td style={{ border: '0' }}>
@@ -471,14 +472,14 @@ const Table: React.FC<PropTypes> = ({ sale }) => {
                 </tr>
               </tbody>
             </table>
-            {path === appRoutes.contracts && (
+            {isContract && (
               <>
                 <Clause>
                   <h3>{labels?.clause1}</h3>
                   {sale.paymentMethod && <p>{sale.paymentMethod}</p>}
                   <p>
-                    {sale.company?.agencyBank} {sale.company?.fantasyName} Pix{' '}
-                    {labels?.cpfCnpj} {sale.company?.pixKey}{' '}
+                    {sale.company?.agencyBank} Pix {labels?.cpfCnpj}{' '}
+                    {sale.company?.pixKey} <br />
                     {labels?.expectedDateForApplication}{' '}
                     <strong>
                       {sale.expectedDateForApplication

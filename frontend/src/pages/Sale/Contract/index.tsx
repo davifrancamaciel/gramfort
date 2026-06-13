@@ -31,6 +31,10 @@ const Contract: React.FC = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [sale, setSale] = useState<Sale>();
   const [path, setPath] = useState<string>();
+  const isContract = !(
+    window.location.pathname.includes('sales') &&
+    window.location.pathname.includes('details')
+  );
 
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
@@ -161,7 +165,7 @@ Esperando instrucciones para continuar…`;
         title="Imprimir"
         filename={getFileName(sale)}
       >
-        <Table sale={state} />
+        <Table sale={state} isContract={isContract} />
       </PrintContainer>
     ];
     if (!query.get('hash')) array.push(btnEdit());
@@ -193,7 +197,7 @@ Esperando instrucciones para continuar…`;
           <Copy text={createLinkShare(sale)} />
         )}
         <div style={{ marginBottom: '15px', marginTop: '15px' }}>
-          <Table sale={state} />
+          <Table sale={state} isContract={isContract} />
         </div>
         {!query.get('hash') && path === appRoutes.contracts && (
           <Copy text={createLinkShare(sale)} />

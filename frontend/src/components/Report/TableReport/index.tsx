@@ -7,6 +7,7 @@ interface PropTypes {
   children: ReactNode;
   headerList?: string[];
   showImageLastPage?: boolean;
+  size?: 'auto' | 'landscape' | 'portrait';
 }
 
 const TableReport: React.FC<PropTypes> = ({
@@ -15,7 +16,8 @@ const TableReport: React.FC<PropTypes> = ({
   headerList,
   image,
   showImageLastPage,
-  imageFooterContract
+  imageFooterContract,
+  size
 }) => {
   const [headerListItens, setHeaderListItens] = useState<string[]>([]);
   useEffect(() => {
@@ -24,7 +26,7 @@ const TableReport: React.FC<PropTypes> = ({
     }
   }, [headerList]);
   return (
-    <Container>
+    <Container size={size}>
       <div className="page">
         <table style={{ fontSize: '12px' }} cellSpacing="0">
           {!showImageLastPage && (
@@ -40,7 +42,8 @@ const TableReport: React.FC<PropTypes> = ({
                 >
                   <header
                     style={{
-                      justifyContent: title ? 'space-between' : 'center'
+                      justifyContent: title ? 'space-between' : 'center',
+                      padding: '10px 8px'
                     }}
                   >
                     <img alt={''} src={image} />

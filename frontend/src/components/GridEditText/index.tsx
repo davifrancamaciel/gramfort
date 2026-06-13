@@ -3,6 +3,11 @@ import { notification } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Input } from 'components/_inputs';
 import api from 'services/api-aws-amplify';
+import {
+  formatPrice,
+  formatValueWhithDecimalCaseOnChange,
+  priceToNumber
+} from 'utils/formatPrice';
 
 interface PropTypes {
   propName: string;
@@ -10,13 +15,17 @@ interface PropTypes {
   item: any;
   setUpdate: (items: any) => void;
   setLoading: (loading: boolean) => void;
+  type: 'text' | 'number';
+  currency?: string;
 }
 const GridEditText: React.FC<PropTypes> = ({
   item,
   setUpdate,
   setLoading,
   apiRoutes,
-  propName
+  propName,
+  currency,
+  type
 }) => {
   const [enable, setEnable] = useState<boolean>();
   const [value, setValue] = useState<string>();
@@ -37,7 +46,7 @@ const GridEditText: React.FC<PropTypes> = ({
       setLoading(true);
 
       let data = item;
-      data[propName] = value;
+      data[propName] = type === 'number' ? priceToNumber(value) : value;
 
       const result = await api['put'](apiRoutes, data);
       setLoading(false);
@@ -48,17 +57,48 @@ const GridEditText: React.FC<PropTypes> = ({
     }
   };
 
+  const formatValue = (value: any) => {
+    if (type === 'number') {
+      const valueNumber = value?.toString()?.includes(',')
+        ? priceToNumber(value)
+        : value;
+      return formatPrice(Number(valueNumber) || 0, currency);
+    }
+    return value;
+  };
+
+  const inputText = () => (
+    <Input
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      style={{ minWidth: '300px' }}
+    />
+  );
+
+  const inputNumber = () => (
+    <Input
+      type={'tel'}
+      value={value}
+      onChange={(e) =>
+        setValue(formatValueWhithDecimalCaseOnChange(e.target.value))
+      }
+    />
+  );
+
+  const getInput = () => {
+    switch (type) {
+      case 'number':
+        return inputNumber();
+      default:
+        return inputText();
+    }
+  };
+
   return enable ? (
-    <form onSubmit={action}>
-      <Input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        style={{ minWidth: '300px' }}
-      />
-    </form>
+    <form onSubmit={action}>{getInput()}</form>
   ) : (
     <span onClick={() => setEnable(true)}>
-      {value} <EditOutlined />
+      {formatValue(value)} <EditOutlined />
     </span>
   );
 };

@@ -37,13 +37,7 @@ module.exports.cards = async (event, context) => {
 
         if (checkRouleProfileAccess(user.groups, roules.sales)) {
             data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId);
-            data.salesAcc = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId, true);
-            const query = `SELECT id FROM companies WHERE id = '${user.companyId}' AND individualCommission = true`;
-            const [individualCommission] = await executeSelect(query);
-            if (individualCommission || isAdm)
-                data.user = await salesRepository.salesMonthDashboard(date, isAdm, user, true, companyId);
-            else
-                data.user = data.sales;
+            data.salesAcc = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId, true);            
         }
 
         if (checkRouleProfileAccess(user.groups, roules.expenses)) {

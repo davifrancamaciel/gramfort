@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import { API, Auth } from 'aws-amplify';
 import { Response } from 'utils/commonInterfaces';
+import localStorageRepository from 'repositories/localStorageRepository';
 
 const api = {
   get: (
@@ -75,6 +76,17 @@ const request = async (
   }
 
   try {
+    // let key = '';
+
+    // if (data) {
+    //   key = Object.values(data).join(':');
+    //   const item = localStorageRepository.getItem<Response>(key, url);
+    //   console.log('cache', url, item);
+    //   if (item) {
+    //     return item;
+    //   }
+    // }
+
     const response = await API[method](url.split('/')[0], `/${url}`, init);
     console.log('sucesso', showNotification, url, response);
     if (showNotification) {
@@ -91,6 +103,16 @@ const request = async (
           placement: 'topRight'
         });
     }
+
+    // const prefixNamespace = `${window.location.hostname}`;
+    // if (method !== 'get') {
+    //   localStorageRepository.clearNamespace(prefixNamespace);
+    // } else {
+    //   localStorageRepository.setItem<Response>(key, response, {
+    //     namespace: `${prefixNamespace}:${url}`,
+    //     ttlSeconds: 3600
+    //   });
+    // }
 
     return response;
   } catch (e: any) {

@@ -40,6 +40,12 @@ export const groupBy = (arr: any, prop: string) => {
   return Array.from(map.values());
 };
 
+export const getPercent = (fisrtValue: number, secondValue: number) => {
+  const result = Number(fisrtValue / secondValue);
+  if (!result || result === -Infinity || result === NaN) return 0;
+  return parseFloat(Number(result * 100).toString()).toFixed(2);
+};
+
 export const createQueryString = (queryObject: any) => {
   let queryString = Object.keys(queryObject)
     .filter(

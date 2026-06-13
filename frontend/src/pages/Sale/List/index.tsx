@@ -47,19 +47,16 @@ const List: React.FC = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [path, setPath] = useState<string>('');
 
-  useEffect(() => {
+    useEffect(() => {
     const typePath = getType();
-    setPath(typePath);
-    const date = new Date();
-    const createdAtStart = startOfMonth(date).toISOString();
-    const createdAtEnd = endOfMonth(date).toISOString();
-    actionFilter(1, createdAtStart, createdAtEnd, typePath);
+    setPath(typePath);   
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (state.date) {
       const createdAtStart = startOfMonth(state.date).toISOString();
       const createdAtEnd = endOfMonth(state.date).toISOString();
+
       dispatch({ createdAtStart, createdAtEnd });
       actionFilter(1, createdAtStart, createdAtEnd);
     }
@@ -74,7 +71,14 @@ const List: React.FC = () => {
     order: string = 'asc'
   ) => {
     try {
-      dispatch({ ...state, pageNumber, createdAtStart, createdAtEnd, path });
+      const typePath = getType();
+      dispatch({
+        ...state,
+        pageNumber,
+        createdAtStart,
+        createdAtEnd,
+        path: typePath
+      });
 
       setLoading(true);
       const resp = await api.get(apiRoutes.sales, {
@@ -82,7 +86,7 @@ const List: React.FC = () => {
         pageNumber,
         createdAtStart,
         createdAtEnd,
-        path,
+        path: typePath,
         field,
         order
       });
@@ -118,10 +122,10 @@ const List: React.FC = () => {
             p.company?.currency
           ),
           valueCostFormatted: formatPrice(
-            getCostValue(p, path === appRoutes.sales),
+            getCostValue(p, typePath === appRoutes.sales),
             p.company?.currency
           ),
-          balanceFormatted: getBalance(p, path === appRoutes.sales),
+          balanceFormatted: getBalance(p, typePath === appRoutes.sales),
           productsFormatted: formatProductName(p.productsSales),
           createdAt: formatDateHour(p.createdAt),
           updatedAt: formatDateHour(p.updatedAt),
@@ -225,7 +229,7 @@ const List: React.FC = () => {
       arrayCols.push({ title: 'NF', dataIndex: 'invoiceAction' });
     }
     if (path === appRoutes.contracts)
-      arrayCols.push({ title: 'Venda', dataIndex: 'approved' });   
+      arrayCols.push({ title: 'Venda', dataIndex: 'approved' });
     arrayCols.push({ title: 'Imprimir', dataIndex: 'print' });
 
     return arrayCols;
@@ -328,7 +332,7 @@ const List: React.FC = () => {
               onChange={(companyId) => dispatch({ companyId })}
             />
           </Col>
-        </ShowByRoule>       
+        </ShowByRoule>
       </PanelFilter>
       <GridList
         headerChildren={

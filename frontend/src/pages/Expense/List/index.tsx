@@ -23,7 +23,7 @@ import {
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
-import { formatPrice } from 'utils/formatPrice';
+
 import Action from 'components/Action';
 import GridEditText from 'components/GridEditText';
 import GridEditSelect from 'components/GridEditSelect';
@@ -77,7 +77,7 @@ const List: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (state.date) {
+    if (state.date && state.setDate === 'false') {
       const paymentDateStart = startOfMonth(state.date).toISOString();
       const paymentDateEnd = endOfMonth(state.date).toISOString();
 
@@ -121,6 +121,7 @@ const List: React.FC = () => {
           ...e,
           title: (
             <GridEditText
+              type={'text'}
               item={e}
               setLoading={setLoading}
               setUpdate={() => {}}
@@ -144,7 +145,16 @@ const List: React.FC = () => {
             </Tooltip>
           ),
           companyName: e.company?.name,
-          value: formatPrice(Number(e.value) || 0, e.company?.currency),
+          value: (
+            <GridEditText
+              type={'number'}
+              item={e}
+              setLoading={setLoading}
+              setUpdate={() => {}}
+              apiRoutes={apiRoutes.expenses}
+              propName="value"
+            />
+          ),
           paymentDate: formatDate(e.paymentDate),
           createdAt: formatDateHour(e.createdAt),
           updatedAt: formatDateHour(e.updatedAt),

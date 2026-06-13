@@ -18,7 +18,8 @@ const PrintContainer: React.FC<PropTypes> = ({
   children,
   show,
   print,
-  title,filename
+  title,
+  filename
 }) => {
   const componentRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -34,7 +35,11 @@ const PrintContainer: React.FC<PropTypes> = ({
     <Container>
       {show && (
         <Button
-          style={{ backgroundColor: systemColors.LIGHT_GREY, color: '#fff' }}
+          style={{
+            backgroundColor: systemColors.LIGHT_GREY,
+            color: '#fff',
+            padding: '0 8px'
+          }}
           icon={<PrinterOutlined />}
           onClick={handlePrint}
           block

@@ -1,41 +1,71 @@
 import React, { useEffect, useState } from 'react';
 
 import api from 'services/api-aws-amplify';
-import { apiRoutes } from 'utils/defaultValues';
-import { formatPrice } from 'utils/formatPrice';
+import {
+  apiRoutes,
+  arrayCashWithdrawal,
+  arrayExpenses,
+  arrayImpostos,
+  arrayInput,
+  arrayInvestment,
+  systemColors
+} from 'utils/defaultValues';
 
 import FastFilter from 'components/FastFilter';
 import { Filter, initialState } from '../Dashboard/Cards/interfaces';
 import { Col, Row, Card } from 'antd';
-import GridList from 'components/GridList';
-import { arrayMonth } from '../User/utils';
-import { IOptions } from '../../utils/commonInterfaces';
 import { groupBy } from 'utils';
-import { DreGrigResult, DreTotals, DreTotalsResult } from './interfaces';
-import { Container } from './styles';
+import {
+  DreGrigResult,
+  DreTotals,
+  DreTotalsResult,
+  LineStyle,
+  typeDataDreEnum,
+  typeItemEnum
+} from './interfaces';
+
+import Table from './Table';
+import PrintContainer from 'components/Report/PrintContainer';
+import TableReport from 'components/Report/TableReport';
+import { getPercent } from 'utils';
+import { useAppContext } from 'hooks/contextLib';
+import { Company } from '../Company/interfaces';
 
 const Dre: React.FC = () => {
+  const { companies, userAuthenticated } = useAppContext();
+  const { signInUserSession } = userAuthenticated;
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Filter>(initialState);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
   const [items, setItems] = useState<Array<DreGrigResult>>([]);
   const [itemsSimplified, setItemsSimplified] = useState<Array<DreGrigResult>>(
     []
   );
+  const [company, setCompany] = useState<Company>({} as Company);
 
   useEffect(() => {
-    const { date, companyId } = state;
-    action(date, companyId);
-  }, [state]);
+    const companyId = signInUserSession.idToken.payload['custom:company_id'];
+    const companyUser = companies.find((c: Company) => c.id === companyId);
+    setCompany(companyUser);
+  }, [companies]);
+
+  useEffect(() => {
+    const { date, companyId, _date } = state;
+    if (_date) action(date, companyId);
+  }, [state.date, state.companyId]);
 
   const action = async (date: Date, companyId?: string) => {
     try {
       setLoading(true);
+      setItemsSimplified([]);
+      setYear(date.getFullYear());
       const resp = await api.get(apiRoutes.dre, {
         dateReference: date.toISOString(),
         companyId: companyId ? companyId : ''
       });
 
       const itemsFormattedsimplified = createPropColsSimplified(resp.data);
+
       setItemsSimplified(itemsFormattedsimplified);
 
       const itemsFormatted = createPropCols(resp.data);
@@ -48,52 +78,248 @@ const Dre: React.FC = () => {
   };
 
   const createPropCols = (data: DreTotalsResult) => {
-    const expenses: Array<DreGrigResult> = mapData(data.expenses, 'name');
+    const expenses: Array<DreGrigResult> = mapData(data.expenses, 'name', '');
 
-    const visits: Array<DreGrigResult> = mapData(data.visits, 'name');
+    const visits: Array<DreGrigResult> = mapData(data.visits, 'name', '');
 
     return [...expenses, ...visits];
   };
 
   const createPropColsSimplified = (data: DreTotalsResult) => {
     const arrayGroup = [...data.sales, ...data.visits];
-    const faturamentoBruto: Array<DreGrigResult> = mapData(arrayGroup, 'name');
+    const faturamentoBruto: Array<DreGrigResult> = mapData(
+      arrayGroup,
+      'name',
+      typeItemEnum.PRICE
+    );
 
     const applications: Array<DreGrigResult> = mapData(
       data.applications,
       'name',
-      false
+      typeItemEnum.NUMBER
     );
-    const m2: Array<DreGrigResult> = mapData(data.m2, 'name', false);
+    const m2: Array<DreGrigResult> = mapData(
+      data.m2,
+      'name',
+      typeItemEnum.NUMBER
+    );
     const dataCosts: Array<DreTotals> = data.sales.map((item: any) => ({
       ...item,
       total: Number(item.totalCost) * -1,
-      name: 'Insumos'
+      name: typeDataDreEnum.INSUMOS
     }));
-    const costs: Array<DreGrigResult> = mapData(dataCosts, 'name');
+    const costs: Array<DreGrigResult> = mapData(
+      dataCosts,
+      'name',
+      typeItemEnum.PRICE
+    );
 
     const arrayGroupBalances = [...data.sales, ...data.visits, ...dataCosts];
     const dataBalances: Array<DreTotals> = arrayGroupBalances.map(
       (item: DreTotals) => ({
         ...item,
-        name: 'M Bruta'
+        name: typeDataDreEnum.MARGEM_BRUTA
+      })
+    );
+    const balances: Array<DreGrigResult> = mapData(
+      dataBalances,
+      'name',
+      typeItemEnum.PRICE
+    );
+
+    const arrExpemenses = [...arrayExpenses, ...arrayImpostos];
+    const dataExpensesFiltered = data.expenses.filter(
+      (x: DreTotals) => !arrExpemenses.includes(x.expenseTypeId)
+    );
+    const dataExpenses: Array<DreTotals> = dataExpensesFiltered.map(
+      (item: DreTotals) => ({
+        ...item,
+        total: Number(item.total) * -1,
+        name: typeDataDreEnum.DESPESAS
+      })
+    );
+    const expenses: Array<DreGrigResult> = mapData(
+      dataExpenses,
+      'name',
+      typeItemEnum.PRICE
+    );
+
+    const arrayGroupEbitda = [...arrayGroupBalances, ...dataExpenses];
+    const dataEbitda: Array<DreTotals> = arrayGroupEbitda.map(
+      (item: DreTotals) => ({
+        ...item,
+        name: typeDataDreEnum.EBITDA
+      })
+    );
+    const ebitda: Array<DreGrigResult> = mapData(
+      dataEbitda,
+      'name',
+      typeItemEnum.PRICE
+    );
+
+    const dataImpostosFiltered = data.expenses.filter((x: DreTotals) =>
+      arrayImpostos.includes(x.expenseTypeId)
+    );
+    const dataImpostos: Array<DreTotals> = dataImpostosFiltered.map(
+      (item: DreTotals) => ({
+        ...item,
+        total: Number(item.total) * -1,
+        name: typeDataDreEnum.IMPOSTOS
+      })
+    );
+    const impostos: Array<DreGrigResult> = mapData(
+      dataImpostos,
+      'name',
+      typeItemEnum.PRICE
+    );
+
+    const arrayGroupLiquido = [...arrayGroupEbitda, ...dataImpostos];
+    const dataLiquido: Array<DreTotals> = arrayGroupLiquido.map(
+      (item: DreTotals) => ({
+        ...item,
+        total: Number(item.total),
+        name: typeDataDreEnum.LIQUIDO
       })
     );
 
-    const balances: Array<DreGrigResult> = mapData(dataBalances, 'name');
+    const liquido: Array<DreGrigResult> = mapData(
+      dataLiquido,
+      'name',
+      typeItemEnum.PRICE
+    );
 
-    return [...faturamentoBruto, ...m2, ...applications, ...costs, ...balances];
+    const dataInvestmentFiltered = data.expenses.filter((x: DreTotals) =>
+      arrayInvestment.includes(x.expenseTypeId)
+    );
+    const dataInvestment: Array<DreTotals> = dataInvestmentFiltered.map(
+      (item: DreTotals) => ({
+        ...item,
+        total: Number(item.total) * -1,
+        name: typeDataDreEnum.INVESTIMENTOS
+      })
+    );
+    const investment: Array<DreGrigResult> = mapData(
+      dataInvestment,
+      'name',
+      typeItemEnum.PRICE
+    );
+
+    const dataCashWithdrawalFiltered = data.expenses.filter((x: DreTotals) =>
+      arrayCashWithdrawal.includes(x.expenseTypeId)
+    );
+    const dataCashWithdrawal: Array<DreTotals> = dataCashWithdrawalFiltered.map(
+      (item: DreTotals) => ({
+        ...item,
+        total: Number(item.total) * -1,
+        name: typeDataDreEnum.RETIRADAS
+      })
+    );
+    const cashWithdrawal: Array<DreGrigResult> = mapData(
+      dataCashWithdrawal,
+      'name',
+      typeItemEnum.PRICE
+    );
+
+    const dataInputExpenseFiltered = data.expenses.filter((x: DreTotals) =>
+      arrayInput.includes(x.expenseTypeId)
+    );
+    const dataInputExpense: Array<DreTotals> = dataInputExpenseFiltered.map(
+      (item: DreTotals) => ({
+        ...item,
+        total: Number(item.total) * -1,
+        name: typeDataDreEnum.PGTO_INSUMO
+      })
+    );
+    const inputExpense: Array<DreGrigResult> = mapData(
+      dataInputExpense,
+      'name',
+      typeItemEnum.PRICE
+    );
+
+    const arrayGroupBox = [
+      ...dataLiquido,
+      ...dataInvestment,
+      ...dataCashWithdrawal,
+      ...dataInputExpense
+    ];
+    const dataBox: Array<DreTotals> = arrayGroupBox.map((item: DreTotals) => ({
+      ...item,
+      name: typeDataDreEnum.SALDO
+    }));
+    const box: Array<DreGrigResult> = mapData(
+      dataBox,
+      'name',
+      typeItemEnum.PRICE
+    );
+    const blank: Array<DreGrigResult> = mapData(
+      [{ name: typeDataDreEnum.BLANK, acc: '' } as DreGrigResult],
+      'name',
+      typeItemEnum.TEXT
+    );
+    const percentMargen: Array<DreGrigResult> = getPercentLine(
+      `Margem do lucro bruto para o faturamento = M.Bruta / Faturamento`,
+      balances,
+      faturamentoBruto
+    );
+    const percentFaturament: Array<DreGrigResult> = getPercentLine(
+      `Ebitida / Faturamento Bruto`,
+      ebitda,
+      faturamentoBruto
+    );
+    const percentLiquido: Array<DreGrigResult> = getPercentLine(
+      `Lucro Lliquido / Faturamento Bruto`,
+      liquido,
+      faturamentoBruto
+    );
+
+    return [
+      ...faturamentoBruto,
+      ...m2,
+      ...applications,
+      ...costs,
+      ...balances,
+      ...percentMargen,
+      ...blank,
+      ...expenses,
+      ...ebitda,
+      ...percentFaturament,
+      ...blank,
+      ...impostos,
+      ...liquido,
+      ...percentLiquido,
+      ...blank,
+      ...investment,
+      ...cashWithdrawal,
+      ...inputExpense,
+      ...box
+    ];
   };
 
-  const mapData = (
-    data: Array<any>,
-    propGroup: string,
-    format: boolean = true
+  const getPercentLine = (
+    text: string,
+    array1: DreGrigResult[],
+    array2: DreGrigResult[]
   ) => {
+    const [first] = array1;
+    const [second] = array2;
+    const result = getPercent(Number(first.acc), Number(second.acc));
+    const percent: Array<DreGrigResult> = [
+      {
+        name: typeDataDreEnum.PERCENT,
+        acc: `${result}%`,
+        month1: text,
+        type: typeItemEnum.TEXT,
+        style: getStyle(typeDataDreEnum.PERCENT)
+      } as DreGrigResult
+    ];
+    return percent;
+  };
+
+  const mapData = (data: Array<any>, propGroup: string, type: string) => {
     let arrayItems: Array<DreGrigResult> = [];
 
     const items: Array<DreTotals> = groupBy(data, propGroup);
-    items.map((array: any) => arrayItems.push(createObjGrid(array, format)));
+    items.map((array: any) => arrayItems.push(createObjGrid(array, type)));
     return arrayItems;
   };
 
@@ -104,52 +330,58 @@ const Dre: React.FC = () => {
 
   const createObjGrid = (
     arrayGroup: Array<DreTotals>,
-    format: boolean
+    type: string
   ): DreGrigResult => {
     const item: DreGrigResult = {
+      type: type,
       name: arrayGroup[0].name,
-      className: getClassName(arrayGroup[0].name),
-      acc: format ? formatPrice(sum(arrayGroup)) : `${sum(arrayGroup)}`,
-      month1: formatValue(arrayGroup, 1, format),
-      month2: formatValue(arrayGroup, 2, format),
-      month3: formatValue(arrayGroup, 3, format),
-      month4: formatValue(arrayGroup, 4, format),
-      month5: formatValue(arrayGroup, 5, format),
-      month6: formatValue(arrayGroup, 6, format),
-      month7: formatValue(arrayGroup, 7, format),
-      month8: formatValue(arrayGroup, 8, format),
-      month9: formatValue(arrayGroup, 9, format),
-      month10: formatValue(arrayGroup, 10, format),
-      month11: formatValue(arrayGroup, 11, format),
-      month12: formatValue(arrayGroup, 12, format)
+      style: getStyle(arrayGroup[0].name),
+      acc: `${sum(arrayGroup)}`,
+      month1: formatValue(arrayGroup, 1),
+      month2: formatValue(arrayGroup, 2),
+      month3: formatValue(arrayGroup, 3),
+      month4: formatValue(arrayGroup, 4),
+      month5: formatValue(arrayGroup, 5),
+      month6: formatValue(arrayGroup, 6),
+      month7: formatValue(arrayGroup, 7),
+      month8: formatValue(arrayGroup, 8),
+      month9: formatValue(arrayGroup, 9),
+      month10: formatValue(arrayGroup, 10),
+      month11: formatValue(arrayGroup, 11),
+      month12: formatValue(arrayGroup, 12)
     };
     return item;
   };
 
-  const getClassName = (name: string) => {
+  const getStyle = (name: string): LineStyle => {
     switch (name) {
-      case 'Fat Bruto':
-        return 'blue';        
-      case 'M Bruta':
-      case 'EBITIDA':
-        return 'green';
-      case 'Insumos':
-      case 'DESPESAS':
-        return 'pink';
+      case typeDataDreEnum.FATURAMENTO_BRUTO:
+      case typeDataDreEnum.SALDO:
+        return { backGround: systemColors.BLUE, color: '#fff' };
+      case typeDataDreEnum.MARGEM_BRUTA:
+      case typeDataDreEnum.EBITDA:
+      case typeDataDreEnum.LIQUIDO:
+        return { backGround: systemColors.GREEN, color: '#fff' };
+      case typeDataDreEnum.INSUMOS:
+      case typeDataDreEnum.DESPESAS:
+      case typeDataDreEnum.IMPOSTOS:
+      case typeDataDreEnum.INVESTIMENTOS:
+      case typeDataDreEnum.RETIRADAS:
+      case typeDataDreEnum.PGTO_INSUMO:
+        return { backGround: systemColors.LIGHT_PINK, color: '#000' };
+      case typeDataDreEnum.BLANK:
+        return { backGround: '#fff', color: '#fff' };
+      case typeDataDreEnum.PERCENT:
+        return { backGround: '#e2e0e0', color: '#000' };
       default:
-        return 'gray';
+        return { backGround: '#f2f1f1', color: '#000' };
     }
   };
 
-
-  const formatValue = (
-    arrayGroup: Array<DreTotals>,
-    month: number,
-    format: boolean
-  ) => {
+  const formatValue = (arrayGroup: Array<DreTotals>, month: number) => {
     const value = filterValue(arrayGroup, month);
     if (!value) return '';
-    return format ? formatPrice(value) : `${value}`;
+    return `${value}`;
   };
 
   const sum = (items: DreTotals[]) => {
@@ -157,18 +389,6 @@ const Dre: React.FC = () => {
       .filter((p: DreTotals) => p.total)
       .reduce((acc: number, p: DreTotals) => acc + Number(p.total), 0);
     return value ? value : 0;
-  };
-
-  const getColls = (title: string) => {
-    let arrayCols = [];
-    arrayCols.push({ title: title, dataIndex: `name` });
-    arrayCols.push({ title: 'ACUMULADO', dataIndex: `acc` });
-
-    arrayMonth.map((item: IOptions) =>
-      arrayCols.push({ title: item.label, dataIndex: `month${item.value}` })
-    );
-
-    return arrayCols;
   };
 
   return (
@@ -179,309 +399,42 @@ const Dre: React.FC = () => {
           <Card
             title={`DRE - DEMONSTRATIVO DE EXERCÍCIO ANUAL`}
             bordered={false}
+            loading={loading}
+            extra={
+              <PrintContainer show={true} filename={`DRE-SIMPLIFICADO-${year}`}>
+                <TableReport
+                  title={company?.fantasyName || ''}
+                  image={company?.image || ''}
+                  size={'landscape'}
+                >
+                  <div
+                    style={{
+                      padding: '20px'
+                    }}
+                  >
+                    <Table
+                      items={itemsSimplified}
+                      year={year}
+                      type={'SIMPLIFICADO'}
+                    />
+                  </div>
+                </TableReport>
+              </PrintContainer>
+            }
           >
-            <Container>
-              <h2>SIMPLIFICADO</h2>
-              <table>
-                <thead>
-                  <tr>
-                    {getColls('SIMPLIFICADO').map((item: any) => (
-                      <th key={item.dataIndex}>{item.title}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {itemsSimplified.map((item: DreGrigResult) => (
-                    <tr key={item.name} className={item.className}>
-                      <td>{item.name}</td>
-                      <td>{item.acc}</td>
-                      <td>{item.month1}</td>
-                      <td>{item.month2}</td>
-                      <td>{item.month3}</td>
-                      <td>{item.month4}</td>
-                      <td>{item.month5}</td>
-                      <td>{item.month6}</td>
-                      <td>{item.month7}</td>
-                      <td>{item.month8}</td>
-                      <td>{item.month9}</td>
-                      <td>{item.month10}</td>
-                      <td>{item.month11}</td>
-                      <td>{item.month12}</td>
-                    </tr>
-                  ))}
-                  {/* <tr className="faturamento">
-                    <td>Fat Bruto (+)</td>
-                    <td>100</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="neutro">
-                    <td>M2 aplicados</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="neutro">
-                    <td>Tanques Aplicados</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="custos">
-                    <td>Insumos (-)</td>
-                    <td>-20</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="resultado">
-                    <td>#NOME?</td>
-                    <td>80</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>% Em relação ao Faturamento</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr> */}
-
-                  <tr className="despesas">
-                    <td>Despesas (-)</td>
-                    <td>-50</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="resultado">
-                    <td>#NOME?</td>
-                    <td>30</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>% Em relação ao Faturamento</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-
-                  <tr className="impostos">
-                    <td>Impostos (-)</td>
-                    <td>-5</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="resultado">
-                    <td>#NOME?</td>
-                    <td>25</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>% Em relação ao Faturamento</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-
-                  <tr className="neutro">
-                    <td>Investimentos (-)</td>
-                    <td>5</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="neutro">
-                    <td>Retiradas (-)</td>
-                    <td>3</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="neutro">
-                    <td>Pgto Insumos (-)</td>
-                    <td>2</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr className="resultado">
-                    <td>#NOME?</td>
-                    <td>15</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-            </Container>
-
-            <GridList
-              size="small"
-              scroll={{ x: 840 }}
-              columns={getColls('DETALHADO')}
-              dataSource={items}
-              totalRecords={items.length}
-              pageSize={items.length}
-              loading={loading}
-              routes={{}}
-            />
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'nowrap',
+                overflowX: 'scroll'
+              }}
+            >
+              <Table
+                items={itemsSimplified}
+                year={year}
+                type={'SIMPLIFICADO'}
+              />
+            </div>
           </Card>
         </Col>
       </Row>

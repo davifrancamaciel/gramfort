@@ -24,7 +24,16 @@ import {
 import { useAppContext } from 'hooks/contextLib';
 
 import api from 'services/api-aws-amplify';
-import { apiRoutes, appRoutes, expensesTypesEnum } from 'utils/defaultValues';
+import {
+  apiRoutes,
+  appRoutes,
+  arrayInput,
+  arrayExpenses,
+  arrayImpostos,
+  arrayMarketing,
+  arrayInvestment,
+  arrayCashWithdrawal
+} from 'utils/defaultValues';
 import { formatPrice } from 'utils/formatPrice';
 import { checkRouleProfileAccess } from 'utils/checkRouleProfileAccess';
 import Card from './Card';
@@ -34,39 +43,13 @@ import { getValueExpensesByTypes } from 'pages/Expense/utils';
 import { ExpenseResult } from 'pages/Expense/interfaces';
 import FastFilter from 'components/FastFilter';
 import { Filter, initialState } from './interfaces';
-import { Col, Divider, Row } from 'antd';
+import { Divider } from 'antd';
 import { LinkButton } from 'components/_inputs';
+import { getPercent } from 'utils';
 
-const arrayExpenses = [
-  expensesTypesEnum.INSUMOS,
-  expensesTypesEnum.INVESTIMENTOS,
-  expensesTypesEnum.RETIRADAS,
-  expensesTypesEnum.COMPRAS
-];
 const arrayFilter = arrayExpensesTypesEnum.filter(
   (x: number) => !arrayExpenses.includes(x)
 );
-const arrayMarketing = [
-  expensesTypesEnum.MKT,
-  expensesTypesEnum.TPAGO,
-  expensesTypesEnum.MOFF,
-  expensesTypesEnum.EVENT,
-  expensesTypesEnum.MPUB
-];
-
-const arrayImpostos = [
-  expensesTypesEnum.IMPOSTOS,
-  expensesTypesEnum.SIMPL,
-  expensesTypesEnum.MOFF,
-  expensesTypesEnum.FGTS,
-  expensesTypesEnum.DARF,
-  expensesTypesEnum.iOUTR,
-  expensesTypesEnum.ISS
-];
-
-const arrayInput = [expensesTypesEnum.INSUMOS];
-const arrayInvestment = [expensesTypesEnum.INVESTIMENTOS];
-const arrayCashWithdrawal = [expensesTypesEnum.RETIRADAS];
 
 const Cards: React.FC = () => {
   const { userAuthenticated } = useAppContext();
@@ -105,10 +88,11 @@ const Cards: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const { date, companyId } = state;
-    action(date, companyId);
+    const { date, companyId, _date } = state;
+    if (_date) action(date, companyId);
     setDateEn(formatDateEn(date.toISOString()));
-  }, [state]);
+    console.log('state', state);
+  }, [state.companyId, state.date]);
 
   useEffect(() => {
     setExpensePaidOutYes(getValueExpenses(cards, 1));
@@ -183,7 +167,7 @@ const Cards: React.FC = () => {
         _expenses.totalValueMonth -
         _input.totalValueMonth -
         _investment.totalValueMonth
-    );    
+    );
   }, [cards]);
 
   const action = async (date: Date, companyId?: string) => {
@@ -261,13 +245,7 @@ const Cards: React.FC = () => {
     } catch (error) {
       return { totalValueMonth: 0, count: 0 };
     }
-  };
-
-  const getPercent = (liquido: number, faturamento: number) => {
-    const result = Number(liquido / faturamento);
-    if (!result || result === -Infinity || result === NaN) return 0;
-    return parseFloat(Number(result * 100).toString()).toFixed(2);
-  };
+  }; 
 
   const getM2 = (m2: number) => {
     if (!m2) return 0;

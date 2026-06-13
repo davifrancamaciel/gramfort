@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+interface ContainerProps {
+  size?: 'auto' | 'landscape' | 'portrait';
+}
+
+export const Container = styled.div<ContainerProps>`
   min-width: 800px;
 
   .page {
@@ -77,7 +81,7 @@ export const Container = styled.div`
     }
 
     @page {
-      size: auto;
+      size: ${(props) => (props.size ? props.size : 'auto')};
       margin: 10mm 0mm;
     }
   }

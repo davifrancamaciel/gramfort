@@ -38,7 +38,7 @@ const BRL: ContractLabels = {
   client: 'Cliente/Contratante',
   textClient:
     'Prezado(a) Sr(a), {contact} atendendo ao seu pedido estamos enviando nossa proposta comercial de Hidrossemeadura.',
-  cpfCnpj: 'CNPJ/CPF',
+  cpfCnpj: 'CNPJ',
   email: 'E-mail',
   phone: 'Fone',
   address: 'Local Aplicação',
