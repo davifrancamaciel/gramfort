@@ -7,7 +7,7 @@ interface PropTypes {
   children: ReactNode;
   headerList?: string[];
   showImageLastPage?: boolean;
-  size?: 'auto' | 'landscape' | 'portrait';
+  subTitle?: string;
 }
 
 const TableReport: React.FC<PropTypes> = ({
@@ -17,16 +17,18 @@ const TableReport: React.FC<PropTypes> = ({
   image,
   showImageLastPage,
   imageFooterContract,
-  size
+
+  subTitle
 }) => {
   const [headerListItens, setHeaderListItens] = useState<string[]>([]);
+
   useEffect(() => {
     if (headerList) {
       setHeaderListItens(headerList);
     }
   }, [headerList]);
   return (
-    <Container size={size}>
+    <Container>
       <div className="page">
         <table style={{ fontSize: '12px' }} cellSpacing="0">
           {!showImageLastPage && (
@@ -47,7 +49,10 @@ const TableReport: React.FC<PropTypes> = ({
                     }}
                   >
                     <img alt={''} src={image} />
-                    <h2>{title}</h2>
+                    <span>
+                      <h2>{title}</h2>
+                      {subTitle && <h3>{subTitle}</h3>}
+                    </span>
                   </header>
                 </th>
               </tr>

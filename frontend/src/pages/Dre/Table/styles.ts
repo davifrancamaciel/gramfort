@@ -5,11 +5,16 @@ export const Container = styled.div`
 
   table {
     border-collapse: collapse;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     font-size: 10px;
     width: 1100px;
   }
-
+  thead {
+    th {
+      color: #fff;
+      background-color: #000;
+    }
+  }
   th,
   td {
     border: 1px solid #333;

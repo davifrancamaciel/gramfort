@@ -1,10 +1,6 @@
 import styled from 'styled-components';
 
-interface ContainerProps {
-  size?: 'auto' | 'landscape' | 'portrait';
-}
-
-export const Container = styled.div<ContainerProps>`
+export const Container = styled.div`
   min-width: 800px;
 
   .page {
@@ -35,6 +31,11 @@ export const Container = styled.div<ContainerProps>`
         h2 {
           font-size: 18px;
           font-weight: 100;
+        }
+        h3 {
+          font-size: 13px;
+          font-weight: 100;
+          text-align: right;
         }
       }
       thead th {
@@ -81,7 +82,7 @@ export const Container = styled.div<ContainerProps>`
     }
 
     @page {
-      size: ${(props) => (props.size ? props.size : 'auto')};
+      size: auto;
       margin: 10mm 0mm;
     }
   }

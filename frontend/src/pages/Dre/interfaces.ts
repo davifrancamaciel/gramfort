@@ -2,6 +2,7 @@ export interface DreTotals {
   name: string;
   total: number;
   month: number;
+  year: number;
   expenseTypeId: number;
 }
 
@@ -40,7 +41,8 @@ export interface LineStyle {
 export const typeItemEnum = {
   PRICE: 'PRICE',
   NUMBER: 'NUMBER',
-  TEXT: 'TEXT'
+  TEXT: 'TEXT',
+  PERCENT: 'PERCENT'
 };
 export const typeDataDreEnum = {
   FATURAMENTO_BRUTO: 'FATURAMENTO_BRUTO',

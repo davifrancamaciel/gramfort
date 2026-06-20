@@ -2,9 +2,9 @@
 
 const { startOfYear, startOfMonth, endOfMonth } = require('date-fns');
 const { executeSelect } = require("../services/ExecuteQueryService");
+const { limitCurrentYear , andCompany} = require("./utils");
 
-const andCompany = (alias, companyId) =>
-    companyId ? `AND ${alias}.companyId IN ('${companyId}')` : ''
+
 
 const where = (paymentDateStart, paymentDateEnd, isAdm, user, title, expenseTypeId, companyId) => {
 
@@ -64,7 +64,7 @@ const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const query = ` SELECT et.name, SUM(e.value) total,MONTH(e.paymentDate) month, YEAR(e.paymentDate) year, e.expenseTypeId 
                     FROM expenses e 
                     INNER JOIN expenseTypes et ON et.id = e.expenseTypeId
-                    WHERE YEAR(e.paymentDate) = YEAR('${dateString}') 
+                    WHERE YEAR(e.paymentDate) = YEAR('${dateString}') ${limitCurrentYear(date, 'e.paymentDate')}
                           ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}  
                     GROUP BY et.name, MONTH (e.paymentDate), YEAR(e.paymentDate), e.expenseTypeId  
                     ORDER BY YEAR(e.paymentDate) DESC, MONTH (e.paymentDate) DESC, et.name`

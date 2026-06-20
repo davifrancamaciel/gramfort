@@ -7,8 +7,7 @@ import {
   arrayExpenses,
   arrayImpostos,
   arrayInput,
-  arrayInvestment,
-  systemColors
+  arrayInvestment
 } from 'utils/defaultValues';
 
 import FastFilter from 'components/FastFilter';
@@ -19,7 +18,6 @@ import {
   DreGrigResult,
   DreTotals,
   DreTotalsResult,
-  LineStyle,
   typeDataDreEnum,
   typeItemEnum
 } from './interfaces';
@@ -30,6 +28,7 @@ import TableReport from 'components/Report/TableReport';
 import { getPercent } from 'utils';
 import { useAppContext } from 'hooks/contextLib';
 import { Company } from '../Company/interfaces';
+import { formatValue, getStyle, sum } from './utils';
 
 const Dre: React.FC = () => {
   const { companies, userAuthenticated } = useAppContext();
@@ -37,17 +36,32 @@ const Dre: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Filter>(initialState);
   const [year, setYear] = useState<number>(new Date().getFullYear());
-  const [items, setItems] = useState<Array<DreGrigResult>>([]);
   const [itemsSimplified, setItemsSimplified] = useState<Array<DreGrigResult>>(
     []
   );
   const [company, setCompany] = useState<Company>({} as Company);
+  const [text, setText] = useState('');
 
   useEffect(() => {
-    const companyId = signInUserSession.idToken.payload['custom:company_id'];
+    let companyId = signInUserSession.idToken.payload['custom:company_id'];
+    if (state.companyId) {
+      companyId = state.companyId;
+      const currentName = companies.find(
+        (c: Company) => c.id === companyId
+      )?.name;
+
+      setText(currentName);
+    } else {
+      const currentName = companies
+        .filter((c: Company) => c.companiesIds?.includes(companyId))
+        ?.map((c: Company) => c?.name)
+        .join('-');
+
+      setText(currentName);
+    }
     const companyUser = companies.find((c: Company) => c.id === companyId);
     setCompany(companyUser);
-  }, [companies]);
+  }, [companies, state.companyId]);
 
   useEffect(() => {
     const { date, companyId, _date } = state;
@@ -65,24 +79,12 @@ const Dre: React.FC = () => {
       });
 
       const itemsFormattedsimplified = createPropColsSimplified(resp.data);
-
       setItemsSimplified(itemsFormattedsimplified);
-
-      const itemsFormatted = createPropCols(resp.data);
-      setItems(itemsFormatted);
 
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
-  };
-
-  const createPropCols = (data: DreTotalsResult) => {
-    const expenses: Array<DreGrigResult> = mapData(data.expenses, 'name', '');
-
-    const visits: Array<DreGrigResult> = mapData(data.visits, 'name', '');
-
-    return [...expenses, ...visits];
   };
 
   const createPropColsSimplified = (data: DreTotalsResult) => {
@@ -257,17 +259,14 @@ const Dre: React.FC = () => {
       typeItemEnum.TEXT
     );
     const percentMargen: Array<DreGrigResult> = getPercentLine(
-      `Margem do lucro bruto para o faturamento = M.Bruta / Faturamento`,
       balances,
       faturamentoBruto
     );
     const percentFaturament: Array<DreGrigResult> = getPercentLine(
-      `Ebitida / Faturamento Bruto`,
       ebitda,
       faturamentoBruto
     );
     const percentLiquido: Array<DreGrigResult> = getPercentLine(
-      `Lucro Lliquido / Faturamento Bruto`,
       liquido,
       faturamentoBruto
     );
@@ -295,37 +294,12 @@ const Dre: React.FC = () => {
     ];
   };
 
-  const getPercentLine = (
-    text: string,
-    array1: DreGrigResult[],
-    array2: DreGrigResult[]
-  ) => {
-    const [first] = array1;
-    const [second] = array2;
-    const result = getPercent(Number(first.acc), Number(second.acc));
-    const percent: Array<DreGrigResult> = [
-      {
-        name: typeDataDreEnum.PERCENT,
-        acc: `${result}%`,
-        month1: text,
-        type: typeItemEnum.TEXT,
-        style: getStyle(typeDataDreEnum.PERCENT)
-      } as DreGrigResult
-    ];
-    return percent;
-  };
-
   const mapData = (data: Array<any>, propGroup: string, type: string) => {
     let arrayItems: Array<DreGrigResult> = [];
 
     const items: Array<DreTotals> = groupBy(data, propGroup);
     items.map((array: any) => arrayItems.push(createObjGrid(array, type)));
     return arrayItems;
-  };
-
-  const filterValue = (items: Array<DreTotals>, month: number) => {
-    const item = items.filter((x: DreTotals) => x.month === month);
-    return item ? sum(item) : 0;
   };
 
   const createObjGrid = (
@@ -353,42 +327,41 @@ const Dre: React.FC = () => {
     return item;
   };
 
-  const getStyle = (name: string): LineStyle => {
-    switch (name) {
-      case typeDataDreEnum.FATURAMENTO_BRUTO:
-      case typeDataDreEnum.SALDO:
-        return { backGround: systemColors.BLUE, color: '#fff' };
-      case typeDataDreEnum.MARGEM_BRUTA:
-      case typeDataDreEnum.EBITDA:
-      case typeDataDreEnum.LIQUIDO:
-        return { backGround: systemColors.GREEN, color: '#fff' };
-      case typeDataDreEnum.INSUMOS:
-      case typeDataDreEnum.DESPESAS:
-      case typeDataDreEnum.IMPOSTOS:
-      case typeDataDreEnum.INVESTIMENTOS:
-      case typeDataDreEnum.RETIRADAS:
-      case typeDataDreEnum.PGTO_INSUMO:
-        return { backGround: systemColors.LIGHT_PINK, color: '#000' };
-      case typeDataDreEnum.BLANK:
-        return { backGround: '#fff', color: '#fff' };
-      case typeDataDreEnum.PERCENT:
-        return { backGround: '#e2e0e0', color: '#000' };
-      default:
-        return { backGround: '#f2f1f1', color: '#000' };
-    }
-  };
+  const getPercentLine = (array1: DreGrigResult[], array2: DreGrigResult[]) => {
+    const [first] = array1;
+    const [second] = array2;
+    let acc: Array<DreTotals> = [];
+    const getPercentFormatted = (value1?: string, value2?: string) => {
+      const value = getPercent(Number(value1), Number(value2));
+      if (value) {
+        acc.push({ total: Number(value) } as DreTotals);
+      }
+      return value;
+    };
 
-  const formatValue = (arrayGroup: Array<DreTotals>, month: number) => {
-    const value = filterValue(arrayGroup, month);
-    if (!value) return '';
-    return `${value}`;
-  };
+    let item = {
+      name: typeDataDreEnum.PERCENT,
+      month1: getPercentFormatted(first.month1, second.month1),
+      month2: getPercentFormatted(first.month2, second.month2),
+      month3: getPercentFormatted(first.month3, second.month3),
+      month4: getPercentFormatted(first.month4, second.month4),
+      month5: getPercentFormatted(first.month5, second.month5),
+      month6: getPercentFormatted(first.month6, second.month6),
+      month7: getPercentFormatted(first.month7, second.month7),
+      month8: getPercentFormatted(first.month8, second.month8),
+      month9: getPercentFormatted(first.month9, second.month9),
+      month10: getPercentFormatted(first.month10, second.month10),
+      month11: getPercentFormatted(first.month11, second.month11),
+      month12: getPercentFormatted(first.month12, second.month12),
+      type: typeItemEnum.PERCENT,
+      style: getStyle(typeDataDreEnum.PERCENT)
+    } as DreGrigResult;
 
-  const sum = (items: DreTotals[]) => {
-    const value = items
-      .filter((p: DreTotals) => p.total)
-      .reduce((acc: number, p: DreTotals) => acc + Number(p.total), 0);
-    return value ? value : 0;
+    const value = sum(acc) / acc.length;
+    item.acc = `${parseFloat(value.toString()).toFixed(2)}`;
+
+    const percent: Array<DreGrigResult> = [item];
+    return percent;
   };
 
   return (
@@ -397,27 +370,24 @@ const Dre: React.FC = () => {
       <Row style={{ width: '100%', marginTop: '30px' }}>
         <Col lg={24} md={24} sm={24} xs={24}>
           <Card
-            title={`DRE - DEMONSTRATIVO DE EXERCÍCIO ANUAL`}
+            title={`DRE - EXERCICIO-${year} ${text}`}
             bordered={false}
             loading={loading}
             extra={
-              <PrintContainer show={true} filename={`DRE-SIMPLIFICADO-${year}`}>
+              <PrintContainer
+                show={true}
+                filename={`DRE-SIMPLIFICADO-${year} ${text}`}
+              >
                 <TableReport
                   title={company?.fantasyName || ''}
                   image={company?.image || ''}
-                  size={'landscape'}
+                  subTitle={`EXERCICIO ${year} ${text}`}
                 >
-                  <div
-                    style={{
-                      padding: '20px'
-                    }}
-                  >
-                    <Table
-                      items={itemsSimplified}
-                      year={year}
-                      type={'SIMPLIFICADO'}
-                    />
-                  </div>
+                  <Table
+                    items={itemsSimplified}
+                    type={'SIMPLIFICADO'}
+                    year={year}
+                  />
                 </TableReport>
               </PrintContainer>
             }
@@ -431,8 +401,8 @@ const Dre: React.FC = () => {
             >
               <Table
                 items={itemsSimplified}
-                year={year}
                 type={'SIMPLIFICADO'}
+                year={year}
               />
             </div>
           </Card>
