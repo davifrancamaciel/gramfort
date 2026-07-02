@@ -30,7 +30,8 @@ module.exports.handler = async (event, context) => {
             companyId = await getCompaniesIdsMap(user);
 
         if (checkRouleProfileAccess(user.groups, roules.sales)) {
-            data.sales = await salesRepository.salesDre(date, isAdm, user, companyId)
+            data.sales = await salesRepository.salesDre(date, isAdm, user, companyId, true)
+            data.contracts = await salesRepository.salesDre(date, isAdm, user, companyId, false)
             data.visits = await salesRepository.visitsPaidOutDre(date, isAdm, user, companyId);
             data.expenses = await expensesRepository.expensesMonthByTypeDre(date, isAdm, user, companyId);
             data.m2 = await salesRepository.m2Dre(date, isAdm, user, companyId);

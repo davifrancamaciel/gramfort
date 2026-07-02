@@ -5,7 +5,8 @@ import {
   DreGrigResult,
   DreTableProps,
   typeDataDreTextEnum,
-  typeItemEnum
+  typeItemEnum,
+  typeLayoutDreEnum
 } from '../interfaces';
 import { arrayMonth } from 'pages/User/utils';
 import { IOptions } from 'utils/commonInterfaces';
@@ -51,13 +52,14 @@ const Table: React.FC<DreTableProps> = (props) => {
               }}
             >
               <td>{getNameTypeData(item.name)}</td>
-              <td>{formatTableValue(item.type, item.acc)}</td>
-              <td colSpan={item.type !== typeItemEnum.TEXT ? 1 : 12}>
-                {formatTableValue(item.type, item.month1)}
-              </td>
+              {item.type === typeItemEnum.TEXT && (
+                <td colSpan={item.type !== typeItemEnum.TEXT ? 1 : 13}></td>
+              )}
 
               {item.type !== typeItemEnum.TEXT && (
                 <>
+                  <td>{formatTableValue(item.type, item.acc)}</td>
+                  <td>{formatTableValue(item.type, item.month1)}</td>
                   <td>{formatTableValue(item.type, item.month2)}</td>
                   <td>{formatTableValue(item.type, item.month3)}</td>
                   <td>{formatTableValue(item.type, item.month4)}</td>
@@ -76,7 +78,9 @@ const Table: React.FC<DreTableProps> = (props) => {
         </tbody>
       </table>
 
-      <TableAverage items={props.items} year={props.year} />
+      {props.type === typeLayoutDreEnum.SIMPLIFIED && (
+        <TableAverage items={props.items} year={props.year} />
+      )}
     </Container>
   );
 };

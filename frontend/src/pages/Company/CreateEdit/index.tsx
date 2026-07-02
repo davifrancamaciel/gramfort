@@ -287,14 +287,7 @@ const CreateEdit: React.FC = (props: any) => {
                   onChange={(e) => dispatch({ financePhone: e.target.value })}
                 />
               </Col>
-              <Col lg={6} md={6} sm={12} xs={24}>
-                <Input
-                  label={'Tamanho do tanque'}
-                  type={'number'}
-                  value={state.sizeTank}
-                  onChange={(e) => dispatch({ sizeTank: e.target.value })}
-                />
-              </Col>
+
               <Col lg={6} md={8} sm={12} xs={24}>
                 <Select
                   label={'Moeda'}
@@ -456,6 +449,44 @@ const CreateEdit: React.FC = (props: any) => {
                 dispatch({ groupsFormatted })
               }
             />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Configurações de Tanque" key="5">
+            <Row gutter={[24, 24]}>
+              <Col lg={6} md={6} sm={12} xs={24}>
+                <Input
+                  label={'Tamanho do tanque'}
+                  type={'number'}
+                  value={state.sizeTank}
+                  onChange={(e) => dispatch({ sizeTank: e.target.value })}
+                />
+              </Col>
+              <Col lg={6} md={6} sm={12} xs={24}>
+                <Input
+                  label={'Kg descarte/tanque'}
+                  type={'phone'}
+                  value={state.kgDiscartPerTank}
+                  onChange={(e) =>
+                    dispatch({ kgDiscartPerTank: e.target.value })
+                  }
+                />
+              </Col>
+              <Col lg={6} md={6} sm={12} xs={24}>
+                <Input
+                  label={'Kg insumo/tanque'}
+                  type={'phone'}
+                  value={state.kgInputPerTank}
+                  onChange={(e) => dispatch({ kgInputPerTank: e.target.value })}
+                />
+              </Col>
+              <Col lg={6} md={6} sm={12} xs={24}>
+                <Input
+                  label={'Kg semente/tanque'}
+                  type={'phone'}
+                  value={state.kgSeedPerTank}
+                  onChange={(e) => dispatch({ kgSeedPerTank: e.target.value })}
+                />
+              </Col>
+            </Row>
           </Tabs.TabPane>
         </Tabs>
       </Col>

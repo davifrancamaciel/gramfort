@@ -61,7 +61,7 @@ const expensesMonthByTypeDash = async (date, isAdm, user, companyId, acc = false
 
 const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const dateString = startOfMonth(date).toISOString()
-    const query = ` SELECT et.name, SUM(e.value) total,MONTH(e.paymentDate) month, YEAR(e.paymentDate) year, e.expenseTypeId 
+    const query = ` SELECT et.name, SUM(e.value) total,MONTH(e.paymentDate) month, YEAR(e.paymentDate) year, e.expenseTypeId, et.description
                     FROM expenses e 
                     INNER JOIN expenseTypes et ON et.id = e.expenseTypeId
                     WHERE YEAR(e.paymentDate) = YEAR('${dateString}') ${limitCurrentYear(date, 'e.paymentDate')}

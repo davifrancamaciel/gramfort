@@ -43,6 +43,9 @@ module.exports = function (sequelize, DataTypes) {
         directorName: { type: DataTypes.STRING(100), },
         imageSignature: { type: DataTypes.STRING(500), },
         companiesIds: { type: DataTypes.JSON },
+        kgDiscartPerTank: { type: DataTypes.DECIMAL },
+        kgInputPerTank: { type: DataTypes.DECIMAL },
+        kgSeedPerTank: { type: DataTypes.DECIMAL },
     });
 
     Company.beforeCreate(c => c.id = uuid.v4());

@@ -1,14 +1,38 @@
 export interface DreTotals {
   name: string;
+  description: string;
   total: number;
   month: number;
   year: number;
   expenseTypeId: number;
 }
+export interface DataDreResult {
+  applications: Array<DreTotals>;
+  expenses: Array<DreTotals>;
+  m2: Array<DreTotals>;
+  sales: Array<DreTotals>;
+  contracts: Array<DreTotals>;
+  visits: Array<DreTotals>;
+}
+
+export const initialStateDre: DataDreResult = {
+  applications: [],
+  expenses: [],
+  m2: [],
+  sales: [],
+  contracts: [],
+  visits: []
+};
+
+export const typeLayoutDreEnum = {
+  SIMPLIFIED: 'SIMPLIFICADO',
+  DEATAILED: 'DETALHADO'
+};
 
 export interface DreTotalsResult {
   expenses: Array<DreTotals>;
   sales: Array<DreTotals>;
+  contracts: Array<DreTotals>;
   visits: Array<DreTotals>;
   applications: Array<DreTotals>;
   m2: Array<DreTotals>;
@@ -47,6 +71,7 @@ export const typeItemEnum = {
 export const typeDataDreEnum = {
   FATURAMENTO_BRUTO: 'FATURAMENTO_BRUTO',
   M2: 'M2',
+  LITERS: 'LITERS',
   TANQUES: 'TANQUES',
   EBITDA: 'EBITDA',
   MARGEM_BRUTA: 'MARGEM_BRUTA',
@@ -59,12 +84,21 @@ export const typeDataDreEnum = {
   PGTO_INSUMO: 'PGTO_INSUMO',
   SALDO: 'SALDO',
   BLANK: 'BLANK',
-  PERCENT: 'PERCENT'
+  PERCENT: 'PERCENT',
+  FUNIL: 'FUNIL',
+  INDICADORES: 'INDICADORES',
+  INDICADORES_OP: 'INDICADORES_OP',
+  DESPESAS_OP: 'DESPESAS_OP',
+  PGTO_ADICIONAIS: 'PGTO_ADICIONAIS',
+  MARKETING: 'MARKETING',
+  KM_VISITAS: 'KM_VISITAS',
+  PRICE_MED_M2: 'PRICE_MED_M2',
 };
 
 export const typeDataDreTextEnum: any = {
   FATURAMENTO_BRUTO: 'Fat Bruto (+)',
   M2: 'M2 aplicados',
+  LITERS: 'Litros insumos',
   TANQUES: 'Tanques',
   EBITDA: '= EBITDA',
   MARGEM_BRUTA: '= M Bruta',
@@ -76,11 +110,19 @@ export const typeDataDreTextEnum: any = {
   RETIRADAS: 'Retiradas (-)',
   PGTO_INSUMO: 'Pgto Insu (-)',
   SALDO: '= Saldo Caixa',
-  PERCENT: '% Faturamento'
+  PERCENT: '% Faturamento',
+  FUNIL: 'Funil Leads',
+  INDICADORES: 'Indicadores',
+  INDICADORES_OP: 'Indicadores OP',
+  DESPESAS_OP: 'Despesas OP',
+  PGTO_ADICIONAIS: 'Pgto adicionais',
+  MARKETING: 'Total em publicidade',
+  KM_VISITAS: 'KM visitas',
+  PRICE_MED_M2: 'Médio M2',
 };
 
 export interface DreTableProps {
   items: DreGrigResult[];
   year: number;
-  type: 'SIMPLIFICADO' | 'DETALHADO';
+  type: string;
 }

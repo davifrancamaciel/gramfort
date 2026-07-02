@@ -111,12 +111,10 @@ const CreateEdit: React.FC = (props: any) => {
         const itemsFormatted = rows.map((item: Sale) => ({
           ...item,
           value: item.id,
-          label: `Cód ${item.id} data ${formatDate(
-            item.saleDate
-          )} ${formatPrice(item.value || 0, item.company?.currency)}`
+          label: `Cód ${item.id} data ${formatDate(item.saleDate)}`
         }));
         setSales(itemsFormatted);
-        setSalesOptions(itemsFormatted.map((x: any) => ({ ...x } as IOptions)));
+        setSalesOptions(itemsFormatted.map((x: any) => ({ ...x }) as IOptions));
 
         setLoadingSales(false);
       }

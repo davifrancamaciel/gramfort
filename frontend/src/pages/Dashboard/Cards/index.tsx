@@ -65,6 +65,7 @@ const Cards: React.FC = () => {
   );
   const [investment, setInvestiment] = useState<CardValues>({} as CardValues);
   const [input, setInput] = useState<CardValues>({} as CardValues);
+  const [inputPayOut, setInputPayOut] = useState<CardValues>({} as CardValues);
   const [marketing, setMarketing] = useState<CardValues>({} as CardValues);
   const [marketingAcc, setMarketingAcc] = useState<CardValues>(
     {} as CardValues
@@ -111,6 +112,13 @@ const Cards: React.FC = () => {
       true
     );
     setInput(_input);
+
+    const _inputPayOut = getValueExpensesByTypes(
+      cards?.expensesByType,
+      arrayInput,
+      true
+    );
+    setInputPayOut(_inputPayOut);
 
     const _marketing = getValueExpensesByTypes(
       cards?.expensesByType,
@@ -245,7 +253,7 @@ const Cards: React.FC = () => {
     } catch (error) {
       return { totalValueMonth: 0, count: 0 };
     }
-  }; 
+  };
 
   const getM2 = (m2: number) => {
     if (!m2) return 0;
@@ -404,6 +412,18 @@ const Cards: React.FC = () => {
             text={`SALDO CAIXA`}
             icon={<DollarOutlined />}
             url={`${appRoutes.sales}?_date=${dateEn}`}
+          />
+        )}
+        {Boolean(checkRouleProfileAccess(groups, roules.expenses)) && (
+          <Card
+            loading={loading}
+            value={formatPrice(inputPayOut.totalValueMonth)}
+            color={systemColors.RED}
+            text={`INSUMOS a pagar (${inputPayOut.count})`}
+            icon={<ArrowUpOutlined />}
+            url={`${appRoutes.expenses}?_date=${dateEn}${getParameter(
+              arrayInput
+            )}&paidOut=false`}
           />
         )}
       </Header>

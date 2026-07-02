@@ -37,6 +37,9 @@ export interface Company {
   textclauseContract4?: string;
   textVisit?: string;
   companiesIds?: string;
+  kgDiscartPerTank: number;
+  kgInputPerTank: number;
+  kgSeedPerTank: number;
 }
 
 export const initialStateForm: Company = {
@@ -47,7 +50,10 @@ export const initialStateForm: Company = {
   createdAt: '',
   updatedAt: '',
   active: true,
-  individualCommission: false
+  individualCommission: false,
+  kgDiscartPerTank: 0,
+  kgInputPerTank: 0,
+  kgSeedPerTank: 0,
 };
 
 export interface Filter {

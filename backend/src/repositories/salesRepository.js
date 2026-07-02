@@ -26,15 +26,17 @@ const salesMonthDashboard = async (date, isAdm, user, individualCommission, comp
     return { ...result, ...m2, ...visits, ...satisfaction, ...applications };
 }
 
-const salesDre = async (date, isAdm, user, companyId) => {
+const salesDre = async (date, isAdm, user, companyId, approved = true) => {
     const dateString = startOfMonth(date).toISOString()
 
     const query = ` SELECT 	'FATURAMENTO_BRUTO' name, 
                             SUM(s.value) total, 
                             SUM(s.valueInput) totalCost, 
+                            SUM(s.valuePerMeter) valuePerMeter, 
+                            COUNT(s.id) count, 
                             MONTH(s.saleDate) month, YEAR(s.saleDate) year 
                     FROM sales s 
-                    WHERE s.approved = true AND YEAR(s.saleDate) = YEAR('${dateString}') ${limitCurrentYear(date, 's.saleDate')}
+                    WHERE s.approved = ${approved} AND YEAR(s.saleDate) = YEAR('${dateString}') ${limitCurrentYear(date, 's.saleDate')}
                     ${isAdm ? andCompany('s', companyId) : andCompany('s', user.companyId)}
                     GROUP BY MONTH (s.saleDate), YEAR(s.saleDate)
                     ORDER BY YEAR(s.saleDate) DESC, MONTH (s.saleDate) DESC`
@@ -90,7 +92,11 @@ const visitsPaidOut = async (date, isAdm, user, companyId, acc) => {
 
 const visitsPaidOutDre = async (date, isAdm, user, companyId) => {
     const dateString = startOfMonth(date).toISOString()
-    const query = ` SELECT 'FATURAMENTO_BRUTO' name, SUM(v.value) total, MONTH(v.paymentDate) month, YEAR(v.paymentDate) year FROM visits v
+    const query = ` SELECT 'FATURAMENTO_BRUTO' name, 
+                            SUM(v.value) total, 
+                            SUM(v.km) km, 
+                            COUNT(v.id) count, 
+                            MONTH(v.paymentDate) month, YEAR(v.paymentDate) year FROM visits v
                     WHERE v.paidOut = true AND YEAR(v.paymentDate) = YEAR('${dateString}') ${limitCurrentYear(date, 'v.paymentDate')}
                     ${isAdm ? andCompany('v', companyId) : andCompany('v', user.companyId)}
                     GROUP BY MONTH (v.paymentDate), YEAR(v.paymentDate)
