@@ -56,6 +56,8 @@ const Cards: React.FC = () => {
   const [groups, setGroups] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [cards, setCards] = useState<CardsResult>(initialStateCards);
+  const [cardsStatic, setCardsStatic] =
+    useState<CardsResult>(initialStateCards);
   const [state, setState] = useState<Filter>(initialState);
   const [expensePaidOutYes, setExpensePaidOutYes] = useState<CardValues>(
     {} as CardValues
@@ -80,6 +82,7 @@ const Cards: React.FC = () => {
   const [liquido, setLiquido] = useState<number>(0);
   const [box, setBox] = useState<number>(0);
   const [bruto, setBruto] = useState<number>(0);
+  const [currentYear, setCurrentYear] = useState<number>();
 
   const [dateEn, setDateEn] = useState('');
 
@@ -90,10 +93,27 @@ const Cards: React.FC = () => {
 
   useEffect(() => {
     const { date, companyId, _date } = state;
-    if (_date) action(date, companyId);
+    actionStaticValues(date, companyId);
+  }, [state.companyId, currentYear]);
+
+  useEffect(() => {
+    const { date, companyId, _date } = state;
+    if (_date) {
+      setCurrentYear(date.getFullYear());
+      action(date, companyId);
+    }
     setDateEn(formatDateEn(date.toISOString()));
-    console.log('state', state);
   }, [state.companyId, state.date]);
+
+  useEffect(() => {
+    const _inputPayOut = getValueExpensesByTypes(
+      cardsStatic?.expensesByType,
+      arrayInput,
+      true
+    );
+    setInputPayOut(_inputPayOut);
+    console.log('cardsStatic', cardsStatic);
+  }, [cardsStatic]);
 
   useEffect(() => {
     setExpensePaidOutYes(getValueExpenses(cards, 1));
@@ -112,13 +132,6 @@ const Cards: React.FC = () => {
       true
     );
     setInput(_input);
-
-    const _inputPayOut = getValueExpensesByTypes(
-      cards?.expensesByType,
-      arrayInput,
-      true
-    );
-    setInputPayOut(_inputPayOut);
 
     const _marketing = getValueExpensesByTypes(
       cards?.expensesByType,
@@ -193,6 +206,18 @@ const Cards: React.FC = () => {
     } catch (error) {
       setLoading(false);
     }
+  };
+
+  const actionStaticValues = async (date: Date, companyId?: string) => {
+    const url = `${apiRoutes.dashboard}/cards-static?companyId=${
+      companyId ? companyId : ''
+    }${getParameter(arrayInput)}`;
+    const resp = await api.get(url, {
+      dateReference: date.toISOString(),
+      paidOut: false
+    });
+
+    resp?.data && setCardsStatic(resp?.data);
   };
 
   const handleCardSaleMonth = (cards: CardsResult) => {

@@ -2,7 +2,7 @@
 
 const { startOfYear, startOfMonth, endOfMonth } = require('date-fns');
 const { executeSelect } = require("../services/ExecuteQueryService");
-const { limitCurrentYear , andCompany} = require("./utils");
+const { limitCurrentYear, andCompany } = require("./utils");
 
 
 
@@ -59,6 +59,17 @@ const expensesMonthByTypeDash = async (date, isAdm, user, companyId, acc = false
     return result
 }
 
+const getExpensesOpenPaymentByType = async (date, isAdm, user, companyId, expenseTypeId, paidOut = false,) => {
+    const query = ` SELECT COUNT(e.id) count, SUM(e.value) totalValueMonth, t.name, t.id FROM expenses e 
+                    LEFT JOIN expenseTypes t ON t.id = e.expenseTypeId 
+                    WHERE e.paymentDate >= '${startOfYear(date).toISOString()}' AND e.paidOut = ${paidOut} AND e.expenseTypeId IN(${expenseTypeId})  
+                    ${isAdm ? andCompany('e', companyId) : andCompany('e', user.companyId)}
+                    GROUP BY e.expenseTypeId`
+
+    const result = await executeSelect(query);
+    return result
+}
+
 const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const dateString = startOfMonth(date).toISOString()
     const query = ` SELECT et.name, SUM(e.value) total,MONTH(e.paymentDate) month, YEAR(e.paymentDate) year, e.expenseTypeId, et.description
@@ -72,4 +83,4 @@ const expensesMonthByTypeDre = async (date, isAdm, user, companyId) => {
     const result = await executeSelect(query);
     return result
 }
-module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType, expensesMonthByTypeDre }
+module.exports = { expensesMonthDash, expensesMonthByTypeDash, expensesByPeriod, expensesMonthByType, expensesMonthByTypeDre, getExpensesOpenPaymentByType }

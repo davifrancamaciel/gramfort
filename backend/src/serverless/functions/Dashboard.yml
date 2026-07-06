@@ -6,6 +6,14 @@ dashboardCards:
         method: get
         authorizer: verifyToken
         cors: true
+dashboardCardsStatic:
+  handler: src/functions/api/dashboard.cardsStatic
+  events:
+    - http:
+        path: dashboard/cards-static
+        method: get
+        authorizer: verifyToken
+        cors: true
 dashboardProductGraphBar:
   handler: src/functions/api/dashboard.productGraphBar
   events:

@@ -22,7 +22,6 @@ module.exports.cards = async (event, context) => {
 
         let data = {
             sales: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 },
-            salesAcc: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 },
             user: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 }
         }
 
@@ -37,13 +36,46 @@ module.exports.cards = async (event, context) => {
 
         if (checkRouleProfileAccess(user.groups, roules.sales)) {
             data.sales = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId);
-            data.salesAcc = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId, true);            
+            data.salesAcc = await salesRepository.salesMonthDashboard(date, isAdm, user, false, companyId, true);
         }
 
         if (checkRouleProfileAccess(user.groups, roules.expenses)) {
             data.expenses = await expensesRepository.expensesMonthDash(date, isAdm, user, companyId);
             data.expensesByType = await expensesRepository.expensesMonthByTypeDash(date, isAdm, user, companyId);
             data.expensesByTypeAcc = await expensesRepository.expensesMonthByTypeDash(date, isAdm, user, companyId, true);
+        }
+
+        return handlerResponse(200, data)
+    } catch (err) {
+        return await handlerErrResponse(err)
+    }
+};
+
+module.exports.cardsStatic = async (event, context) => {
+    try {
+
+        const user = await getUser(event)
+
+        if (!user)
+            return handlerResponse(400, {}, 'Usuário não encontrado')
+
+        let data = {
+            sales: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 },
+        }
+
+        let isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
+        let date = new Date();
+        const { queryStringParameters, multiValueQueryStringParameters } = event
+        if (queryStringParameters && queryStringParameters.dateReference)
+            date = new Date(queryStringParameters.dateReference)
+        let { companyId, paidOut } = queryStringParameters;
+        const { expenseTypeId } = multiValueQueryStringParameters;
+
+        if (isAdm && !companyId)
+            companyId = await getCompaniesIdsMap(user);
+
+        if (checkRouleProfileAccess(user.groups, roules.expenses)) {
+            data.expensesByType = await expensesRepository.getExpensesOpenPaymentByType(date, isAdm, user, companyId, expenseTypeId, paidOut);
         }
 
         return handlerResponse(200, data)
