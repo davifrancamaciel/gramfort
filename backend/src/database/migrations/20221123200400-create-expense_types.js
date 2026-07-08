@@ -14,7 +14,7 @@ module.exports = {
       },
       name: { type: Sequelize.STRING(255), },
       description: { type: Sequelize.STRING(255), },
-
+      replicateNextMonth: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false, },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

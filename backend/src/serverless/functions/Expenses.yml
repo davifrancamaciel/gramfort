@@ -54,15 +54,15 @@ expenseTypes:
         method: get
         authorizer: verifyToken
         cors: true 
-expenseComissionEvent:  
-  handler: src/functions/events/expenseComission.handler
+expenseAutomaticEvent:  
+  handler: src/functions/events/expenseAutomatic.handler
   timeout: 300   
   events:  
     - eventBridge:
-        name: "${self:service}-${opt:stage, self:provider.stage}-expense-comission"
-        description: "Servico de geração de despesa de pagamento de comissão"
-        schedule: cron(0 4 1 * ? *) # 1h00 no primeiro dia do mês hora BR
+        name: "${self:service}-${opt:stage, self:provider.stage}-expense-automatic"
+        description: "Servico de geração automática de despesas para o mês seguinte"
+        schedule: cron(30 23 L * ? *) # no ultimo dia do mês
     - http:
-          path: expenses/run-comission
+          path: expenses/run-automatic
           method: get        
           cors: true

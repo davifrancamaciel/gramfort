@@ -139,27 +139,4 @@ const tanksApplied = async (date, isAdm, user, companyId) => {
     return result
 }
 
-const salesMonthExpenseCommission = async (date) => {
-    const query = ` SELECT 
-                        u.id,
-                        u.name,
-                        u.email,
-                        u.commissionMonth,
-                        c.name AS companyName,
-                        c.individualCommission,
-                        s.companyId,
-                        COUNT(s.id) count,
-                        COUNT(DISTINCT s.userId) users,                                                   
-                        SUM(s.value) totalValueMonth, 
-                        SUM(s.value * (s.commission / 100)) totalValueCommissionMonth     
-                    FROM sales s 
-                    INNER JOIN users u ON u.id = s.userId 
-                    INNER JOIN companies c ON c.id = s.companyId
-                    WHERE s.approved = true AND c.active = true AND 
-                          s.createdAt BETWEEN '${startOfMonth(date).toISOString()}' AND '${endOfMonth(date).toISOString()}' 
-                    GROUP BY s.userId, s.companyId;`
-    const result = await executeSelect(query);
-    return result
-}
-
-module.exports = { salesMonthExpenseCommission, salesMonthDashboard, visitsPaidOutDre, salesDre, m2Dre, applicationDre }
+module.exports = { salesMonthDashboard, visitsPaidOutDre, salesDre, m2Dre, applicationDre }
