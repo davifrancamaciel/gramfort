@@ -46,14 +46,6 @@ expensesDeletePost:
         method: post
         authorizer: verifyToken
         cors: true
-expenseTypes:
-  handler: src/functions/api/expenseTypes.listAll
-  events:
-    - http:
-        path: expense-types
-        method: get
-        authorizer: verifyToken
-        cors: true 
 expenseAutomaticEvent:  
   handler: src/functions/events/expenseAutomatic.handler
   timeout: 300   

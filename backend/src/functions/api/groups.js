@@ -36,6 +36,10 @@ module.exports.listUserGroups = async (event) => {
             })
             data = data.filter(x => x !== undefined)
         }
+
+        if (!checkRouleProfileAccess(user.groups, roules.developers))
+            data = data.filter(x => x.value.toLocaleLowerCase() !== roules.developers.toLocaleLowerCase())
+
         return handlerResponse(200, data)
     } catch (err) {
         return await handlerErrResponse(err)

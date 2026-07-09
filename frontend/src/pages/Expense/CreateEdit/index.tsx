@@ -95,7 +95,7 @@ const CreateEdit: React.FC = (props: any) => {
       setUsers(respUser.data);
 
       if (typePath == appRoutes.expenses) {
-        const respEpensesTypes = await api.get(apiRoutes.expenseTypes);
+        const respEpensesTypes = await api.get(`${apiRoutes.expenseTypes}/all`);
         setExpenseTypes(respEpensesTypes.data);
 
         const respVehicles = await api.get(`${apiRoutes.vehicles}/all`);

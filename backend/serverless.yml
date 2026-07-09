@@ -105,7 +105,8 @@ functions:
   - ${file(src/serverless/functions/Users.yml)}  
   - ${file(src/serverless/functions/Companies.yml)}  
   - ${file(src/serverless/functions/Sales.yml)}  
-  - ${file(src/serverless/functions/Expenses.yml)}  
+  - ${file(src/serverless/functions/Expenses.yml)}
+  - ${file(src/serverless/functions/ExpenseTypes.yml)}
   - ${file(src/serverless/functions/Services.yml)}
   - ${file(src/serverless/functions/Products.yml)}
   - ${file(src/serverless/functions/Visits.yml)}

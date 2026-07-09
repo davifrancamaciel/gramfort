@@ -263,13 +263,19 @@ const SliderMenu: React.FC = (props: any) => {
           </SubMenu>
         )}
 
-        {checkRouleProfileAccess(groupsUser, roules.administrator) && (
+        {checkRouleProfileAccess(groupsUser, roules.developers) && (
           <>
             <Menu.Item
               icon={<CloudServerOutlined />}
               key={`/${appRoutes.services}`}
             >
               <Link to={`/${appRoutes.services}`}>Serviços</Link>
+            </Menu.Item>
+            <Menu.Item
+              icon={<UnorderedListOutlined />}
+              key={`/${appRoutes.expenseTypes}`}
+            >
+              <Link to={`/${appRoutes.expenseTypes}`}>Tipos de Despesas</Link>
             </Menu.Item>
           </>
         )}

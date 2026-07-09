@@ -450,7 +450,7 @@ const CreateEdit: React.FC = (props: any) => {
               }
             />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Configurações de Tanque" key="5">
+          <Tabs.TabPane tab="Configurações de tanque" key="5">
             <Row gutter={[24, 24]}>
               <Col lg={6} md={6} sm={12} xs={24}>
                 <Input

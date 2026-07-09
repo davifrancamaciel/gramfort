@@ -11,6 +11,7 @@ const roules = {
     supplier: 'fornecedores',
     visits: 'visitas',
     applications: 'aplicacoes',
+    developers: 'desenvolvedores'
 };
 const pathRoutes = {
     sales: 'sales',

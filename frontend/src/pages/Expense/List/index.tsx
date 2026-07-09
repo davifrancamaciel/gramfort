@@ -211,7 +211,7 @@ const List: React.FC = () => {
 
   const onLoad = async (typePath: string) => {
     if (typePath == appRoutes.expenses) {
-      const respEpensesTypes = await api.get(apiRoutes.expenseTypes);
+      const respEpensesTypes = await api.get(`${apiRoutes.expenseTypes}/all`);
       setExpenseTypes(respEpensesTypes.data);
       return respEpensesTypes.data;
     }

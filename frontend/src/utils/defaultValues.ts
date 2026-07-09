@@ -1,3 +1,4 @@
+import { de } from 'date-fns/locale';
 import { IOptions } from './commonInterfaces';
 
 export const systemColors = {
@@ -23,6 +24,7 @@ export const appRoutes = {
   sales: 'sales',
   contracts: 'contracts',
   expenses: 'expenses',
+  expenseTypes: 'expense-types',
   companies: 'companies',
   services: 'services',
   shopping: 'shopping',
@@ -74,12 +76,14 @@ export const roules = {
   contracts: 'contratos',
   saleUserIdChange: 'vendedor_vendas',
   expenses: 'despesas',
+  expenseTypes: 'tipos_despesa',
   clients: 'clientes',
   suppliers: 'fornecedores',
   shopping: 'compras',
   visit: 'visitas',
   vehicles: 'veiculos',
-  applications: 'aplicacoes'
+  applications: 'aplicacoes',
+  developers: 'desenvolvedores'
 };
 
 export const enumStatusUserAws = {
@@ -141,8 +145,6 @@ export const expensesTypesEnum = {
 export const arrayExpensesTypesEnum: number[] =
   Object.values(expensesTypesEnum);
 
-
-
 export const arrayMarketing = [
   expensesTypesEnum.MKT,
   expensesTypesEnum.TPAGO,
@@ -161,7 +163,7 @@ export const arrayImpostos = [
   expensesTypesEnum.ISS
 ];
 
-export const arrayExpenses = [  
+export const arrayExpenses = [
   expensesTypesEnum.INSUMOS,
   expensesTypesEnum.INVESTIMENTOS,
   expensesTypesEnum.RETIRADAS,
@@ -171,7 +173,6 @@ export const arrayExpenses = [
 export const arrayInput = [expensesTypesEnum.INSUMOS];
 export const arrayInvestment = [expensesTypesEnum.INVESTIMENTOS];
 export const arrayCashWithdrawal = [expensesTypesEnum.RETIRADAS];
-
 
 export const productCategoriesEnum = {
   SERVICO: 1,

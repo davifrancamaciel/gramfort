@@ -91,3 +91,10 @@ Resources:
         GroupName: "Aplicacoes"
         UserPoolId:
           Ref: UserPool  
+    CognitoUserPoolGroupsDeveloper:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties: 
+        Description: "Permissão master para desenvolvedores, pode executar todas as tarefas do sistema"
+        GroupName: "Desenvolvedores"
+        UserPoolId:
+          Ref: UserPool  
