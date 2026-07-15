@@ -43,16 +43,12 @@ module.exports.update = async (event) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
-        if (!checkRouleProfileAccess(user.groups, roules.administrator))
+        if (!checkRouleProfileAccess(user.groups, roules.developers))
             return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade');
 
         const { Name, State, ScheduleExpression, Description } = body;
 
         const params = { Name, State, ScheduleExpression, Description }
-        const { STAGE } = process.env
-        if (STAGE === 'dev' && user.sub !== 'f0fbce39-8f59-4c4c-a9b1-a4fc50e114a6')
-            return handlerResponse(403, {}, 'Usuário não tem permissão acessar esta funcionalidade');
-
         const result = await eventbridge.putRule(params).promise();
 
         return handlerResponse(201, result, `${RESOURCE_NAME} alteradas com sucesso`);

@@ -20,9 +20,17 @@ module.exports.cards = async (event, context) => {
         if (!user)
             return handlerResponse(400, {}, 'Usuário não encontrado')
 
+        const defaultSales = {
+            count: 0,
+            totalValueMonth: 0,
+            totalValueInputMonth: 0,
+            m2: 0,
+            totalValueVisitsMonth: 0,
+            countVisis: 0
+        }
         let data = {
-            sales: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 },
-            user: { count: 0, totalValueCommissionMonth: 0, totalValueMonth: 0, users: 0 }
+            sales: defaultSales,
+            salesAcc: defaultSales,
         }
 
         let isAdm = checkRouleProfileAccess(user.groups, roules.administrator);
