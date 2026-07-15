@@ -111,6 +111,7 @@ module.exports.create = async (event) => {
         await imageService.add('companies', result.dataValues, body.fileList);
         await imageService.add('companies', result.dataValues, body.imageHeaderContractList, 'imageHeaderContract');
         await imageService.add('companies', result.dataValues, body.imageFooterContractList, 'imageFooterContract');
+        await imageService.add('companies', result.dataValues, body.imageFooterContract2List, 'imageFooterContract2');
         await imageService.add('companies', result.dataValues, body.imageSignatureList, 'imageSignature');
         await createFile(result.dataValues);
 
@@ -148,6 +149,7 @@ module.exports.update = async (event) => {
         await imageService.add('companies', result.dataValues, body.fileList);
         await imageService.add('companies', result.dataValues, body.imageHeaderContractList, 'imageHeaderContract');
         await imageService.add('companies', result.dataValues, body.imageFooterContractList, 'imageFooterContract');
+        await imageService.add('companies', result.dataValues, body.imageFooterContract2List, 'imageFooterContract2');
         await imageService.add('companies', result.dataValues, body.imageSignatureList, 'imageSignature');
         await createFile(result.dataValues);
 
@@ -175,6 +177,7 @@ module.exports.delete = async (event) => {
         await imageService.remove(item.image);
         await imageService.remove(item.imageHeaderContract);
         await imageService.remove(item.imageFooterContract);
+        await imageService.remove(item.imageFooterContract2);
         await imageService.remove(item.imageSignatureList);
 
         await Company.destroy({ where: { id } });

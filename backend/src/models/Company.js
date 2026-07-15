@@ -26,6 +26,7 @@ module.exports = function (sequelize, DataTypes) {
         fantasyName: { type: DataTypes.STRING(100), },
         imageHeaderContract: { type: DataTypes.STRING(500), },
         imageFooterContract: { type: DataTypes.STRING(500), },
+        imageFooterContract2: { type: DataTypes.STRING(500), },
         agencyBank: { type: DataTypes.STRING(100), },
         site: { type: DataTypes.STRING(100), },
         instagran: { type: DataTypes.STRING(100), },

@@ -21,6 +21,7 @@ export interface Company {
   fantasyName?: string;
   imageHeaderContract?: string;
   imageFooterContract?: string;
+  imageFooterContract2?: string;
   imageSignature?: string;
   agencyBank?: string;
   site?: string;

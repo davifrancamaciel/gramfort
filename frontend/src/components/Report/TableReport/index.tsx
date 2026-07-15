@@ -4,6 +4,7 @@ interface PropTypes {
   title: string;
   image: string;
   imageFooterContract?: string;
+  imageFooterContract2?: string;
   children: ReactNode;
   headerList?: string[];
   showImageLastPage?: boolean;
@@ -17,6 +18,7 @@ const TableReport: React.FC<PropTypes> = ({
   image,
   showImageLastPage,
   imageFooterContract,
+  imageFooterContract2,
 
   subTitle
 }) => {
@@ -76,6 +78,16 @@ const TableReport: React.FC<PropTypes> = ({
           }}
         >
           <img src={imageFooterContract} alt="" style={{ width: '710px' }} />
+        </div>
+      )}
+      {showImageLastPage && imageFooterContract2 && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center'
+          }}
+        >
+          <img src={imageFooterContract2} alt="" style={{ width: '710px' }} />
         </div>
       )}
     </Container>

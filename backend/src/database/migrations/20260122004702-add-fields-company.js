@@ -10,6 +10,7 @@ module.exports = {
       await queryInterface.addColumn(TABLE_NAME, "fantasyName", { type: Sequelize.STRING(100), allowNull: true }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "imageHeaderContract", { type: Sequelize.STRING(500), allowNull: true }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "imageFooterContract", { type: Sequelize.STRING(500), allowNull: true }, { transaction });
+      await queryInterface.addColumn(TABLE_NAME, "imageFooterContract2", { type: Sequelize.STRING(500), allowNull: true }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "agencyBank", { type: Sequelize.STRING(100), allowNull: true }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "site", { type: Sequelize.STRING(100), allowNull: true }, { transaction });
       await queryInterface.addColumn(TABLE_NAME, "instagran", { type: Sequelize.STRING(100), allowNull: true }, { transaction });
@@ -29,6 +30,7 @@ module.exports = {
       await queryInterface.removeColumn(TABLE_NAME, "fantasyName"),
       await queryInterface.removeColumn(TABLE_NAME, "imageHeaderContract"),
       await queryInterface.removeColumn(TABLE_NAME, "imageFooterContract"),
+      await queryInterface.removeColumn(TABLE_NAME, "imageFooterContract2"),
       await queryInterface.removeColumn(TABLE_NAME, "agencyBank"),
       await queryInterface.removeColumn(TABLE_NAME, "site"),
       await queryInterface.removeColumn(TABLE_NAME, "instagran"),

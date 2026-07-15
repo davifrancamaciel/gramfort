@@ -3,14 +3,14 @@ import { Upload, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PropTypes } from './interfaces';
 
-function getBase64(file: any) {
+function getBase64(file: any, notResize: boolean = false): Promise<any> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     console.log(file);
     if (file) {
       reader.readAsDataURL(file);
       // reader.onload = () => resolve(reader.result);
-      reader.onload = () => resize(file, resolve);
+      reader.onload = () =>  notResize ? resolve(reader.result) : resize(file, resolve);
       reader.onerror = (error) => reject(error);
     }
   });
@@ -91,7 +91,7 @@ const UploadImages: React.FC<PropTypes> = (props) => {
     if (file.file.status == 'done') {
       for (let i = 0; i < file.fileList.length; i++) {
         const element = file.fileList[i];
-        const preview = await getBase64(element.originFileObj);
+        const preview = await getBase64(element.originFileObj, props.notResize);
         files.push({ ...element, preview, thumbUrl: preview });
       }
       props.setFileList(files);
@@ -102,7 +102,7 @@ const UploadImages: React.FC<PropTypes> = (props) => {
 
   const handlePreview = async (file: any) => {
     if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+      file.preview = await getBase64(file.originFileObj, props.notResize);
     }
     setPreviewImage(file.url || file.preview);
     setPreviewVisible(true);

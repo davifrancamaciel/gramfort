@@ -191,6 +191,7 @@ const Table: React.FC<PropTypes> = ({ sale, isContract = true }) => {
       title={``}
       image={sale?.company?.image || ''}
       imageFooterContract={sale?.company?.imageFooterContract || ''}
+      imageFooterContract2={sale?.company?.imageFooterContract2 || ''}
       showImageLastPage={isContract}
     >
       <tr style={{ border: '0', fontSize: '10px' }}>

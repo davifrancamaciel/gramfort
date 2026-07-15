@@ -28,6 +28,9 @@ const CreateEdit: React.FC = (props: any) => {
   const [imageFooterContractList, setImageFooterContractList] = useState<
     Array<UploadFile>
   >([]);
+   const [imageFooterContract2List, setImageFooterContract2List] = useState<
+    Array<UploadFile>
+  >([]);
 
   useEffect(() => {
     props.match.params.id && get(props.match.params.id);
@@ -75,6 +78,18 @@ const CreateEdit: React.FC = (props: any) => {
         ]);
       }
 
+      if (resp.data && resp.data.imageFooterContract2) {
+        const imageArr = resp.data.imageFooterContract2.split('/');
+        setImageFooterContract2List([
+          {
+            uid: '-1',
+            name: imageArr[imageArr.length - 1],
+            status: 'done',
+            url: resp.data.imageFooterContract2
+          }
+        ]);
+      }
+
       if (resp.data && resp.data.imageSignature) {
         const imageArr = resp.data.imageSignature.split('/');
         setImageSignatureList([
@@ -108,6 +123,7 @@ const CreateEdit: React.FC = (props: any) => {
         fileList,
         imageHeaderContractList,
         imageFooterContractList,
+        imageFooterContract2List,
         imageSignatureList
       });
 
@@ -362,7 +378,7 @@ const CreateEdit: React.FC = (props: any) => {
 
             <Col lg={24}>
               <Row gutter={[24, 24]}>
-                <Col lg={8} md={24} sm={24} xs={24}>
+                <Col lg={6} md={24} sm={24} xs={24}>
                   <Divider>Logo cabeçalho</Divider>
                   <Col
                     lg={24}
@@ -377,7 +393,23 @@ const CreateEdit: React.FC = (props: any) => {
                     />
                   </Col>
                 </Col>
-                <Col lg={8} md={24} sm={24} xs={24}>
+                <Col lg={6} md={24} sm={24} xs={24}>
+                  <Divider>Imagem exibida em penultima páigina</Divider>
+                  <Col
+                    lg={24}
+                    md={24}
+                    sm={24}
+                    xs={24}
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    <UploadImages
+                      notResize={true}
+                      setFileList={setImageFooterContractList}
+                      fileList={imageFooterContractList}
+                    />
+                  </Col>
+                </Col>
+                <Col lg={6} md={24} sm={24} xs={24}>
                   <Divider>Imagem exibida em ultima páigina</Divider>
                   <Col
                     lg={24}
@@ -387,12 +419,13 @@ const CreateEdit: React.FC = (props: any) => {
                     style={{ display: 'flex', justifyContent: 'center' }}
                   >
                     <UploadImages
-                      setFileList={setImageFooterContractList}
-                      fileList={imageFooterContractList}
+                      notResize={true}
+                      setFileList={setImageFooterContract2List}
+                      fileList={imageFooterContract2List}
                     />
                   </Col>
                 </Col>
-                <Col lg={8} md={24} sm={24} xs={24}>
+                <Col lg={6} md={24} sm={24} xs={24}>
                   <Divider>Imagem de assinaturas</Divider>
                   <Col
                     lg={24}
