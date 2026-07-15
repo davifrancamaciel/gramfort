@@ -100,7 +100,7 @@ const List: React.FC = () => {
           { title: 'Código', dataIndex: 'id' },
           { title: 'Nome', dataIndex: 'name' },
           { title: 'Descrição', dataIndex: 'description' },
-          { title: 'Replicar', dataIndex: 'replicateNextMonth' },
+          { title: 'Recorrente', dataIndex: 'replicateNextMonth' },
           { title: 'Criada em', dataIndex: 'createdAt' },
           { title: 'Alterado em', dataIndex: 'updatedAt' }
         ]}

@@ -80,7 +80,7 @@ const CreateEdit: React.FC = (props: any) => {
               title="Não / Sim"
               checkedChildren="Sim"
               unCheckedChildren="Não"
-              label={'Replicar Próximo Mês?'}
+              label={'Recorrente - Replicar Próximo Mês?'}
               checked={state.replicateNextMonth}
               onChange={(replicateNextMonth) =>
                 dispatch({ replicateNextMonth })

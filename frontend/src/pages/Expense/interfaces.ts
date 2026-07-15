@@ -2,6 +2,7 @@ import { Company } from '../Company/interfaces';
 export interface ExpenseType {
   name: string;
   description?: string;
+  replicateNextMonth: boolean;
 }
 export interface Expense {
   id?: string;
@@ -20,6 +21,7 @@ export interface Expense {
   description?: string;
   paidOut: boolean;
   paymentDate?: string;
+  replicateNextMonth: boolean;
   createdAt?: string;
   updatedAt?: string;
   companyId?: string;
@@ -31,7 +33,8 @@ export const initialStateForm: Expense = {
   createdAt: '',
   updatedAt: '',
   paymentDate: new Date().toISOString(),
-  paidOut: false
+  paidOut: false,
+  replicateNextMonth: false
 };
 
 export interface Filter {

@@ -165,6 +165,14 @@ const List: React.FC = () => {
               apiRoutes={apiRoutes.expenses}
               propName="paidOut"
             />
+          ),
+          replicateNextMonth: e.expenseType?.replicateNextMonth && (
+            <Action
+              item={e}
+              setUpdate={() => {}}
+              apiRoutes={apiRoutes.expenses}
+              propName="replicateNextMonth"
+            />
           )
         };
         return expense;
@@ -224,14 +232,11 @@ const List: React.FC = () => {
     colls.push({ title: 'Empresa', dataIndex: 'companyName' });
     if (path == appRoutes.expenses)
       colls.push({ title: 'Tipo', dataIndex: 'expenseTypeName', sorter: true });
-    colls.push({
-      title: 'Dia',
-      dataIndex: 'paymentDate',
-      sorter: true
-    });
+    colls.push({ title: 'Dia', dataIndex: 'paymentDate', sorter: true });
     colls.push({ title: 'Titulo', dataIndex: 'title', sorter: true });
     colls.push({ title: 'Valor', dataIndex: 'value', sorter: true });
     colls.push({ title: 'Paga', dataIndex: 'paidOut' });
+    colls.push({ title: 'Recorrente', dataIndex: 'replicateNextMonth' });
     return colls;
   };
 

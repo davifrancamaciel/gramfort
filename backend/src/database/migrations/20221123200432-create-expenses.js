@@ -45,6 +45,7 @@ module.exports = {
         paymentDate: { type: Sequelize.DATE, allowNull: false, defaultValue: new Date() },
         createdAt: { type: Sequelize.DATE, allowNull: false, },
         updatedAt: { type: Sequelize.DATE, allowNull: false, },
+        replicateNextMonth: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false, },
       });
       await queryInterface.addIndex(TABLE_NAME, ['createdAt'], { transaction });
       await transaction.commit();

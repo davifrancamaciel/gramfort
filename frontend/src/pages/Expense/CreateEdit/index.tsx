@@ -39,7 +39,7 @@ const CreateEdit: React.FC = (props: any) => {
   const [path, setPath] = useState('');
   const [users, setUsers] = useState<any[]>([]);
   const [usersOptions, setUsersOptions] = useState<IOptions[]>();
-  const [expenseTypes, setExpenseTypes] = useState<IOptions[]>([]);
+  const [expenseTypes, setExpenseTypes] = useState<any[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [vehiclesOptions, setVehiclesOptions] = useState<IOptions[]>([]);
   const arrayTypeExpensesRequiredUser = [
@@ -68,7 +68,7 @@ const CreateEdit: React.FC = (props: any) => {
     const filteredVehicles = vehicles?.filter(
       (u: Vehicle) => u.companyId === state.companyId
     );
-    console.log(filteredVehicles)
+    console.log(filteredVehicles);
     setVehiclesOptions(filteredVehicles);
   }, [state.companyId]);
 
@@ -130,7 +130,10 @@ const CreateEdit: React.FC = (props: any) => {
         )
           ? state.vehicleId
           : null,
-        supplierId: path == appRoutes.shopping ? state.supplierId : null
+        supplierId: path == appRoutes.shopping ? state.supplierId : null,
+        replicateNextMonth: checkAvailableType()
+          ? state.replicateNextMonth
+          : false
       });
 
       setLoading(false);
@@ -154,6 +157,10 @@ const CreateEdit: React.FC = (props: any) => {
     }
   };
 
+  const checkAvailableType = () => {
+    const type = expenseTypes?.find((e) => e.value === state.expenseTypeId);
+    return type ? type?.replicateNextMonth : false;
+  };
   return (
     <PanelCrud
       title={`${type === 'update' ? 'Editar' : 'Novo'} ${getTitle(
@@ -260,7 +267,9 @@ const CreateEdit: React.FC = (props: any) => {
             <Col lg={8} md={8} sm={24} xs={24}>
               <Select
                 label={'Consultor'}
-                options={usersOptions?.filter((u: any) => u.type === userType.USER)}
+                options={usersOptions?.filter(
+                  (u: any) => u.type === userType.USER
+                )}
                 value={state.userId}
                 onChange={(userId) => dispatch({ userId })}
               />
@@ -301,6 +310,20 @@ const CreateEdit: React.FC = (props: any) => {
           onChange={() => dispatch({ paidOut: !state.paidOut })}
         />
       </Col>
+      {checkAvailableType() && (
+        <Col lg={6} md={8} sm={12} xs={24}>
+          <Switch
+            label={'Recorrente - Replicar próx. mês'}
+            title="Não / Sim"
+            checked={state.replicateNextMonth}
+            checkedChildren="Sim"
+            unCheckedChildren="Não"
+            onChange={() =>
+              dispatch({ replicateNextMonth: !state.replicateNextMonth })
+            }
+          />
+        </Col>
+      )}
     </PanelCrud>
   );
 };

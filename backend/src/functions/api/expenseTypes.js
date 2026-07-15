@@ -168,7 +168,7 @@ module.exports.listAll = async (event) => {
 
         const resp = await ExpenseType.findAll({
             where: whereStatement,
-            attributes: ['id', 'name', 'description'],
+            attributes: ['id', 'name', 'description', 'replicateNextMonth'],
             order: [['name', 'ASC']],
         })
 
@@ -176,6 +176,7 @@ module.exports.listAll = async (event) => {
             value: item.id,
             label: item.name,
             description: item.description,
+            replicateNextMonth: item.replicateNextMonth
         }));
         return handlerResponse(200, respFormated)
     } catch (err) {

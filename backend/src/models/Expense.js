@@ -22,6 +22,7 @@ module.exports = function (sequelize, DataTypes) {
         paymentDate: { type: DataTypes.DATE },
         paymentMethod: { type: DataTypes.STRING(50) },
         amount: { type: DataTypes.DECIMAL },
+        replicateNextMonth: { type: DataTypes.BOOLEAN, defaultValue: false },
     });
 
     Expense.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
