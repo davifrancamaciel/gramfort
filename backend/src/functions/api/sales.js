@@ -19,11 +19,12 @@ const { handlerResponse, handlerErrResponse } = require("../../utils/handleRespo
 const imageService = require("../../services/ImageService");
 const { getCompaniesIds } = require("../../repositories/companiesRepository");
 const { sum } = require('../../utils');
+const { createRouter } = require("../../utils/requestRouter");
 
 
 const RESOURCE_NAME = 'Venda'
 
-module.exports.list = async (event, context) => {
+const list = async (event, context) => {
     try {
         context.callbackWaitsForEmptyEventLoop = false;
 
@@ -145,7 +146,7 @@ module.exports.list = async (event, context) => {
     }
 };
 
-module.exports.listById = async (event) => {
+const listById = async (event) => {
     const { pathParameters } = event
     try {
         const user = await getUser(event)
@@ -167,7 +168,7 @@ module.exports.listById = async (event) => {
     }
 }
 
-module.exports.listByIdPublic = async (event) => {
+const listByIdPublic = async (event) => {
     const { pathParameters, queryStringParameters } = event;
     const result = await listByIdResult(pathParameters.id);
     if (!result)
@@ -217,7 +218,7 @@ const listByIdResult = async (id) => {
     return result;
 }
 
-module.exports.create = async (event) => {
+const create = async (event) => {
     const body = JSON.parse(event.body)
     try {
 
@@ -254,7 +255,7 @@ module.exports.create = async (event) => {
     }
 }
 
-module.exports.update = async (event) => {
+const update = async (event) => {
     const body = JSON.parse(event.body)
     try {
         const user = await getUser(event)
@@ -317,7 +318,7 @@ const updateSimple = async (item, objOnSave) => {
     return handlerResponse(200, result, `${RESOURCE_NAME} alterada com sucesso`)
 }
 
-module.exports.updatePublic = async (event) => {
+const updatePublic = async (event) => {
     const body = JSON.parse(event.body)
     try {
         const { id, hash } = body
@@ -339,7 +340,7 @@ module.exports.updatePublic = async (event) => {
     }
 }
 
-module.exports.delete = async (event) => {
+const deleteFn = async (event) => {
     const { pathParameters } = event
     try {
         const user = await getUser(event)
@@ -499,3 +500,15 @@ const getTotalSale = (body) => {
 
     return value;
 }
+
+module.exports.handler = createRouter({
+    list,
+    listById,
+    create,
+    update,
+    delete: deleteFn
+});
+
+// Public endpoints handled separately as they don't follow standard REST pattern
+module.exports.listByIdPublic = listByIdPublic;
+module.exports.updatePublic = updatePublic;

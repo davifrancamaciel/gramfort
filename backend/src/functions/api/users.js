@@ -12,8 +12,9 @@ const User = require('../../models/User')(db.sequelize, db.Sequelize);
 const Company = require('../../models/Company')(db.sequelize, db.Sequelize);
 const imageService = require("../../services/ImageService");
 const { getCompaniesIds } = require("../../repositories/companiesRepository");
+const { createRouter } = require("../../utils/requestRouter");
 
-module.exports.list = async (event) => {
+const list = async (event) => {
     const { queryStringParameters } = event
     try {
         const user = await getUser(event)
@@ -94,7 +95,7 @@ module.exports.list = async (event) => {
     }
 }
 
-module.exports.listById = async (event) => {
+const listById = async (event) => {
     const { pathParameters } = event
     try {
         const user = await getUser(event)
@@ -132,7 +133,7 @@ module.exports.listById = async (event) => {
     }
 }
 
-module.exports.create = async (event) => {
+const create = async (event) => {
     let userDbId = 0
     const body = JSON.parse(event.body)
     let { password, email, name, status, accessType, companyId, commissionMonth, phone, type, cpfCnpj, state, city, address, dateOfBirth, hiringDate, salesRepresentative, capture } = body;
@@ -203,7 +204,7 @@ module.exports.create = async (event) => {
     }
 }
 
-module.exports.update = async (event) => {
+const update = async (event) => {
     const body = JSON.parse(event.body)
     let { resetPassword, password, name, status, accessType, companyId, type } = body;
     try {
@@ -278,7 +279,7 @@ module.exports.update = async (event) => {
     }
 }
 
-module.exports.delete = async (event) => {
+const deleteFn = async (event) => {
     const { pathParameters } = event
     try {
         const { id } = pathParameters
@@ -334,7 +335,7 @@ const removeUserToGroup = async (Username, groups, position) => {
     return true
 }
 
-module.exports.listAll = async (event) => {
+const listAll = async (event) => {
     let type
     if (event && event.queryStringParameters) {
         const { queryStringParameters } = event
@@ -393,3 +394,12 @@ const getMonthBirth = (dateOfBirth) => {
 
     return dateOfBirthMoth + 1
 }
+
+module.exports.handler = createRouter({
+    list,
+    listById,
+    listAll,
+    create,
+    update,
+    delete: deleteFn
+});

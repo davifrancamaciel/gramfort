@@ -12,10 +12,11 @@ const { executeSelect } = require("../../services/ExecuteQueryService");
 const formatPrice = require("../../utils/formatPrice");
 const { roules } = require("../../utils/defaultValues");
 const { getCompaniesIds } = require("../../repositories/companiesRepository");
+const { createRouter } = require("../../utils/requestRouter");
 
 const RESOURCE_NAME = 'Produto'
 
-module.exports.list = async (event, context) => {
+const list = async (event, context) => {
     try {
         context.callbackWaitsForEmptyEventLoop = false;
 
@@ -119,7 +120,7 @@ module.exports.list = async (event, context) => {
     }
 };
 
-module.exports.listById = async (event) => {
+const listById = async (event) => {
     const { pathParameters } = event
     try {
         const user = await getUser(event)
@@ -150,7 +151,7 @@ module.exports.listById = async (event) => {
     }
 }
 
-module.exports.create = async (event) => {
+const create = async (event) => {
     const body = JSON.parse(event.body)
     try {
 
@@ -175,7 +176,7 @@ module.exports.create = async (event) => {
     }
 }
 
-module.exports.update = async (event) => {
+const update = async (event) => {
     const body = JSON.parse(event.body)
     try {
         const user = await getUser(event)
@@ -206,7 +207,7 @@ module.exports.update = async (event) => {
     }
 }
 
-module.exports.delete = async (event) => {
+const deleteFn = async (event) => {
     const { pathParameters } = event
     try {
         const user = await getUser(event)
@@ -231,7 +232,7 @@ module.exports.delete = async (event) => {
 
 }
 
-module.exports.listAll = async (event, context) => {
+const listAll = async (event, context) => {
     try {
         const { queryStringParameters } = event
         let whereStatement = {};
@@ -267,3 +268,12 @@ module.exports.listAll = async (event, context) => {
         return await handlerErrResponse(err)
     }
 };
+
+module.exports.handler = createRouter({
+    list,
+    listById,
+    listAll,
+    create,
+    update,
+    delete: deleteFn
+});
