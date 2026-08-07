@@ -7,7 +7,7 @@ import {
 } from '../interfaces';
 import { PropTypes } from './interfaces';
 import { Container } from './styles';
-import { formatTableValue } from '../utils';
+import { formatTableValue, getDivider } from '../utils';
 
 const TableAverage: React.FC<PropTypes> = (props) => {
   const [itemsAverage, setItemsAverage] = useState<any>();
@@ -17,11 +17,7 @@ const TableAverage: React.FC<PropTypes> = (props) => {
   }, [props.items]);
 
   const calculateAverageValues = (array: Array<DreGrigResult>) => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = date.getMonth();
-
-    const divider = props.year === year ? month + 1 : 12;
+    const divider = getDivider(props.year);
     const averageValues = array
       .filter(
         (item: DreGrigResult) =>

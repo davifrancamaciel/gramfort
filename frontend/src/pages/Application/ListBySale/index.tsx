@@ -3,7 +3,7 @@ import GridList from 'components/GridList';
 import { Row, Col, Image, Carousel } from 'antd';
 
 import { apiRoutes, appRoutes } from 'utils/defaultValues';
-import { Application } from '../interfaces';
+import { Application, contentStyle } from '../interfaces';
 
 import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
@@ -25,16 +25,7 @@ const List: React.FC<PropTypes> = ({ saleId, companyId, clientId }) => {
     actionFilter(1, saleId, companyId);
   }, [saleId]);
 
-  const contentStyle: React.CSSProperties = {
-    height: '400px',
-    color: '#fff',
-    lineHeight: '400px',
-    textAlign: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center',
-    background: '#364d79'
-  };
+  
   const actionFilter = async (
     pageNumber: number = 1,
     saleId: number,

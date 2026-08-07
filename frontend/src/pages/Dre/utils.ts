@@ -90,7 +90,7 @@ const createObjGrid = (
     type: type,
     name: arrayGroup[0].name,
     style: getStyle(arrayGroup[0].name),
-    acc: `${sum(arrayGroup)}`,
+    acc: `${getValueAcc(arrayGroup)}`,
     month1: formatValue(arrayGroup, 1),
     month2: formatValue(arrayGroup, 2),
     month3: formatValue(arrayGroup, 3),
@@ -161,4 +161,22 @@ export const parseNegative = (
     name
   }));
   return data;
+};
+
+export const getDivider = (selectedYear: number) => {
+  const date = new Date();
+  const currentYear = date.getFullYear();
+  const month = date.getMonth();
+
+  const divider = selectedYear === currentYear ? month + 1 : 12;
+  return divider;
+};
+
+const getValueAcc = (arrayGroup: Array<DreTotals>) => {
+  const value = sum(arrayGroup);
+  if (arrayGroup[0].name === typeDataDreEnum.PRICE_MED_M2) {
+    const divider = getDivider(arrayGroup[0].year);
+    return (value / divider).toFixed(2);
+  }
+  return value;
 };

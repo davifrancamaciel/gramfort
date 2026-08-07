@@ -66,3 +66,14 @@ export const initialStateFilter: Filter = {
   pageNumber: 1,
   pageSize: 100
 };
+
+export const contentStyle: React.CSSProperties = {
+    height: '400px',
+    color: '#fff',
+    lineHeight: '400px',
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    background: '#364d79'
+  };

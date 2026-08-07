@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { startOfMonth, endOfMonth } from 'date-fns';
-import { Col, TableProps } from 'antd';
+import { Col, TableProps, Image, Carousel } from 'antd';
 import moment from 'moment';
 import PanelFilter from 'components/PanelFilter';
 import GridList from 'components/GridList';
 import { Input, RangePicker, Select } from 'components/_inputs';
 import { apiRoutes, appRoutes, roules } from 'utils/defaultValues';
-import { initialStateFilter, Application } from '../interfaces';
+import { initialStateFilter, Application, contentStyle } from '../interfaces';
 import useFormState from 'hooks/useFormState';
 import api from 'services/api-aws-amplify';
 import { formatDate, formatDateHour } from 'utils/formatDate';
@@ -94,6 +94,83 @@ const List: React.FC = () => {
               apiRoutes={apiRoutes.applications}
               propName="approved"
             />
+          ),
+          expandable: (
+            <div
+              style={{
+                height: '600px',
+                width: '800px'
+              }}
+            >
+              <Carousel
+                autoplay
+                arrows
+                style={{
+                  height: '400px',
+                  width: '800px',
+                  marginBottom: '20px'
+                }}
+              >
+                {item.image1 && (
+                  <div>
+                    <div style={contentStyle}>
+                      <Image
+                        src={item.image1}
+                        style={{
+                          width: '100%',
+                          height: '100%'
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {item.image2 && (
+                  <div>
+                    <div style={contentStyle}>
+                      <Image
+                        src={item.image2}
+                        style={{
+                          width: '100%',
+                          height: '100%'
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+                {item.image3 && (
+                  <div>
+                    <div style={contentStyle}>
+                      <Image
+                        src={item.image3}
+                        style={{
+                          width: '100%',
+                          height: '100%'
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+                {item.image4 && (
+                  <div>
+                    <div style={contentStyle}>
+                      <Image
+                        src={item.image4}
+                        style={{
+                          width: '100%',
+                          height: '100%'
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </Carousel>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: item?.note ? item?.note : ''
+                }}
+              />
+            </div>
           )
         };
         return { ...itemFormatted };
