@@ -47,12 +47,12 @@ const List: React.FC = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [path, setPath] = useState<string>('');
 
-    useEffect(() => {
+  useEffect(() => {
     const typePath = getType();
-    setPath(typePath);   
+    setPath(typePath);
   }, []);
 
-  useEffect(() => {    
+  useEffect(() => {
     if (state.date) {
       const createdAtStart = startOfMonth(state.date).toISOString();
       const createdAtEnd = endOfMonth(state.date).toISOString();
@@ -255,14 +255,16 @@ const List: React.FC = () => {
             onChange={(e) => dispatch({ id: e.target.value })}
           />
         </Col>
-        <Col lg={5} md={12} sm={24} xs={24}>
-          <Input
-            label={'Produto'}
-            placeholder="Ex.: Bola"
-            value={state.product}
-            onChange={(e) => dispatch({ product: e.target.value })}
-          />
-        </Col>
+        {path === appRoutes.sales && (
+          <Col lg={5} md={12} sm={24} xs={24}>
+            <Input
+              label={'Produto'}
+              placeholder="Ex.: Bola"
+              value={state.product}
+              onChange={(e) => dispatch({ product: e.target.value })}
+            />
+          </Col>
+        )}
         <Col lg={5} md={6} sm={24} xs={24}>
           <Input
             label={'Consultor'}
@@ -281,12 +283,23 @@ const List: React.FC = () => {
         </Col>
         <Col lg={5} md={12} sm={24} xs={24}>
           <Select
-            label={'Pequisa realizada'}
+            label={'Pesquisa realizada'}
             options={booleanFilter}
             value={state?.satisfaction}
             onChange={(satisfaction) => dispatch({ satisfaction })}
           />
         </Col>
+        {path === appRoutes.contracts && (
+          <Col lg={5} md={12} sm={24} xs={24}>
+            <Select
+              label={'Venda'}
+              options={booleanFilter}
+              value={state?.approved}
+              onChange={(approved) => dispatch({ approved })}
+            />
+          </Col>
+        )}
+
         <Col lg={9} md={12} sm={24} xs={24}>
           <RangePicker
             label="Data aplicação"

@@ -4,6 +4,7 @@ export interface DreTotals {
   total: number;
   month: number;
   year: number;
+  count: number;
   expenseTypeId: number;
 }
 export interface DataDreResult {

@@ -136,9 +136,9 @@ const Details: React.FC = (props: any) => {
       <Col lg={8} md={12} sm={24} xs={24}>
         <ViewData label="Captação" value={state?.capture} />
       </Col>
-      <Col lg={8} md={12} sm={24} xs={24}>
+      {/* <Col lg={8} md={12} sm={24} xs={24}>
         <ViewData label="Natureza" value={state?.nature} />
-      </Col>
+      </Col> */}
       <Col lg={8} md={12} sm={24} xs={24}>
         <ViewData label="Data da Venda" value={state?.saleDate} />
       </Col>

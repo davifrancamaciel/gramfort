@@ -180,3 +180,39 @@ const getValueAcc = (arrayGroup: Array<DreTotals>) => {
   }
   return value;
 };
+
+export const groupByYearAndMonth = (dados:any = []) => {
+  const agrupado = new Map();
+
+  for (const item of dados) {
+    const chave = `${item.year}-${String(item.month).padStart(2, "0")}`;
+
+    if (!agrupado.has(chave)) {
+      agrupado.set(chave, {
+        name: item.name,
+        month: item.month,
+        year: item.year,
+        total: 0,
+        totalCost: 0,
+        valuePerMeter: 0,
+        count: 0,
+      });
+    }
+
+    const registro = agrupado.get(chave);
+
+    registro.total += Number(item.total || 0);
+    registro.totalCost += Number(item.totalCost || 0);
+    registro.valuePerMeter += Number(item.valuePerMeter || 0);
+    registro.count += Number(item.count || 0);
+  }
+
+  return Array.from(agrupado.values())
+    .sort((a, b) => a.year - b.year || a.month - b.month)
+    .map((item) => ({
+      ...item,
+      total: Number(item.total.toFixed(2)),
+      totalCost: Number(item.totalCost.toFixed(2)),
+      valuePerMeter: Number(item.valuePerMeter.toFixed(2)),
+    }));
+};

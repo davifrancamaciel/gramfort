@@ -20,8 +20,14 @@ import {
 } from '../interfaces';
 
 import Table from '../Table';
-import { getPercentLine, mapData, parseNegative } from '../utils';
+import {
+  getPercentLine,
+  groupByYearAndMonth,
+  mapData,
+  parseNegative
+} from '../utils';
 import { Company } from 'pages/Company/interfaces';
+import { purpose } from 'pages/User/utils';
 
 interface PropTypes {
   data: DataDreResult;
@@ -42,9 +48,15 @@ const Detailed: React.FC<PropTypes> = (props) => {
   }, [props.data]);
 
   const createPropCols = (data: DreTotalsResult) => {
+    const blank = lineText(typeDataDreEnum.BLANK);
     const arrayAllContractsAndSales = [...data.sales, ...data.contracts];
-    const arrayGroup = [...data.sales, ...data.visits];
-    const faturamentoBruto = mapData(arrayGroup, typeItemEnum.PRICE);
+
+    //#region faturamento bruto
+    const arrayAllfaturamentos = [...data.sales, ...data.visits];
+    const faturamentoBruto = mapData(arrayAllfaturamentos, typeItemEnum.PRICE);
+    //#endregion
+
+    //#region funil
     const funilTitle = lineText(typeDataDreEnum.FUNIL);
     const dataCountVisits: Array<DreGrigResult> = data.visits.map(
       (item: any) => ({
@@ -69,12 +81,43 @@ const Detailed: React.FC<PropTypes> = (props) => {
       })
     );
     const countSales = mapData(dataCountSales, typeItemEnum.NUMBER);
+
+    //#region finalidade
+    const dataCountSalesPurposeComercial = getDataByPurpose(
+      data.sales,
+      purpose.COMERCIAL
+    );
+    const percentCountSalesPurposeComercial = getPercentLine(
+      dataCountSalesPurposeComercial,
+      countSales,
+      purpose.COMERCIAL
+    );
+
+    const dataCountSalesPurposeParticular = getDataByPurpose(
+      data.sales,
+      purpose.PARTICULAR
+    );
+    const percentCountSalesPurposeParticular = getPercentLine(
+      dataCountSalesPurposeParticular,
+      countSales,
+      purpose.PARTICULAR
+    );
+    const dataCountSalesPurposeNotPurpose = getDataByPurpose(data.sales, null);
+    const percentCountSalesPurposeNotPurpose = getPercentLine(
+      dataCountSalesPurposeNotPurpose,
+      countSales,
+      'Sem finalidade'
+    );
+    //#endregion
+
     const percentContractXSales = getPercentLine(
       countSales,
       countContracts,
       '% conver'
     );
+    //#endregion
 
+    //#region indicators
     const indicatorsTitle = lineText(typeDataDreEnum.INDICADORES);
     const contracts = mapData(
       arrayAllContractsAndSales.map((x: DreTotals) => ({
@@ -93,21 +136,26 @@ const Detailed: React.FC<PropTypes> = (props) => {
       name: typeDataDreEnum.KM_VISITAS
     }));
     const kmsVisits = mapData(dataKmVisits, typeItemEnum.NUMBER);
-    const dataTiketmed: Array<DreGrigResult> = data.sales.map((item: any) => ({
-      ...item,
-      total: Number(item.total) / Number(item.count),
-      name: 'Ticket Méd'
-    }));
-    const tiketmed = mapData(dataTiketmed, typeItemEnum.PRICE);
-    const dataValueM2med: Array<DreGrigResult> = data.sales.map(
+
+    const salesGroupedpByYearAndMonth = groupByYearAndMonth(data.sales);
+    const dataTiketmed: Array<DreGrigResult> = salesGroupedpByYearAndMonth.map(
       (item: any) => ({
+        ...item,
+        total: Number(item.total) / Number(item.count),
+        name: 'Ticket Méd'
+      })
+    );
+    const tiketmed = mapData(dataTiketmed, typeItemEnum.PRICE);
+    const dataValueM2med: Array<DreGrigResult> =
+      salesGroupedpByYearAndMonth.map((item: any) => ({
         ...item,
         total: Number(item.valuePerMeter) / Number(item.count),
         name: typeDataDreEnum.PRICE_MED_M2
-      })
-    );
+      }));
     const valueM2med = mapData(dataValueM2med, typeItemEnum.PRICE);
+    //#endregion
 
+    //#region indicatorsOp
     const indicatorsOpTitle = lineText(typeDataDreEnum.INDICADORES_OP);
     const applications = mapData(data.applications, typeItemEnum.NUMBER);
     const m2 = mapData(data.m2, typeItemEnum.NUMBER);
@@ -142,7 +190,9 @@ const Detailed: React.FC<PropTypes> = (props) => {
       })
     );
     const kgDiscart = mapData(dataKgDiscart, typeItemEnum.NUMBER);
+    //#endregion
 
+    //#region custos
     const dataCosts: Array<DreTotals> = data.sales.map((item: any) => ({
       ...item,
       total: Number(item.totalCost) * -1,
@@ -150,23 +200,31 @@ const Detailed: React.FC<PropTypes> = (props) => {
     }));
     const costs = mapData(dataCosts, typeItemEnum.PRICE);
     const percentCost = getPercentLine(costs, faturamentoBruto);
+    //#endregion
 
+    //#region balances faturamento bruto - custos
     const arrayGroupBalances = [...data.sales, ...data.visits, ...dataCosts];
     const dataBalances: Array<DreTotals> = arrayGroupBalances.map(
       (item: DreTotals) => ({ ...item, name: typeDataDreEnum.MARGEM_BRUTA })
     );
     const balances = mapData(dataBalances, typeItemEnum.PRICE);
+    const percentMargen = getPercentLine(balances, faturamentoBruto);
+    //#endregion
 
-    const arrExpemenses = [...arrayExpenses, ...arrayImpostos];
+    //#region expenses
+    const arrExpenses = [...arrayExpenses, ...arrayImpostos];
     const dataExpensesFiltered = data.expenses.filter(
-      (x: DreTotals) => !arrExpemenses.includes(x.expenseTypeId)
+      (x: DreTotals) => !arrExpenses.includes(x.expenseTypeId)
     );
     const dataExpenses = parseNegative(
       dataExpensesFiltered,
       typeDataDreEnum.DESPESAS
     );
     const expenses = mapData(dataExpenses, typeItemEnum.PRICE);
+    const percentExpense = getPercentLine(expenses, faturamentoBruto);
+    //#endregion
 
+    //#region despesas de operação, marketing, impostos, investimentos, retiradas e insumos
     const arrExpemensesNoMarketing = [
       ...arrayExpenses,
       ...arrayImpostos,
@@ -181,6 +239,9 @@ const Detailed: React.FC<PropTypes> = (props) => {
         total: Number(item.total) * -1,
         name: item.description ? item.description.split('(')[0] : item.name
       }));
+    //#endregion
+
+    //#region despesas de marketing
     const expensesTitle = lineText(typeDataDreEnum.DESPESAS_OP);
     const expensesNoMarketingDetail = mapData(
       dataExpensesNoMarketingDetail,
@@ -215,7 +276,9 @@ const Detailed: React.FC<PropTypes> = (props) => {
       dataExpensesYesMarketingDetail,
       typeItemEnum.PRICE
     );
+    //#endregion
 
+    //#region ebitda
     const arrayGroupEbitda = [...arrayGroupBalances, ...dataExpenses];
     const dataEbitda: Array<DreTotals> = arrayGroupEbitda.map(
       (item: DreTotals) => ({
@@ -224,7 +287,10 @@ const Detailed: React.FC<PropTypes> = (props) => {
       })
     );
     const ebitda = mapData(dataEbitda, typeItemEnum.PRICE);
+    const percentFaturament = getPercentLine(ebitda, faturamentoBruto);
+    //#endregion
 
+    //#region impostos
     const dataImpostosFiltered = data.expenses.filter((x: DreTotals) =>
       arrayImpostos.includes(x.expenseTypeId)
     );
@@ -243,7 +309,9 @@ const Detailed: React.FC<PropTypes> = (props) => {
     );
 
     const impostosDetail = mapData(dataImpostosDetail, typeItemEnum.PRICE);
+    //#endregion
 
+    //#region liquido
     const arrayGroupLiquido = [...arrayGroupEbitda, ...dataImpostos];
     const dataLiquido: Array<DreTotals> = arrayGroupLiquido.map(
       (item: DreTotals) => ({
@@ -254,7 +322,10 @@ const Detailed: React.FC<PropTypes> = (props) => {
     );
 
     const liquido = mapData(dataLiquido, typeItemEnum.PRICE);
+    const percentLiquido = getPercentLine(liquido, faturamentoBruto);
+    //#endregion
 
+    //#region investimentos, retiradas e insumos
     const dataInvestmentFiltered = data.expenses.filter((x: DreTotals) =>
       arrayInvestment.includes(x.expenseTypeId)
     );
@@ -296,12 +367,8 @@ const Detailed: React.FC<PropTypes> = (props) => {
       name: typeDataDreEnum.SALDO
     }));
     const box = mapData(dataBox, typeItemEnum.PRICE);
-    const blank = lineText(typeDataDreEnum.BLANK);
-    const percentMargen = getPercentLine(balances, faturamentoBruto);
-    const percentFaturament = getPercentLine(ebitda, faturamentoBruto);
-    const percentLiquido = getPercentLine(liquido, faturamentoBruto);
-    const percentExpense = getPercentLine(expenses, faturamentoBruto);
-
+    //#endregion
+    
     return [
       ...faturamentoBruto,
       ...blank,
@@ -309,6 +376,9 @@ const Detailed: React.FC<PropTypes> = (props) => {
       ...countVisits,
       ...countContracts,
       ...countSales,
+      ...percentCountSalesPurposeComercial,
+      ...percentCountSalesPurposeParticular,
+      ...percentCountSalesPurposeNotPurpose,
       ...percentContractXSales,
       ...blank,
       ...indicatorsTitle,
@@ -365,6 +435,18 @@ const Detailed: React.FC<PropTypes> = (props) => {
       typeItemEnum.TEXT
     );
     return line;
+  };
+
+  const getDataByPurpose = (dreTotals: DreTotals[], purpose: string | null) => {
+    const dataFiltered = dreTotals
+      .filter((sale: DreTotals) => sale?.description === purpose)
+      .map((item: any) => ({
+        ...item,
+        total: item.count,
+        name: purpose
+      }));
+    const data = mapData(dataFiltered, typeItemEnum.NUMBER);
+    return data;
   };
 
   const createTable = (items: DreGrigResult[]) => {

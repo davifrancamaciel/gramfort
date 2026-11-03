@@ -32,7 +32,7 @@ import ShowByRoule from 'components/ShowByRoule';
 import {
   arrayCapture,
   arrayLevel,
-  arrayNature,
+  arrayPurpose,
   arraySatisfactionArray
 } from 'pages/User/utils';
 import { arrayDemand } from '../../User/utils';
@@ -225,9 +225,9 @@ const CreateEdit: React.FC = (props: any) => {
         imageSatisfaction2List
       };
 
-      if (!productsSales || !productsSales.length || !state.clientId) {
+      if (!productsSales || !productsSales.length || !state.clientId|| !state.purpose) {
         notification.warning({
-          message: 'Verifique campos obrigatórios e produtos validos'
+          message: 'Verifique campos obrigatórios e produtos se estão válidos'
         });
         return;
       }
@@ -374,7 +374,39 @@ const CreateEdit: React.FC = (props: any) => {
                   onChange={(visitId) => dispatch({ visitId })}
                 />
               </Col>
-
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Select
+                  label={'Captação'}
+                  options={arrayCapture}
+                  value={state?.capture}
+                  onChange={(capture) => dispatch({ capture })}
+                />
+              </Col>
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Select
+                  label={'Finalidade'}
+                  required={true}
+                  options={arrayPurpose}
+                  value={state?.purpose}
+                  onChange={(purpose) => dispatch({ purpose })}
+                />
+              </Col>
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Select
+                  label={'Demanda'}
+                  options={arrayDemand}
+                  value={state?.demand}
+                  onChange={(demand) => dispatch({ demand })}
+                />
+              </Col>
+              <Col lg={6} md={8} sm={12} xs={24}>
+                <Input
+                  label={'Contato'}
+                  placeholder=""
+                  value={state.contact}
+                  onChange={(e) => dispatch({ contact: e.target.value })}
+                />
+              </Col>
               <Divider>
                 Produtos d{path === appRoutes.sales ? 'a' : 'o'}{' '}
                 {getTitle(path).toLocaleLowerCase()}
@@ -399,15 +431,6 @@ const CreateEdit: React.FC = (props: any) => {
                   />
 
                   <Col lg={6} md={8} sm={12} xs={24}>
-                    <Select
-                      label={'Demanda'}
-                      options={arrayDemand}
-                      value={state?.demand}
-                      onChange={(demand) => dispatch({ demand })}
-                    />
-                  </Col>
-
-                  <Col lg={6} md={8} sm={12} xs={24}>
                     <DatePicker
                       label={'Data aplicação'}
                       value={state.saleDate}
@@ -416,14 +439,6 @@ const CreateEdit: React.FC = (props: any) => {
                   </Col>
                 </>
               )}
-              <Col lg={6} md={8} sm={12} xs={24}>
-                <Select
-                  label={'Captação'}
-                  options={arrayCapture}
-                  value={state?.capture}
-                  onChange={(capture) => dispatch({ capture })}
-                />
-              </Col>
 
               <Col lg={6} md={8} sm={12} xs={24}>
                 <Input
@@ -432,22 +447,6 @@ const CreateEdit: React.FC = (props: any) => {
                   placeholder=""
                   value={state.distance}
                   onChange={(e) => dispatch({ distance: e.target.value })}
-                />
-              </Col>
-              <Col lg={6} md={8} sm={12} xs={24}>
-                <Select
-                  label={'Natureza'}
-                  options={arrayNature}
-                  value={state?.nature}
-                  onChange={(nature) => dispatch({ nature })}
-                />
-              </Col>
-              <Col lg={6} md={8} sm={12} xs={24}>
-                <Input
-                  label={'Contato'}
-                  placeholder=""
-                  value={state.contact}
-                  onChange={(e) => dispatch({ contact: e.target.value })}
                 />
               </Col>
 
@@ -554,16 +553,6 @@ const CreateEdit: React.FC = (props: any) => {
                       }
                     />
                   </Col>
-                  <Col lg={24} md={24} sm={24} xs={24}>
-                    <Input
-                      label={'Forma de pagamento'}
-                      placeholder=""
-                      value={state.paymentMethod}
-                      onChange={(e) =>
-                        dispatch({ paymentMethod: e.target.value })
-                      }
-                    />
-                  </Col>
                   <Col lg={6} md={8} sm={12} xs={24}>
                     <Switch
                       label={'Proposta aprovada'}
@@ -572,6 +561,16 @@ const CreateEdit: React.FC = (props: any) => {
                       checkedChildren="Não"
                       unCheckedChildren="Sim"
                       onChange={() => dispatch({ approved: !state.approved })}
+                    />
+                  </Col>
+                  <Col lg={24} md={24} sm={24} xs={24}>
+                    <Input
+                      label={'Forma de pagamento'}
+                      placeholder=""
+                      value={state.paymentMethod}
+                      onChange={(e) =>
+                        dispatch({ paymentMethod: e.target.value })
+                      }
                     />
                   </Col>
                 </>

@@ -22,6 +22,7 @@ const Export: React.FC<PropTypes> = ({ actionFilter, items, title }) => {
           { label: 'SALDO', key: 'balance' },
           { label: 'VALOR MED M2', key: 'valuePerMeter' },
           { label: 'CAPTAÇÃO', key: 'capture' },
+          { label: 'FINALIDADE', key: 'purpose' },
           { label: 'DEMANDA', key: 'demand' },
           { label: 'CONTATO', key: 'contact' },
           { label: 'NF', key: 'invoice' },
@@ -39,7 +40,7 @@ const Export: React.FC<PropTypes> = ({ actionFilter, items, title }) => {
           { label: 'DESCONTO', key: 'discountDescription' },
           { label: 'VALOR DESCONTO', key: 'discountValue' },
           { label: 'FORMA DE PGTO', key: 'paymentMethod' },
-          { label: 'OBS ITENTERNA', key: 'internalNote' }
+          { label: 'OBS ITENTERNA', key: 'internalNote' },
         ]}
       >
         <Button id="ghost-button" style={{ display: 'none' }}></Button>

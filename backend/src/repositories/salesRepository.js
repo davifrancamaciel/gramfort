@@ -30,6 +30,7 @@ const salesDre = async (date, isAdm, user, companyId, approved = true) => {
     const dateString = startOfMonth(date).toISOString()
 
     const query = ` SELECT 	'FATURAMENTO_BRUTO' name, 
+                            s.purpose description,
                             SUM(s.value) total, 
                             SUM(s.valueInput) totalCost, 
                             SUM(s.valuePerMeter) valuePerMeter, 
@@ -38,7 +39,7 @@ const salesDre = async (date, isAdm, user, companyId, approved = true) => {
                     FROM sales s 
                     WHERE s.approved = ${approved} AND YEAR(s.saleDate) = YEAR('${dateString}') ${limitCurrentYear(date, 's.saleDate')}
                     ${isAdm ? andCompany('s', companyId) : andCompany('s', user.companyId)}
-                    GROUP BY MONTH (s.saleDate), YEAR(s.saleDate)
+                    GROUP BY MONTH (s.saleDate), YEAR(s.saleDate), s.purpose
                     ORDER BY YEAR(s.saleDate) DESC, MONTH (s.saleDate) DESC`
 
     const result = await executeSelect(query);

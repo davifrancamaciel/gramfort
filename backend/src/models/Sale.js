@@ -59,6 +59,7 @@ module.exports = function (sequelize, DataTypes) {
         imageSatisfaction2: { type: DataTypes.STRING(500) },
         satisfactionSurveyDate: { type: DataTypes.DATE },
         userSatisfactionId: { type: DataTypes.INTEGER },
+        purpose: { type: DataTypes.STRING(100) }, //Finalidade
     });
 
     Sale.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });

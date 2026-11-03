@@ -53,6 +53,7 @@ export interface Sale {
   saleDate?: string;
   distance?: number;
   demand?: string;
+  purpose?: string;
   invoice: boolean;
   // contract
   visitId?: number;

@@ -42,21 +42,24 @@ export const getTitle = (path: string, isPlural: boolean = false) => {
 };
 
 const array = [
-  'INSTAGRAM',
+  'CAPTAÇÃO ATIVA ',
+  'CAPTAÇÃO NA OBRA ',
+  'EXCLIENTE',
   'FACEBOOK ',
+  'FACHADA DE OBRA',
+  'FEIRA/EVENTO ',
   'GOOGLE ',
-  'TIKTOK ',
   'INDICAÇÃO EXCLIENTE',
   'INDICAÇÃO PROFISSIONAL ',
-  'CAPTAÇÃO NA OBRA ',
-  'CAPTAÇÃO ATIVA ',
-  'FACHADA DE OBRA',
+  'INSTAGRAM',
+  'LEAD',
+  'MÍDIA CARROS ',
+  'OUTROS',
   'OUTDOOR',
   'RÁDIO  ',
-  'MÍDIA CARROS ',
-  'FEIRA/EVENTO ',
-  'TV ',
-  'OUTROS '
+  'RECORRENTE',
+  'TIKTOK ',
+  'TV '
 ];
 
 export const arrayCapture: IOptions[] = array.map((item: string) => ({
@@ -64,7 +67,7 @@ export const arrayCapture: IOptions[] = array.map((item: string) => ({
   label: item
 }));
 
-const levelArray = Array.from({ length: 5}, (_, index) => index+1);
+const levelArray = Array.from({ length: 5 }, (_, index) => index + 1);
 export const arrayLevel: IOptions[] = levelArray.map((item: number) => ({
   value: item.toString(),
   label: item.toString()
@@ -91,12 +94,22 @@ const demandArray = [
   'Condomínio',
   'Comercial',
   'Rodovia/Estrada',
-  'Empreendimento ',
   'Prefeitura ',
   'Lote/Terreno',
   'Outros'
 ];
 export const arrayDemand: IOptions[] = demandArray.map((item: string) => ({
+  value: item,
+  label: item
+}));
+
+export const purpose = {
+  COMERCIAL: 'Comercial',
+  PARTICULAR: 'Particular'
+};
+
+const purposeArray = [purpose.COMERCIAL, purpose.PARTICULAR];
+export const arrayPurpose: IOptions[] = purposeArray.map((item: string) => ({
   value: item,
   label: item
 }));
